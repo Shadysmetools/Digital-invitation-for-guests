@@ -12,36 +12,65 @@
         html { scroll-behavior: smooth; }
         body { min-height: 100vh; background: #C5D1D8; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
-        .envelope-scene {
+        /* OPENING SCENE */
+        .opening-scene {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             background: #C5D1D8; z-index: 100;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
+            transition: background 0.8s ease;
         }
-        .envelope-scene.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .opening-scene.opened { background: #FFFEF9; }
+        .opening-scene.hidden { display: none; }
 
-        .envelope-wrapper { position: relative; width: 340px; height: 240px; cursor: pointer; perspective: 1500px; transition: transform 0.3s ease; }
-        .envelope-wrapper:hover { transform: scale(1.02); }
+        /* Envelope */
+        .envelope-wrapper {
+            position: absolute;
+            width: 320px; height: 220px;
+            cursor: pointer; perspective: 1500px;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        .opening-scene.opened .envelope-wrapper {
+            transform: translateX(calc(50vw - 80px)) scale(0.5);
+            opacity: 0.8;
+        }
         .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
-        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
-        .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; overflow: hidden; z-index: 1; }
-        .envelope-inside::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 15% 20%, #E8B8B8 4px, transparent 4px), radial-gradient(circle at 30% 15%, #B8D0B8 3px, transparent 3px), radial-gradient(circle at 45% 25%, #D8B8D8 4px, transparent 4px), radial-gradient(circle at 60% 10%, #E8D8B8 3px, transparent 3px), radial-gradient(circle at 75% 20%, #B8C8E0 4px, transparent 4px); }
-        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 130px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20; }
-        .seal { position: absolute; top: 35%; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Alex Brush', cursive; font-size: 16px; color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
+        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
+        .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; z-index: 1; }
+        .envelope-inside::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 15% 20%, #E8B8B8 3px, transparent 3px), radial-gradient(circle at 45% 25%, #D8B8D8 3px, transparent 3px), radial-gradient(circle at 75% 20%, #B8C8E0 3px, transparent 3px), radial-gradient(circle at 30% 60%, #C8E0C8 3px, transparent 3px), radial-gradient(circle at 70% 70%, #E8C8B8 3px, transparent 3px); }
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 120px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20; }
+        .seal { position: absolute; top: 32%; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Alex Brush', cursive; font-size: 14px; color: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
         .opened .seal { opacity: 0; }
         .opened .envelope-flap { transform: rotateX(-180deg); }
-        .envelope-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%); clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3; }
+        .envelope-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 90px; background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%); clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3; }
         .envelope-left, .envelope-right { position: absolute; top: 0; width: 50%; height: 100%; z-index: 2; }
         .envelope-left { left: 0; background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
         .envelope-right { right: 0; background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-        .tap-instruction { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); font-size: 14px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; white-space: nowrap; }
+        .tap-instruction { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); font-size: 13px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; white-space: nowrap; transition: opacity 0.3s; }
+        .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-page { min-height: 100vh; background: #FFFEF9; }
+        /* Invitation Card - Grows when opened */
+        .invitation-card {
+            position: absolute;
+            width: 280px;
+            background: #FFFEF9;
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+        }
+        .opening-scene.opened .invitation-card {
+            opacity: 1;
+            transform: scale(1) translateX(-80px);
+            width: min(90vw, 420px);
+            padding: 50px 35px;
+        }
 
-        .invitation-header { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 30px; text-align: center; background: #FFFEF9; }
-
-        .wreath-container { position: relative; width: 200px; height: 200px; margin-bottom: 30px; }
+        .wreath-container { position: relative; width: 160px; height: 160px; margin: 0 auto 25px; }
         .flower { position: absolute; border-radius: 50%; }
         .flower.pink { background: radial-gradient(circle, #F5D0D0 30%, #E8B4B8 70%); }
         .flower.rose { background: radial-gradient(circle, #E8C0C8 30%, #D4A0A8 70%); }
@@ -51,67 +80,107 @@
         .flower.purple { background: radial-gradient(circle, #D8C0E0 30%, #C0A0D0 70%); }
         .leaf { position: absolute; background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%); border-radius: 0 70% 0 70%; }
 
-        .f1 { width: 24px; height: 24px; top: 5px; left: 88px; } .f2 { width: 20px; height: 20px; top: 15px; left: 55px; }
-        .f3 { width: 18px; height: 18px; top: 18px; left: 128px; } .f4 { width: 22px; height: 22px; top: 35px; left: 28px; }
-        .f5 { width: 26px; height: 26px; top: 30px; left: 150px; } .f6 { width: 16px; height: 16px; top: 62px; left: 12px; }
-        .f7 { width: 20px; height: 20px; top: 56px; left: 170px; } .f8 { width: 18px; height: 18px; top: 95px; left: 0px; }
-        .f9 { width: 22px; height: 22px; top: 88px; left: 180px; } .f10 { width: 17px; height: 17px; top: 128px; left: 8px; }
-        .f11 { width: 20px; height: 20px; top: 122px; left: 175px; } .f12 { width: 18px; height: 18px; top: 155px; left: 28px; }
-        .f13 { width: 24px; height: 24px; top: 150px; left: 155px; } .f14 { width: 20px; height: 20px; top: 175px; left: 58px; }
-        .f15 { width: 22px; height: 22px; top: 172px; left: 128px; } .f16 { width: 18px; height: 18px; top: 182px; left: 95px; }
-        .l1 { width: 20px; height: 8px; top: 28px; left: 72px; transform: rotate(-30deg); }
-        .l2 { width: 24px; height: 10px; top: 45px; left: 140px; transform: rotate(40deg); }
-        .l3 { width: 18px; height: 7px; top: 78px; left: 20px; transform: rotate(-50deg); }
-        .l4 { width: 22px; height: 9px; top: 108px; left: 168px; transform: rotate(60deg); }
-        .l5 { width: 20px; height: 8px; top: 142px; left: 15px; transform: rotate(-70deg); }
-        .l6 { width: 22px; height: 9px; top: 165px; left: 145px; transform: rotate(25deg); }
-        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 52px; color: #444; letter-spacing: -3px; }
+        .f1 { width: 20px; height: 20px; top: 4px; left: 70px; } .f2 { width: 16px; height: 16px; top: 12px; left: 44px; }
+        .f3 { width: 14px; height: 14px; top: 14px; left: 102px; } .f4 { width: 18px; height: 18px; top: 28px; left: 22px; }
+        .f5 { width: 22px; height: 22px; top: 24px; left: 120px; } .f6 { width: 13px; height: 13px; top: 50px; left: 10px; }
+        .f7 { width: 16px; height: 16px; top: 45px; left: 136px; } .f8 { width: 15px; height: 15px; top: 76px; left: 0px; }
+        .f9 { width: 18px; height: 18px; top: 70px; left: 144px; } .f10 { width: 14px; height: 14px; top: 102px; left: 6px; }
+        .f11 { width: 16px; height: 16px; top: 98px; left: 140px; } .f12 { width: 15px; height: 15px; top: 124px; left: 22px; }
+        .f13 { width: 20px; height: 20px; top: 120px; left: 124px; } .f14 { width: 16px; height: 16px; top: 140px; left: 46px; }
+        .f15 { width: 18px; height: 18px; top: 138px; left: 102px; } .f16 { width: 14px; height: 14px; top: 148px; left: 76px; }
+        .l1 { width: 16px; height: 6px; top: 22px; left: 58px; transform: rotate(-30deg); }
+        .l2 { width: 20px; height: 8px; top: 36px; left: 112px; transform: rotate(40deg); }
+        .l3 { width: 14px; height: 5px; top: 62px; left: 16px; transform: rotate(-50deg); }
+        .l4 { width: 18px; height: 7px; top: 86px; left: 134px; transform: rotate(60deg); }
+        .l5 { width: 16px; height: 6px; top: 114px; left: 12px; transform: rotate(-70deg); }
+        .l6 { width: 18px; height: 7px; top: 132px; left: 116px; transform: rotate(25deg); }
+        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 44px; color: #444; letter-spacing: -3px; }
 
-        .together-text { font-size: 16px; font-style: italic; color: #888; margin-bottom: 18px; letter-spacing: 1px; }
-        .names { font-size: 26px; font-weight: 400; color: #333; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; line-height: 1.5; }
-        .invite-text { font-size: 16px; font-style: italic; color: #666; margin-bottom: 18px; }
-        .date-main { font-size: 20px; font-weight: 500; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 15px; }
-        .date-details { font-size: 16px; font-style: italic; color: #555; line-height: 1.7; margin-bottom: 18px; }
-        .venue-name-small { font-size: 16px; color: #555; letter-spacing: 1px; margin-bottom: 18px; }
-        .reception-text { font-size: 16px; font-style: italic; color: #888; }
+        .together-text { font-size: 14px; font-style: italic; color: #888; margin-bottom: 15px; letter-spacing: 1px; }
+        .names { font-size: 20px; font-weight: 400; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; line-height: 1.5; }
+        .invite-text { font-size: 14px; font-style: italic; color: #666; margin-bottom: 15px; }
+        .date-main { font-size: 16px; font-weight: 500; color: #333; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .date-details { font-size: 14px; font-style: italic; color: #555; line-height: 1.6; margin-bottom: 15px; }
+        .venue-name-small { font-size: 14px; color: #555; letter-spacing: 1px; margin-bottom: 15px; }
+        .reception-text { font-size: 14px; font-style: italic; color: #888; }
+
+        /* Continue button */
+        .continue-btn {
+            display: none;
+            margin-top: 25px;
+            padding: 12px 40px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid #333;
+            background: #333;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .continue-btn:hover { background: #555; }
+        .opening-scene.opened .continue-btn { display: inline-block; }
+
+        /* MAIN CONTENT */
+        .main-content { display: none; background: #FAF8F5; }
+        .main-content.visible { display: block; }
 
         .section { padding: 60px 30px; text-align: center; background: #FAF8F5; }
-        .section-label { font-family: 'Alex Brush', cursive; font-size: 38px; color: #666; margin-bottom: 25px; }
-        .main-title { font-family: 'Alex Brush', cursive; font-size: 44px; color: #444; margin-bottom: 30px; line-height: 1.3; }
-        .welcome-text { font-size: 20px; font-style: italic; color: #666; max-width: 450px; margin: 0 auto 35px; line-height: 1.8; }
 
-        .attend-form { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .attend-form input { padding: 14px 22px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 300px; text-align: center; }
-        .attend-btn { padding: 16px 55px; font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
-        .attend-btn:hover { background: #555; }
-        .success-msg { display: none; font-size: 20px; font-style: italic; color: #4a7c59; }
+        /* RSVP Section */
+        .main-title { font-family: 'Alex Brush', cursive; font-size: 42px; color: #444; margin-bottom: 30px; line-height: 1.3; }
+        .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
 
-        .dot { width: 8px; height: 8px; background: #2B4A7C; border-radius: 50%; margin: 18px auto; }
-        .section-date-text { font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #333; margin-bottom: 12px; text-decoration: underline; text-underline-offset: 6px; }
-        .time-text { font-size: 18px; letter-spacing: 3px; color: #333; text-decoration: underline; text-underline-offset: 6px; }
+        .rsvp-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        .rsvp-btn {
+            padding: 16px 40px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: 1px solid #333;
+            background: transparent;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .rsvp-btn:hover, .rsvp-btn.selected { background: #333; color: #fff; }
+        .rsvp-btn.decline { border-color: #888; color: #888; }
+        .rsvp-btn.decline:hover { background: #888; color: #fff; }
 
-        /* VENUE SECTION - Matching reference style */
+        /* Attend Form (hidden initially) */
+        .attend-form { display: none; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
+        .attend-form.visible { display: flex; }
+        .attend-form input { padding: 12px 20px; font-family: 'Cormorant Garamond', serif; font-size: 15px; border: 1px solid #ccc; width: 280px; text-align: center; }
+        .attend-submit { padding: 14px 45px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; border: none; background: #4a7c59; color: #fff; cursor: pointer; margin-top: 10px; }
+        .attend-submit:hover { background: #3d6a4a; }
+
+        .thank-you { display: none; font-size: 20px; font-style: italic; color: #4a7c59; margin-top: 20px; }
+        .sorry-msg { display: none; font-size: 18px; font-style: italic; color: #888; margin-top: 20px; }
+
+        /* Venue Section */
         .section-venue { padding: 60px 30px 80px; text-align: center; background: #FAF8F5; }
-        .travel-label { font-family: 'Pinyon Script', cursive; font-size: 42px; color: #666; margin-bottom: 30px; }
-        .venue-image { max-width: 600px; width: 90%; height: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.12); margin: 0 auto 40px; display: block; }
-        .venue-label { font-family: 'Pinyon Script', cursive; font-size: 38px; color: #666; margin-bottom: 25px; }
-        .venue-name-large { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 15px; }
-        .venue-link-text { font-size: 14px; letter-spacing: 1px; color: #333; text-decoration: none; }
+        .travel-label { font-family: 'Pinyon Script', cursive; font-size: 40px; color: #666; margin-bottom: 30px; }
+        .venue-image { max-width: 550px; width: 90%; height: auto; box-shadow: 0 8px 28px rgba(0,0,0,0.1); margin: 0 auto 35px; display: block; }
+        .venue-label { font-family: 'Pinyon Script', cursive; font-size: 36px; color: #666; margin-bottom: 20px; }
+        .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
+        .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
         .venue-link-text:hover { text-decoration: underline; }
 
-        @media (max-width: 480px) {
-            .envelope-wrapper { width: 300px; height: 210px; }
-            .wreath-container { width: 160px; height: 160px; }
-            .monogram { font-size: 42px; }
-            .names { font-size: 22px; letter-spacing: 2px; }
-            .main-title { font-size: 34px; }
-            .attend-form input { width: 100%; max-width: 300px; }
-            .venue-image { width: 95%; }
+        @media (max-width: 600px) {
+            .opening-scene.opened .envelope-wrapper { transform: translateX(30vw) scale(0.35); opacity: 0.6; }
+            .opening-scene.opened .invitation-card { transform: scale(1) translateX(0); width: 92vw; padding: 35px 20px; }
+            .wreath-container { width: 130px; height: 130px; }
+            .monogram { font-size: 36px; }
+            .names { font-size: 18px; letter-spacing: 2px; }
+            .rsvp-buttons { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
 <body>
-    <div class="envelope-scene" id="envelopeScene">
+    <!-- OPENING SCENE (Envelope + Invitation Animation) -->
+    <div class="opening-scene" id="openingScene">
         <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
             <div class="envelope">
                 <div class="envelope-back"></div>
@@ -124,10 +193,8 @@
             </div>
             <p class="tap-instruction">tap to open</p>
         </div>
-    </div>
 
-    <div class="invitation-page">
-        <div class="invitation-header">
+        <div class="invitation-card">
             <div class="wreath-container">
                 <div class="flower pink f1"></div><div class="flower white f2"></div><div class="flower rose f3"></div>
                 <div class="flower yellow f4"></div><div class="flower pink f5"></div><div class="flower blue f6"></div>
@@ -146,32 +213,38 @@
             <p class="date-details">two thousand and twenty six<br>at five o'clock in the evening</p>
             <p class="venue-name-small">The Groove Venue, Al Shorouk</p>
             <p class="reception-text">Dinner and festivities to follow</p>
+            <button class="continue-btn" onclick="showContent()">Continue</button>
         </div>
+    </div>
 
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <!-- RSVP Section -->
         <div class="section">
             <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
             <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
+            
+            <div class="rsvp-buttons" id="rsvpButtons">
+                <button class="rsvp-btn" onclick="showAttendForm()">Will Attend</button>
+                <button class="rsvp-btn decline" onclick="showSorry()">Can't Attend</button>
+            </div>
+
             <form class="attend-form" id="attendForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST">
                 <input type="hidden" name="_subject" value="🎉 New Guest Attending - Hana & Shady's Engagement">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_next" value="https://shadysmetools.github.io/Digital-invitation-for-guests/?confirmed=true">
                 <input type="text" name="name" placeholder="Your Name" required>
-                <input type="tel" name="phone" placeholder="Phone Number (optional)">
+                <input type="tel" name="phone" placeholder="Phone Number">
                 <input type="number" name="guests" placeholder="Number of Guests" min="1" max="10" value="1">
-                <button type="submit" class="attend-btn">I Will Attend</button>
+                <button type="submit" class="attend-submit">Confirm Attendance</button>
             </form>
-            <p class="success-msg" id="successMsg">Thank you! Your attendance has been confirmed 💕</p>
+
+            <p class="thank-you" id="thankYou">Thank you! We look forward to celebrating with you 💕</p>
+            <p class="sorry-msg" id="sorryMsg">We'll miss you! Thank you for letting us know 💝</p>
         </div>
 
-        <div class="section">
-            <p class="section-label">Date</p>
-            <div class="dot"></div>
-            <p class="section-date-text">Wednesday, April 22</p>
-            <p class="time-text">5:00PM EET</p>
-        </div>
-
-        <!-- VENUE SECTION - Matching reference style -->
+        <!-- Venue Section -->
         <div class="section-venue">
             <p class="travel-label">Travel</p>
             <img src="venue.jpg" alt="The Groove Venue" class="venue-image">
@@ -183,13 +256,30 @@
 
     <script>
         function openEnvelope() {
-            document.getElementById('envelope').classList.add('opened');
-            setTimeout(() => { document.getElementById('envelopeScene').classList.add('hidden'); }, 800);
+            document.getElementById('openingScene').classList.add('opened');
         }
+
+        function showContent() {
+            document.getElementById('openingScene').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('visible');
+        }
+
+        function showAttendForm() {
+            document.getElementById('rsvpButtons').style.display = 'none';
+            document.getElementById('attendForm').classList.add('visible');
+        }
+
+        function showSorry() {
+            document.getElementById('rsvpButtons').style.display = 'none';
+            document.getElementById('sorryMsg').style.display = 'block';
+        }
+
+        // If returning from form
         if (window.location.search.includes('confirmed=true')) {
-            document.getElementById('envelopeScene').classList.add('hidden');
-            document.getElementById('attendForm').style.display = 'none';
-            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('openingScene').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('visible');
+            document.getElementById('rsvpButtons').style.display = 'none';
+            document.getElementById('thankYou').style.display = 'block';
         }
     </script>
 </body>
