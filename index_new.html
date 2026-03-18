@@ -10,6 +10,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
+        
         body {
             min-height: 100vh;
             background: #C5D1D8;
@@ -17,10 +18,13 @@
             overflow-x: hidden;
         }
 
+        /* ENVELOPE SCENE */
         .envelope-scene {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,82 +32,170 @@
             z-index: 100;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
-        .envelope-scene.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .envelope-scene.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
 
         .envelope-wrapper {
             position: relative;
-            width: 340px; height: 240px;
+            width: 340px;
+            height: 240px;
             cursor: pointer;
             perspective: 1500px;
             transition: transform 0.3s ease;
         }
+
         .envelope-wrapper:hover { transform: scale(1.02); }
 
-        .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
         .envelope-back {
-            position: absolute; width: 100%; height: 100%;
+            position: absolute;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%);
-            border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
         }
+
         .envelope-inside {
-            position: absolute; width: 100%; height: 100%;
-            background: #FCEEE8; border-radius: 4px; overflow: hidden; z-index: 1;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #FCEEE8;
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 1;
         }
+
         .envelope-inside::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-image: 
                 radial-gradient(circle at 15% 20%, #E8B8B8 4px, transparent 4px),
                 radial-gradient(circle at 30% 15%, #B8D0B8 3px, transparent 3px),
                 radial-gradient(circle at 45% 25%, #D8B8D8 4px, transparent 4px),
                 radial-gradient(circle at 60% 10%, #E8D8B8 3px, transparent 3px),
-                radial-gradient(circle at 75% 20%, #B8C8E0 4px, transparent 4px);
+                radial-gradient(circle at 75% 20%, #B8C8E0 4px, transparent 4px),
+                radial-gradient(circle at 85% 15%, #E0B8C0 3px, transparent 3px);
         }
+
         .envelope-flap {
-            position: absolute; top: 0; left: 0; width: 100%; height: 130px;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 130px;
             background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%);
             clip-path: polygon(0 0, 50% 100%, 100% 0);
             transform-origin: top center;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 20;
         }
+
         .seal {
-            position: absolute; top: 35%; left: 50%; transform: translateX(-50%);
-            width: 50px; height: 50px;
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%);
-            border-radius: 50%; z-index: 21;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Alex Brush', cursive; font-size: 16px; color: #fff;
+            border-radius: 50%;
+            z-index: 21;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Alex Brush', cursive;
+            font-size: 16px;
+            color: #fff;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             transition: opacity 0.3s ease;
         }
+
         .opened .seal { opacity: 0; }
         .opened .envelope-flap { transform: rotateX(-180deg); }
 
         .envelope-bottom {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100px;
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 100px;
             background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%);
-            clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3;
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+            z-index: 3;
         }
-        .envelope-left, .envelope-right { position: absolute; top: 0; width: 50%; height: 100%; z-index: 2; }
-        .envelope-left { left: 0; background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
-        .envelope-right { right: 0; background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+
+        .envelope-left, .envelope-right {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .envelope-left {
+            left: 0;
+            background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .envelope-right {
+            right: 0;
+            background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
 
         .tap-instruction {
-            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
-            font-size: 14px; font-style: italic; color: #888;
-            animation: pulse 2s ease-in-out infinite; white-space: nowrap;
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-style: italic;
+            color: #888;
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-page { min-height: 100vh; background: #FFFEF9; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
 
+        /* FULL SCREEN INVITATION */
+        .invitation-page {
+            min-height: 100vh;
+            background: #FFFEF9;
+        }
+
+        /* Invitation Header - Full Screen */
         .invitation-header {
             min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 40px 30px; text-align: center; background: #FFFEF9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            text-align: center;
+            background: #FFFEF9;
         }
 
-        .wreath-container { position: relative; width: 200px; height: 200px; margin-bottom: 30px; }
+        .wreath-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 30px;
+        }
+
         .flower { position: absolute; border-radius: 50%; }
         .flower.pink { background: radial-gradient(circle, #F5D0D0 30%, #E8B4B8 70%); }
         .flower.rose { background: radial-gradient(circle, #E8C0C8 30%, #D4A0A8 70%); }
@@ -111,7 +203,12 @@
         .flower.yellow { background: radial-gradient(circle, #F8E8A0 30%, #E8D080 70%); }
         .flower.blue { background: radial-gradient(circle, #A8C8E0 30%, #88B0D0 70%); }
         .flower.purple { background: radial-gradient(circle, #D8C0E0 30%, #C0A0D0 70%); }
-        .leaf { position: absolute; background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%); border-radius: 0 70% 0 70%; }
+
+        .leaf {
+            position: absolute;
+            background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%);
+            border-radius: 0 70% 0 70%;
+        }
 
         .f1 { width: 24px; height: 24px; top: 5px; left: 88px; }
         .f2 { width: 20px; height: 20px; top: 15px; left: 55px; }
@@ -137,7 +234,16 @@
         .l5 { width: 20px; height: 8px; top: 142px; left: 15px; transform: rotate(-70deg); }
         .l6 { width: 22px; height: 9px; top: 165px; left: 145px; transform: rotate(25deg); }
 
-        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 52px; color: #444; letter-spacing: -3px; }
+        .monogram {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Pinyon Script', cursive;
+            font-size: 52px;
+            color: #444;
+            letter-spacing: -3px;
+        }
 
         .together-text { font-size: 16px; font-style: italic; color: #888; margin-bottom: 18px; letter-spacing: 1px; }
         .names { font-size: 26px; font-weight: 400; color: #333; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 25px; line-height: 1.5; }
@@ -147,36 +253,113 @@
         .venue-name-small { font-size: 16px; color: #555; letter-spacing: 1px; margin-bottom: 18px; }
         .reception-text { font-size: 16px; font-style: italic; color: #888; }
 
-        .section { padding: 60px 30px; text-align: center; background: #FAF8F5; }
-        .section-label { font-family: 'Alex Brush', cursive; font-size: 38px; color: #666; margin-bottom: 25px; }
-        .main-title { font-family: 'Alex Brush', cursive; font-size: 44px; color: #444; margin-bottom: 30px; line-height: 1.3; }
-        .welcome-text { font-size: 20px; font-style: italic; color: #666; max-width: 450px; margin: 0 auto 35px; line-height: 1.8; }
+        /* Sections */
+        .section {
+            padding: 60px 30px;
+            text-align: center;
+            background: #FAF8F5;
+        }
 
-        .attend-form { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .attend-form input { padding: 14px 22px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 300px; text-align: center; }
-        .attend-btn { padding: 16px 55px; font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+        .section-label {
+            font-family: 'Alex Brush', cursive;
+            font-size: 38px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .main-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 44px;
+            color: #444;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .welcome-text {
+            font-size: 20px;
+            font-style: italic;
+            color: #666;
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            margin: 0 auto 35px;
+            line-height: 1.8;
+        }
+
+        /* Attend Form */
+        .attend-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .attend-form input {
+            padding: 14px 22px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            width: 300px;
+            text-align: center;
+        }
+
+        .attend-btn {
+            padding: 16px 55px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 15px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border: 1px solid #333;
+            background: #333;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
         .attend-btn:hover { background: #555; }
-        .success-msg { display: none; font-size: 20px; font-style: italic; color: #4a7c59; }
 
+        .success-msg {
+            display: none;
+            font-size: 20px;
+            font-style: italic;
+            color: #4a7c59;
+        }
+
+        /* Date Section */
         .dot { width: 8px; height: 8px; background: #2B4A7C; border-radius: 50%; margin: 18px auto; }
         .section-date-text { font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #333; margin-bottom: 12px; text-decoration: underline; text-underline-offset: 6px; }
         .time-text { font-size: 18px; letter-spacing: 3px; color: #333; text-decoration: underline; text-underline-offset: 6px; }
 
-        /* FIXED: Image without black bars */
+        /* Venue Section */
         .venue-map {
-            max-width: 400px;
-            width: 90%;
+            display: block;
+            width: 100%;
+            max-width: 100%;
+            width: auto;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 12px 35px rgba(0,0,0,0.12);
             margin: 25px auto;
-            display: block;
         }
 
         .venue-name-large { font-size: 18px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin: 25px 0 20px; }
-        .venue-link { display: inline-block; padding: 14px 35px; font-size: 14px; letter-spacing: 2px; color: #fff; background: #2B4A7C; text-decoration: none; border-radius: 6px; transition: background 0.3s ease; }
+
+        .venue-link {
+            display: inline-block;
+            padding: 14px 35px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #fff;
+            background: #2B4A7C;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+
         .venue-link:hover { background: #1a3a5c; }
 
+        /* Mobile */
         @media (max-width: 480px) {
             .envelope-wrapper { width: 300px; height: 210px; }
             .wreath-container { width: 160px; height: 160px; }
@@ -184,11 +367,13 @@
             .names { font-size: 22px; letter-spacing: 2px; }
             .main-title { font-size: 34px; }
             .attend-form input { width: 100%; max-width: 300px; }
-            .venue-map { width: 95%; max-width: 100%; }
+            .venue-map {
+            display: block; max-width: 100%; }
         }
     </style>
 </head>
 <body>
+    <!-- ENVELOPE (overlays everything) -->
     <div class="envelope-scene" id="envelopeScene">
         <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
             <div class="envelope">
@@ -204,17 +389,33 @@
         </div>
     </div>
 
+    <!-- FULL SCREEN INVITATION (behind envelope, revealed when envelope hides) -->
     <div class="invitation-page">
+        <!-- Full Screen Invitation Letter -->
         <div class="invitation-header">
             <div class="wreath-container">
-                <div class="flower pink f1"></div><div class="flower white f2"></div><div class="flower rose f3"></div>
-                <div class="flower yellow f4"></div><div class="flower pink f5"></div><div class="flower blue f6"></div>
-                <div class="flower white f7"></div><div class="flower purple f8"></div><div class="flower rose f9"></div>
-                <div class="flower pink f10"></div><div class="flower yellow f11"></div><div class="flower white f12"></div>
-                <div class="flower rose f13"></div><div class="flower blue f14"></div><div class="flower pink f15"></div>
+                <div class="flower pink f1"></div>
+                <div class="flower white f2"></div>
+                <div class="flower rose f3"></div>
+                <div class="flower yellow f4"></div>
+                <div class="flower pink f5"></div>
+                <div class="flower blue f6"></div>
+                <div class="flower white f7"></div>
+                <div class="flower purple f8"></div>
+                <div class="flower rose f9"></div>
+                <div class="flower pink f10"></div>
+                <div class="flower yellow f11"></div>
+                <div class="flower white f12"></div>
+                <div class="flower rose f13"></div>
+                <div class="flower blue f14"></div>
+                <div class="flower pink f15"></div>
                 <div class="flower white f16"></div>
-                <div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div>
-                <div class="leaf l4"></div><div class="leaf l5"></div><div class="leaf l6"></div>
+                <div class="leaf l1"></div>
+                <div class="leaf l2"></div>
+                <div class="leaf l3"></div>
+                <div class="leaf l4"></div>
+                <div class="leaf l5"></div>
+                <div class="leaf l6"></div>
                 <div class="monogram">HS</div>
             </div>
             <p class="together-text">Together with their families</p>
@@ -226,9 +427,11 @@
             <p class="reception-text">Dinner and festivities to follow</p>
         </div>
 
+        <!-- Attendance Section -->
         <div class="section">
             <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
             <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
+            
             <form class="attend-form" id="attendForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST">
                 <input type="hidden" name="_subject" value="🎉 New Guest Attending - Hana & Shady's Engagement">
                 <input type="hidden" name="_captcha" value="false">
@@ -242,6 +445,7 @@
             <p class="success-msg" id="successMsg">Thank you! Your attendance has been confirmed 💕</p>
         </div>
 
+        <!-- Date Section -->
         <div class="section">
             <p class="section-label">Date</p>
             <div class="dot"></div>
@@ -249,6 +453,7 @@
             <p class="time-text">5:00PM EET</p>
         </div>
 
+        <!-- Venue Section -->
         <div class="section">
             <p class="section-label">Location</p>
             <img src="venue-map.jpg" alt="The Grove Directional Map" class="venue-map">
@@ -259,9 +464,16 @@
 
     <script>
         function openEnvelope() {
-            document.getElementById('envelope').classList.add('opened');
-            setTimeout(() => { document.getElementById('envelopeScene').classList.add('hidden'); }, 800);
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('opened');
+            
+            // After flap opens, hide entire envelope scene
+            setTimeout(() => {
+                document.getElementById('envelopeScene').classList.add('hidden');
+            }, 800);
         }
+
+        // If returning from form, skip envelope
         if (window.location.search.includes('confirmed=true')) {
             document.getElementById('envelopeScene').classList.add('hidden');
             document.getElementById('attendForm').style.display = 'none';
