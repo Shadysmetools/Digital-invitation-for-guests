@@ -12,7 +12,6 @@
         html { scroll-behavior: smooth; }
         body { min-height: 100vh; background: #C5D1D8; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
-        /* OPENING SCENE */
         .opening-scene {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
@@ -22,7 +21,6 @@
         .opening-scene.opened { background: #FFFEF9; }
         .opening-scene.hidden { display: none; }
 
-        /* Envelope */
         .envelope-wrapper {
             position: absolute;
             width: 320px; height: 220px;
@@ -50,7 +48,6 @@
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        /* Invitation Card - Grows when opened */
         .invitation-card {
             position: absolute;
             width: 280px;
@@ -104,7 +101,6 @@
         .venue-name-small { font-size: 14px; color: #555; letter-spacing: 1px; margin-bottom: 15px; }
         .reception-text { font-size: 14px; font-style: italic; color: #888; }
 
-        /* Continue button */
         .continue-btn {
             display: none;
             margin-top: 25px;
@@ -122,15 +118,26 @@
         .continue-btn:hover { background: #555; }
         .opening-scene.opened .continue-btn { display: inline-block; }
 
-        /* MAIN CONTENT */
         .main-content { display: none; background: #FAF8F5; }
         .main-content.visible { display: block; }
 
         .section { padding: 60px 30px; text-align: center; background: #FAF8F5; }
 
-        /* RSVP Section */
         .main-title { font-family: 'Alex Brush', cursive; font-size: 42px; color: #444; margin-bottom: 30px; line-height: 1.3; }
         .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
+
+        /* Name input before buttons */
+        .name-input-section { margin-bottom: 25px; }
+        .name-label { font-size: 16px; font-style: italic; color: #666; margin-bottom: 12px; display: block; }
+        .name-input {
+            padding: 14px 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            width: 280px;
+            text-align: center;
+            background: #fff;
+        }
 
         .rsvp-buttons { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
         .rsvp-btn {
@@ -149,7 +156,6 @@
         .rsvp-btn.decline { border-color: #888; color: #888; }
         .rsvp-btn.decline:hover { background: #888; color: #fff; }
 
-        /* Attend Form (hidden initially) */
         .attend-form { display: none; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
         .attend-form.visible { display: flex; }
         .attend-form input { padding: 12px 20px; font-family: 'Cormorant Garamond', serif; font-size: 15px; border: 1px solid #ccc; width: 280px; text-align: center; }
@@ -159,10 +165,9 @@
         .thank-you { display: none; font-size: 20px; font-style: italic; color: #4a7c59; margin-top: 20px; }
         .sorry-msg { display: none; font-size: 18px; font-style: italic; color: #888; margin-top: 20px; }
 
-        /* Venue Section */
+        /* Venue Section - No image */
         .section-venue { padding: 60px 30px 80px; text-align: center; background: #FAF8F5; }
         .travel-label { font-family: 'Pinyon Script', cursive; font-size: 40px; color: #666; margin-bottom: 30px; }
-        .venue-image { max-width: 550px; width: 90%; height: auto; box-shadow: 0 8px 28px rgba(0,0,0,0.1); margin: 0 auto 35px; display: block; }
         .venue-label { font-family: 'Pinyon Script', cursive; font-size: 36px; color: #666; margin-bottom: 20px; }
         .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
@@ -175,11 +180,11 @@
             .monogram { font-size: 36px; }
             .names { font-size: 18px; letter-spacing: 2px; }
             .rsvp-buttons { flex-direction: column; align-items: center; }
+            .name-input { width: 100%; max-width: 280px; }
         }
     </style>
 </head>
 <body>
-    <!-- OPENING SCENE (Envelope + Invitation Animation) -->
     <div class="opening-scene" id="openingScene">
         <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
             <div class="envelope">
@@ -217,37 +222,38 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
-        <!-- RSVP Section -->
         <div class="section">
             <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
             <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
             
-            <div class="rsvp-buttons" id="rsvpButtons">
-                <button class="rsvp-btn" onclick="showAttendForm()">Will Attend</button>
-                <button class="rsvp-btn decline" onclick="showSorry()">Can't Attend</button>
+            <!-- Name input before buttons -->
+            <div class="name-input-section">
+                <label class="name-label">Write your name</label>
+                <input type="text" class="name-input" id="guestName" placeholder="Your Name">
             </div>
 
-            <form class="attend-form" id="attendForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="🎉 New Guest Attending - Hana & Shady's Engagement">
-                <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_next" value="https://shadysmetools.github.io/Digital-invitation-for-guests/?confirmed=true">
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="tel" name="phone" placeholder="Phone Number">
-                <input type="number" name="guests" placeholder="Number of Guests" min="1" max="10" value="1">
-                <button type="submit" class="attend-submit">Confirm Attendance</button>
-            </form>
+            <div class="rsvp-buttons" id="rsvpButtons">
+                <button class="rsvp-btn" onclick="submitAttend()">Will Attend</button>
+                <button class="rsvp-btn decline" onclick="submitDecline()">Can't Attend</button>
+            </div>
 
             <p class="thank-you" id="thankYou">Thank you! We look forward to celebrating with you 💕</p>
             <p class="sorry-msg" id="sorryMsg">We'll miss you! Thank you for letting us know 💝</p>
+
+            <!-- Hidden form for submission -->
+            <form id="hiddenForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST" style="display:none;">
+                <input type="hidden" name="_subject" id="formSubject" value="">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_next" value="https://shadysmetools.github.io/Digital-invitation-for-guests/?confirmed=true">
+                <input type="hidden" name="name" id="formName" value="">
+                <input type="hidden" name="response" id="formResponse" value="">
+            </form>
         </div>
 
-        <!-- Venue Section -->
         <div class="section-venue">
             <p class="travel-label">Travel</p>
-            <img src="venue.jpg" alt="The Groove Venue" class="venue-image">
             <p class="venue-label">Venue</p>
             <p class="venue-name-large">THE GROOVE VENUE, AL SHOROUK</p>
             <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link-text">MAPS.APP.GOO.GL/BPR5VCXXMRAWMNGD9</a>
@@ -264,20 +270,34 @@
             document.getElementById('mainContent').classList.add('visible');
         }
 
-        function showAttendForm() {
-            document.getElementById('rsvpButtons').style.display = 'none';
-            document.getElementById('attendForm').classList.add('visible');
+        function submitAttend() {
+            var name = document.getElementById('guestName').value.trim();
+            if (!name) {
+                alert('Please write your name');
+                return;
+            }
+            document.getElementById('formSubject').value = '🎉 ' + name + ' will attend - Hana & Shady\'s Engagement';
+            document.getElementById('formName').value = name;
+            document.getElementById('formResponse').value = 'Will Attend';
+            document.getElementById('hiddenForm').submit();
         }
 
-        function showSorry() {
-            document.getElementById('rsvpButtons').style.display = 'none';
-            document.getElementById('sorryMsg').style.display = 'block';
+        function submitDecline() {
+            var name = document.getElementById('guestName').value.trim();
+            if (!name) {
+                alert('Please write your name');
+                return;
+            }
+            document.getElementById('formSubject').value = '💝 ' + name + ' can\'t attend - Hana & Shady\'s Engagement';
+            document.getElementById('formName').value = name;
+            document.getElementById('formResponse').value = 'Can\'t Attend';
+            document.getElementById('hiddenForm').submit();
         }
 
-        // If returning from form
         if (window.location.search.includes('confirmed=true')) {
             document.getElementById('openingScene').classList.add('hidden');
             document.getElementById('mainContent').classList.add('visible');
+            document.querySelector('.name-input-section').style.display = 'none';
             document.getElementById('rsvpButtons').style.display = 'none';
             document.getElementById('thankYou').style.display = 'block';
         }
