@@ -6,266 +6,456 @@
     <title>Shady & Hana's Engagement</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Great+Vibes&family=Pinyon+Script&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --gold: #C9A227;
-            --gold-light: #E8D5A3;
-            --dark-green: #1B4332;
-            --cream: #FDF8F0;
-            --cream-dark: #F5EBD9;
-        }
+        
         body {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+            background: linear-gradient(180deg, #D4DFE6 0%, #E8EEF2 50%, #F5F7F9 100%);
             font-family: 'Cormorant Garamond', serif;
             overflow: hidden;
+        }
+
+        .scene {
+            perspective: 1500px;
             position: relative;
         }
-        .bg-decoration { position: fixed; pointer-events: none; opacity: 0.15; }
-        .marigold {
-            width: 120px; height: 120px;
-            background: radial-gradient(circle, #FF9933 30%, #FF6600 70%);
-            border-radius: 50%; position: absolute;
+
+        /* Envelope */
+        .envelope-wrapper {
+            position: relative;
+            width: 340px;
+            height: 240px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
-        .marigold::before {
-            content: ''; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px; height: 40px; background: #FFD700; border-radius: 50%;
+
+        .envelope-wrapper:hover:not(.opened) {
+            transform: scale(1.02);
         }
-        .marigold-1 { top: 5%; left: 5%; width: 80px; height: 80px; }
-        .marigold-2 { top: 15%; right: 8%; width: 100px; height: 100px; }
-        .marigold-3 { bottom: 10%; left: 3%; width: 90px; height: 90px; }
-        .marigold-4 { bottom: 20%; right: 5%; width: 70px; height: 70px; }
-        .diya {
-            width: 40px; height: 30px; background: var(--gold);
-            border-radius: 0 0 50% 50%; position: absolute;
-        }
-        .diya::before {
-            content: ''; position: absolute; top: -20px; left: 50%;
-            transform: translateX(-50%); width: 8px; height: 20px;
-            background: linear-gradient(to top, #FF6600, #FFD700, transparent);
-            border-radius: 50% 50% 20% 20%;
-            animation: flicker 1.5s infinite alternate;
-        }
-        .diya-1 { top: 30%; left: 2%; }
-        .diya-2 { top: 40%; right: 3%; }
-        .diya-3 { bottom: 35%; left: 4%; }
-        .diya-4 { bottom: 40%; right: 2%; }
-        @keyframes flicker {
-            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
-            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
-        }
-        .envelope-container {
-            position: relative; width: 320px; height: 220px;
-            cursor: pointer; perspective: 1000px; transition: transform 0.3s ease;
-        }
-        .envelope-container:hover { transform: scale(1.02); }
-        .envelope-container.opened { cursor: default; }
+
         .envelope {
-            position: relative; width: 100%; height: 100%;
-            background: linear-gradient(145deg, #F5E6D3 0%, #E8D5B8 100%);
-            border-radius: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: visible;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
         }
-        .envelope::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            border: 3px solid var(--gold); border-radius: 8px; pointer-events: none;
+
+        /* Envelope body */
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%);
+            border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
         }
+
+        /* Floral pattern inside envelope */
+        .envelope-inside {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #FDF5F0 0%, #FCEEE8 100%);
+            border-radius: 4px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .envelope-inside::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(219,167,167,0.3) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(182,210,180,0.3) 3px, transparent 3px),
+                radial-gradient(circle at 60% 70%, rgba(200,180,210,0.3) 2px, transparent 2px),
+                radial-gradient(circle at 30% 80%, rgba(210,190,170,0.3) 2px, transparent 2px),
+                radial-gradient(circle at 70% 40%, rgba(180,200,190,0.3) 3px, transparent 3px);
+            opacity: 0.8;
+        }
+
+        /* Envelope flap (top triangle) */
         .envelope-flap {
-            position: absolute; top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(145deg, #F5E6D3 0%, #E8D5B8 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 130px;
+            background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
             transform-origin: top center;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10; clip-path: polygon(0 0, 50% 100%, 100% 0);
-            border-top: 3px solid var(--gold);
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 20;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+
         .envelope-flap::after {
-            content: ''; position: absolute; top: 20%; left: 50%;
-            transform: translateX(-50%); width: 50px; height: 50px;
-            background: var(--gold);
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #EDE5DB 0%, #F5EDE3 100%);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
         }
-        .opened .envelope-flap { transform: rotateX(180deg); }
-        .tap-instruction {
-            position: absolute; bottom: -50px; left: 50%;
+
+        /* Seal on flap */
+        .seal {
+            position: absolute;
+            top: 35%;
+            left: 50%;
             transform: translateX(-50%);
-            font-family: 'Cormorant Garamond', serif; font-size: 16px;
-            color: var(--dark-green); animation: pulse 2s ease-in-out infinite;
-            white-space: nowrap;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #E8C4C4 0%, #D4A5A5 100%);
+            border-radius: 50%;
+            z-index: 21;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Pinyon Script', cursive;
+            font-size: 24px;
+            color: #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            transition: opacity 0.3s ease;
         }
-        .opened .tap-instruction { opacity: 0; pointer-events: none; }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+
+        .opened .seal {
+            opacity: 0;
         }
+
+        .opened .envelope-flap {
+            transform: rotateX(-180deg);
+        }
+
+        /* Bottom flap */
+        .envelope-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%);
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+            z-index: 3;
+        }
+
+        /* Side flaps */
+        .envelope-left, .envelope-right {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .envelope-left {
+            left: 0;
+            background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+
+        .envelope-right {
+            right: 0;
+            background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+
+        /* Invitation Card - Hidden inside initially */
         .invitation-card {
-            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 280px; background: linear-gradient(180deg, #FFFEF9 0%, #FDF8F0 100%);
-            border-radius: 8px; padding: 30px 20px; text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transition-delay: 0.3s; z-index: 5; border: 2px solid var(--gold-light);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 400px;
+            background: #FFFFFE;
+            border-radius: 2px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            z-index: 0;
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.5s;
         }
-        .invitation-card::before {
-            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 1px solid var(--gold); border-radius: 4px; pointer-events: none;
-        }
+
         .opened .invitation-card {
-            top: -320px; transform: translateX(-50%) scale(1.15);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            top: -220px;
+            opacity: 1;
+            z-index: 25;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.2);
         }
-        .card-decoration { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
-        .card-decoration .mini-diya {
-            width: 20px; height: 15px; background: var(--gold);
-            border-radius: 0 0 50% 50%; position: relative;
+
+        /* Floral wreath */
+        .floral-wreath {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
         }
-        .card-decoration .mini-diya::before {
-            content: ''; position: absolute; top: -10px; left: 50%;
-            transform: translateX(-50%); width: 4px; height: 10px;
-            background: linear-gradient(to top, #FF6600, #FFD700, transparent);
-            border-radius: 50%; animation: flicker 1.5s infinite alternate;
+
+        .wreath-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            background: 
+                radial-gradient(circle at 15% 20%, #E8B4B4 4px, transparent 4px),
+                radial-gradient(circle at 85% 25%, #C9D4C5 5px, transparent 5px),
+                radial-gradient(circle at 20% 80%, #D4C5D9 4px, transparent 4px),
+                radial-gradient(circle at 80% 75%, #E8D4C4 5px, transparent 5px),
+                radial-gradient(circle at 50% 5%, #F0D4D4 6px, transparent 6px),
+                radial-gradient(circle at 50% 95%, #D4E0D4 5px, transparent 5px),
+                radial-gradient(circle at 5% 50%, #E4D4E8 4px, transparent 4px),
+                radial-gradient(circle at 95% 50%, #E8E4D4 5px, transparent 5px),
+                radial-gradient(circle at 30% 10%, #B8C8B8 3px, transparent 3px),
+                radial-gradient(circle at 70% 10%, #C8B8B8 3px, transparent 3px),
+                radial-gradient(circle at 10% 35%, #D8C8D8 4px, transparent 4px),
+                radial-gradient(circle at 90% 35%, #C8D8C8 4px, transparent 4px),
+                radial-gradient(circle at 10% 65%, #E0D0D0 4px, transparent 4px),
+                radial-gradient(circle at 90% 65%, #D0E0D0 4px, transparent 4px),
+                radial-gradient(circle at 30% 90%, #D0D0E0 3px, transparent 3px),
+                radial-gradient(circle at 70% 90%, #E0D0E0 3px, transparent 3px);
         }
-        .celebrate-text {
-            font-family: 'Cormorant Garamond', serif; font-size: 14px;
-            font-style: italic; color: var(--dark-green);
-            margin-bottom: 10px; letter-spacing: 1px;
+
+        .wreath-leaves {
+            position: absolute;
+            width: 100%;
+            height: 100%;
         }
+
+        .wreath-leaves::before,
+        .wreath-leaves::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .wreath-leaves::before {
+            top: 50%;
+            left: -10px;
+            transform: translateY(-50%) rotate(-30deg);
+            background: linear-gradient(90deg, #B8C8A8 0%, #D4E0C8 100%);
+            opacity: 0.6;
+        }
+
+        .wreath-leaves::after {
+            top: 50%;
+            right: -10px;
+            transform: translateY(-50%) rotate(30deg);
+            background: linear-gradient(-90deg, #B8C8A8 0%, #D4E0C8 100%);
+            opacity: 0.6;
+        }
+
+        /* Monogram */
+        .monogram {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Pinyon Script', cursive;
+            font-size: 42px;
+            color: #555;
+            letter-spacing: 5px;
+        }
+
+        /* Typography */
+        .intro-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 13px;
+            font-style: italic;
+            color: #666;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
         .names {
-            font-family: 'Great Vibes', cursive; font-size: 32px;
-            color: var(--dark-green); line-height: 1.3; margin-bottom: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: #333;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
-        .names .and { font-size: 24px; display: block; margin: 5px 0; color: var(--gold); }
+
+        .names .amp {
+            font-family: 'Pinyon Script', cursive;
+            font-size: 28px;
+            display: block;
+            margin: 5px 0;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .invite-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 12px;
+            font-style: italic;
+            color: #666;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .event-type {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .date {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .time-venue {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 12px;
+            font-style: italic;
+            color: #666;
+            line-height: 1.8;
+        }
+
         .divider {
-            width: 80px; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #C4A484, transparent);
             margin: 15px auto;
         }
-        .details {
-            font-family: 'Playfair Display', serif; font-size: 13px;
-            color: var(--dark-green); line-height: 1.8; margin-bottom: 15px;
-        }
-        .details .date { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
-        .details .venue { font-style: italic; font-size: 12px; letter-spacing: 0.5px; }
+
         .footer-text {
-            font-family: 'Cormorant Garamond', serif; font-size: 12px;
-            font-style: italic; color: var(--gold); margin-top: 10px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 11px;
+            font-style: italic;
+            color: #888;
+            margin-top: 15px;
         }
-        .rsvp-container {
-            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.5s ease; transition-delay: 1s;
-            pointer-events: none; z-index: 100;
+
+        /* Tap instruction */
+        .tap-instruction {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 14px;
+            font-style: italic;
+            color: #888;
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+            transition: opacity 0.3s ease;
         }
-        .opened ~ .rsvp-container, .show-rsvp .rsvp-container {
-            opacity: 1; pointer-events: auto;
+
+        .opened .tap-instruction {
+            opacity: 0;
         }
-        .rsvp-button {
-            display: inline-block; padding: 15px 40px;
-            background: linear-gradient(135deg, var(--dark-green) 0%, #2D5A45 100%);
-            color: var(--gold-light); font-family: 'Playfair Display', serif;
-            font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
-            text-decoration: none; border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(27, 67, 50, 0.3);
-            transition: all 0.3s ease; border: 2px solid var(--gold);
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
-        .rsvp-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(27, 67, 50, 0.4);
-        }
+
+        /* Mobile */
         @media (max-width: 480px) {
-            .envelope-container { width: 280px; height: 190px; }
-            .invitation-card { width: 250px; padding: 25px 15px; }
-            .opened .invitation-card { top: -300px; transform: translateX(-50%) scale(1.2); }
-            .names { font-size: 28px; }
-            .marigold { display: none; }
-        }
-        .confetti {
-            position: fixed; top: -10px; width: 10px; height: 10px;
-            opacity: 0; pointer-events: none;
-        }
-        .show-confetti .confetti { animation: fall 3s ease-out forwards; }
-        @keyframes fall {
-            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
-            100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+            .envelope-wrapper { width: 300px; height: 210px; }
+            .invitation-card { width: 270px; height: 380px; padding: 30px 20px; }
+            .opened .invitation-card { top: -200px; }
+            .floral-wreath { width: 130px; height: 130px; }
+            .monogram { font-size: 36px; }
+            .names { font-size: 18px; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-decoration marigold marigold-1"></div>
-    <div class="bg-decoration marigold marigold-2"></div>
-    <div class="bg-decoration marigold marigold-3"></div>
-    <div class="bg-decoration marigold marigold-4"></div>
-    <div class="bg-decoration diya diya-1"></div>
-    <div class="bg-decoration diya diya-2"></div>
-    <div class="bg-decoration diya diya-3"></div>
-    <div class="bg-decoration diya diya-4"></div>
+    <div class="scene">
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="envelope">
+                <!-- Envelope parts -->
+                <div class="envelope-back"></div>
+                <div class="envelope-inside"></div>
+                <div class="envelope-left"></div>
+                <div class="envelope-right"></div>
+                <div class="envelope-bottom"></div>
+                <div class="envelope-flap"></div>
+                <div class="seal">S&H</div>
 
-    <div class="envelope-container" id="envelope" onclick="openEnvelope()">
-        <div class="envelope">
-            <div class="envelope-flap"></div>
-            <div class="invitation-card">
-                <div class="card-decoration">
-                    <div class="mini-diya"></div>
-                    <div class="mini-diya"></div>
-                    <div class="mini-diya"></div>
+                <!-- Invitation Card (hidden inside) -->
+                <div class="invitation-card">
+                    <div class="floral-wreath">
+                        <div class="wreath-circle"></div>
+                        <div class="wreath-leaves"></div>
+                        <div class="monogram">S H</div>
+                    </div>
+
+                    <p class="intro-text">Together with their families</p>
+                    
+                    <h1 class="names">
+                        Shady Al-halawani
+                        <span class="amp">&</span>
+                        Hana Alashry
+                    </h1>
+
+                    <p class="invite-text">invite you to celebrate their</p>
+                    <p class="event-type">Engagement</p>
+
+                    <div class="divider"></div>
+
+                    <p class="date">Tuesday, April 22nd, 2026</p>
+                    <p class="time-venue">
+                        seven o'clock in the evening<br>
+                        The Groove, Cairo
+                    </p>
+
+                    <div class="divider"></div>
+
+                    <p class="footer-text">Dinner and festivities to follow</p>
                 </div>
-                <p class="celebrate-text">Join us as we celebrate the engagement of</p>
-                <h1 class="names">
-                    Shady Al-halawani
-                    <span class="and">&</span>
-                    Hana Alashry
-                </h1>
-                <div class="divider"></div>
-                <div class="details">
-                    <p class="date">Tuesday, 22 April 2026</p>
-                    <p>7:00 PM ONWARDS</p>
-                    <p class="venue">THE GROOVE<br>CAIRO, EGYPT</p>
-                </div>
-                <div class="divider"></div>
-                <p class="footer-text">Dinner and festivities to follow.</p>
             </div>
+
+            <p class="tap-instruction">tap to open</p>
         </div>
-        <p class="tap-instruction">✨ Tap to Open ✨</p>
     </div>
-
-    <div class="rsvp-container">
-        <a href="https://www.greetingsisland.com/rsvp/ah9zpf" target="_blank" class="rsvp-button">RSVP</a>
-    </div>
-
-    <div id="confetti-container"></div>
 
     <script>
         let isOpened = false;
+
         function openEnvelope() {
             if (isOpened) return;
             isOpened = true;
             document.getElementById('envelope').classList.add('opened');
-            document.body.classList.add('show-rsvp');
-            setTimeout(createConfetti, 600);
         }
-        function createConfetti() {
-            const container = document.getElementById('confetti-container');
-            const colors = ['#C9A227', '#1B4332', '#FF9933', '#E8D5A3', '#FFD700'];
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animationDelay = Math.random() * 2 + 's';
-                confetti.style.width = (Math.random() * 10 + 5) + 'px';
-                confetti.style.height = (Math.random() * 10 + 5) + 'px';
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                container.appendChild(confetti);
-            }
-            document.body.classList.add('show-confetti');
-            setTimeout(() => {
-                container.innerHTML = '';
-                document.body.classList.remove('show-confetti');
-            }, 5000);
-        }
+
+        // Touch feedback
+        const envelope = document.getElementById('envelope');
+        envelope.addEventListener('touchstart', function(e) {
+            if (!isOpened) this.style.transform = 'scale(0.98)';
+        });
+        envelope.addEventListener('touchend', function(e) {
+            this.style.transform = 'scale(1)';
+        });
     </script>
 </body>
 </html>
