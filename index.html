@@ -12,59 +12,23 @@
         html { scroll-behavior: smooth; }
         body { min-height: 100vh; background: #C5D1D8; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
-        /* FLOATING FLOWERS */
-        .floating-flowers {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .petal {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: floatDown linear infinite;
-        }
+        .floating-flowers { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
+        .petal { position: absolute; width: 12px; height: 12px; border-radius: 50%; opacity: 0.6; animation: floatDown linear infinite; }
         .petal.pink { background: radial-gradient(circle, #F5D0D0, #E8B4B8); }
         .petal.rose { background: radial-gradient(circle, #E8C0C8, #D4A0A8); }
         .petal.white { background: radial-gradient(circle, #FFF, #F5E8E0); }
         .petal.lavender { background: radial-gradient(circle, #E0D0E8, #D0B8D8); }
-        
-        @keyframes floatDown {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
+        @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
-        .opening-scene {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            background: linear-gradient(180deg, #D8E4E8 0%, #C5D1D8 50%, #E8DCD8 100%);
-            z-index: 100;
-            transition: background 0.8s ease;
-        }
+        .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(180deg, #D8E4E8 0%, #C5D1D8 50%, #E8DCD8 100%); z-index: 100; transition: background 0.8s ease; }
         .opening-scene.opened { background: linear-gradient(180deg, #FFFEF9 0%, #FDF8F5 100%); }
         .opening-scene.hidden { display: none; }
 
-        .envelope-wrapper {
-            position: absolute;
-            width: 320px; height: 220px;
-            cursor: pointer; perspective: 1500px;
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-        }
-        .opening-scene.opened .envelope-wrapper {
-            transform: translateX(calc(50vw - 80px)) scale(0.5);
-            opacity: 0.8;
-        }
+        .envelope-wrapper { position: absolute; width: 320px; height: 220px; cursor: pointer; perspective: 1500px; transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
+        .opening-scene.opened .envelope-wrapper { transform: translateX(calc(50vw - 80px)) scale(0.5); opacity: 0.8; }
         .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
         .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
         .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; z-index: 1; }
-        .envelope-inside::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 15% 20%, #E8B8B8 3px, transparent 3px), radial-gradient(circle at 45% 25%, #D8B8D8 3px, transparent 3px), radial-gradient(circle at 75% 20%, #B8C8E0 3px, transparent 3px), radial-gradient(circle at 30% 60%, #C8E0C8 3px, transparent 3px), radial-gradient(circle at 70% 70%, #E8C8B8 3px, transparent 3px); }
         .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 120px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20; }
         .seal { position: absolute; top: 32%; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Alex Brush', cursive; font-size: 14px; color: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
         .opened .seal { opacity: 0; }
@@ -73,28 +37,12 @@
         .envelope-left, .envelope-right { position: absolute; top: 0; width: 50%; height: 100%; z-index: 2; }
         .envelope-left { left: 0; background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
         .envelope-right { right: 0; background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-        .tap-instruction { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); font-size: 13px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; white-space: nowrap; transition: opacity 0.3s; }
+        .tap-instruction { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); font-size: 13px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; }
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-card {
-            position: absolute;
-            width: 280px;
-            background: #FFFEF9;
-            padding: 30px 25px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 5;
-        }
-        .opening-scene.opened .invitation-card {
-            opacity: 1;
-            transform: scale(1) translateX(-80px);
-            width: min(90vw, 420px);
-            padding: 50px 35px;
-        }
+        .invitation-card { position: absolute; width: 280px; background: #FFFEF9; padding: 30px 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
+        .opening-scene.opened .invitation-card { opacity: 1; transform: scale(1) translateX(-80px); width: min(90vw, 420px); padding: 50px 35px; }
 
         .wreath-container { position: relative; width: 160px; height: 160px; margin: 0 auto 25px; }
         .flower { position: absolute; border-radius: 50%; }
@@ -105,7 +53,6 @@
         .flower.blue { background: radial-gradient(circle, #A8C8E0 30%, #88B0D0 70%); }
         .flower.purple { background: radial-gradient(circle, #D8C0E0 30%, #C0A0D0 70%); }
         .leaf { position: absolute; background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%); border-radius: 0 70% 0 70%; }
-
         .f1 { width: 20px; height: 20px; top: 4px; left: 70px; } .f2 { width: 16px; height: 16px; top: 12px; left: 44px; }
         .f3 { width: 14px; height: 14px; top: 14px; left: 102px; } .f4 { width: 18px; height: 18px; top: 28px; left: 22px; }
         .f5 { width: 22px; height: 22px; top: 24px; left: 120px; } .f6 { width: 13px; height: 13px; top: 50px; left: 10px; }
@@ -120,89 +67,41 @@
         .l4 { width: 18px; height: 7px; top: 86px; left: 134px; transform: rotate(60deg); }
         .l5 { width: 16px; height: 6px; top: 114px; left: 12px; transform: rotate(-70deg); }
         .l6 { width: 18px; height: 7px; top: 132px; left: 116px; transform: rotate(25deg); }
-        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 44px; color: #444; letter-spacing: -3px; }
+        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 44px; color: #444; }
 
-        .together-text { font-size: 14px; font-style: italic; color: #888; margin-bottom: 15px; letter-spacing: 1px; }
+        .together-text { font-size: 14px; font-style: italic; color: #888; margin-bottom: 15px; }
         .names { font-size: 20px; font-weight: 400; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; line-height: 1.5; }
         .invite-text { font-size: 14px; font-style: italic; color: #666; margin-bottom: 15px; }
         .date-main { font-size: 16px; font-weight: 500; color: #333; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
         .date-details { font-size: 14px; font-style: italic; color: #555; line-height: 1.6; margin-bottom: 15px; }
-        .venue-name-small { font-size: 14px; color: #555; letter-spacing: 1px; margin-bottom: 15px; }
+        .venue-name-small { font-size: 14px; color: #555; margin-bottom: 15px; }
         .reception-text { font-size: 14px; font-style: italic; color: #888; }
-
-        .continue-btn {
-            display: none;
-            margin-top: 25px;
-            padding: 12px 40px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: 1px solid #333;
-            background: #333;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .continue-btn { display: none; margin-top: 25px; padding: 12px 40px; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; }
         .continue-btn:hover { background: #555; }
         .opening-scene.opened .continue-btn { display: inline-block; }
 
         .main-content { display: none; background: #FAF8F5; }
         .main-content.visible { display: block; }
-
         .section { padding: 60px 30px; text-align: center; background: #FAF8F5; }
-
-        .main-title { font-family: 'Alex Brush', cursive; font-size: 42px; color: #444; margin-bottom: 30px; line-height: 1.3; }
+        .main-title { font-family: 'Alex Brush', cursive; font-size: 42px; color: #444; margin-bottom: 30px; }
         .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
-
         .name-input-section { margin-bottom: 25px; }
         .name-label { font-size: 16px; font-style: italic; color: #666; margin-bottom: 12px; display: block; }
-        .name-input {
-            padding: 14px 20px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            width: 280px;
-            text-align: center;
-            background: #fff;
-        }
-
+        .name-input { padding: 14px 20px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 280px; text-align: center; background: #fff; }
         .rsvp-buttons { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .rsvp-btn {
-            padding: 20px 0;
-            width: 300px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 15px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border: 1px solid #333;
-            background: transparent;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
+        .rsvp-btn { padding: 20px 0; width: 300px; font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 4px; text-transform: uppercase; border: 1px solid #333; background: transparent; color: #333; cursor: pointer; text-align: center; }
         .rsvp-btn:hover { background: #333; color: #fff; }
         .rsvp-btn.decline { border-color: #999; color: #666; }
         .rsvp-btn.decline:hover { background: #888; color: #fff; }
-
         .thank-you { display: none; font-size: 20px; font-style: italic; color: #4a7c59; margin-top: 20px; }
         .sorry-msg { display: none; font-size: 18px; font-style: italic; color: #888; margin-top: 20px; }
 
-        /* Venue Section */
         .section-venue { padding: 60px 30px 80px; text-align: center; background: #FAF8F5; }
         .travel-label { font-family: 'Pinyon Script', cursive; font-size: 40px; color: #666; margin-bottom: 30px; }
-        .venue-image { 
-            width: 100%; 
-            max-width: 100%;
-            height: auto; 
-            display: block;
-            margin: 0 auto 35px;
-        }
+        .venue-image { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 35px; }
         .venue-label { font-family: 'Pinyon Script', cursive; font-size: 36px; color: #666; margin-bottom: 20px; }
         .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
-        .venue-link-text:hover { text-decoration: underline; }
 
         @media (max-width: 600px) {
             .opening-scene.opened .envelope-wrapper { transform: translateX(30vw) scale(0.35); opacity: 0.6; }
@@ -210,3 +109,134 @@
             .wreath-container { width: 130px; height: 130px; }
             .monogram { font-size: 36px; }
             .names { font-size: 18px; letter-spacing: 2px; }
+            .name-input { width: 100%; max-width: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-flowers" id="floatingFlowers"></div>
+
+    <div class="opening-scene" id="openingScene">
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="envelope">
+                <div class="envelope-back"></div>
+                <div class="envelope-inside"></div>
+                <div class="envelope-left"></div>
+                <div class="envelope-right"></div>
+                <div class="envelope-bottom"></div>
+                <div class="envelope-flap"></div>
+                <div class="seal">H&S</div>
+            </div>
+            <p class="tap-instruction">tap to open</p>
+        </div>
+
+        <div class="invitation-card">
+            <div class="wreath-container">
+                <div class="flower pink f1"></div><div class="flower white f2"></div><div class="flower rose f3"></div>
+                <div class="flower yellow f4"></div><div class="flower pink f5"></div><div class="flower blue f6"></div>
+                <div class="flower white f7"></div><div class="flower purple f8"></div><div class="flower rose f9"></div>
+                <div class="flower pink f10"></div><div class="flower yellow f11"></div><div class="flower white f12"></div>
+                <div class="flower rose f13"></div><div class="flower blue f14"></div><div class="flower pink f15"></div>
+                <div class="flower white f16"></div>
+                <div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div>
+                <div class="leaf l4"></div><div class="leaf l5"></div><div class="leaf l6"></div>
+                <div class="monogram">HS</div>
+            </div>
+            <p class="together-text">Together with their families</p>
+            <h1 class="names">HANA ALASHRY &<br>SHADY AL-HALAWANI</h1>
+            <p class="invite-text">invite you to celebrate their engagement</p>
+            <p class="date-main">Wednesday, April 22nd</p>
+            <p class="date-details">2026<br>5:00 PM</p>
+            <p class="venue-name-small">The Groove Venue, Al Shorouk</p>
+            <p class="reception-text">Dinner and festivities to follow</p>
+            <button class="continue-btn" onclick="showContent()">Continue</button>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="section">
+            <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
+            <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
+            
+            <div class="name-input-section">
+                <label class="name-label">Write your name</label>
+                <input type="text" class="name-input" id="guestName" placeholder="Your Name">
+            </div>
+
+            <div class="rsvp-buttons" id="rsvpButtons">
+                <button class="rsvp-btn" onclick="submitAttend()">Will Attend</button>
+                <button class="rsvp-btn decline" onclick="submitDecline()">Can't Attend</button>
+            </div>
+
+            <p class="thank-you" id="thankYou">Thank you! We look forward to celebrating with you 💕</p>
+            <p class="sorry-msg" id="sorryMsg">We'll miss you! Thank you for letting us know 💝</p>
+
+            <form id="hiddenForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST" style="display:none;">
+                <input type="hidden" name="_subject" id="formSubject" value="">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_next" value="https://shadysmetools.github.io/Digital-invitation-for-guests/?confirmed=true">
+                <input type="hidden" name="name" id="formName" value="">
+                <input type="hidden" name="response" id="formResponse" value="">
+            </form>
+        </div>
+
+        <div class="section-venue">
+            <p class="travel-label">Travel</p>
+            <img src="venue.jpg" alt="The Groove Venue" class="venue-image">
+            <p class="venue-label">Venue</p>
+            <p class="venue-name-large">THE GROOVE VENUE, AL SHOROUK</p>
+            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link-text">MAPS.APP.GOO.GL/BPR5VCXXMRAWMNGD9</a>
+        </div>
+    </div>
+
+    <script>
+        function createPetals() {
+            var container = document.getElementById('floatingFlowers');
+            var colors = ['pink', 'rose', 'white', 'lavender'];
+            for (var i = 0; i < 20; i++) {
+                var petal = document.createElement('div');
+                petal.className = 'petal ' + colors[Math.floor(Math.random() * colors.length)];
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDuration = (8 + Math.random() * 8) + 's';
+                petal.style.animationDelay = (Math.random() * 10) + 's';
+                petal.style.width = (8 + Math.random() * 8) + 'px';
+                petal.style.height = petal.style.width;
+                container.appendChild(petal);
+            }
+        }
+        createPetals();
+
+        function openEnvelope() { document.getElementById('openingScene').classList.add('opened'); }
+        function showContent() {
+            document.getElementById('openingScene').classList.add('hidden');
+            document.getElementById('floatingFlowers').style.display = 'none';
+            document.getElementById('mainContent').classList.add('visible');
+        }
+        function submitAttend() {
+            var name = document.getElementById('guestName').value.trim();
+            if (!name) { alert('Please write your name'); return; }
+            document.getElementById('formSubject').value = '🎉 ' + name + ' will attend';
+            document.getElementById('formName').value = name;
+            document.getElementById('formResponse').value = 'Will Attend';
+            document.getElementById('hiddenForm').submit();
+        }
+        function submitDecline() {
+            var name = document.getElementById('guestName').value.trim();
+            if (!name) { alert('Please write your name'); return; }
+            document.getElementById('formSubject').value = '💝 ' + name + " can't attend";
+            document.getElementById('formName').value = name;
+            document.getElementById('formResponse').value = "Can't Attend";
+            document.getElementById('hiddenForm').submit();
+        }
+        if (window.location.search.includes('confirmed=true')) {
+            document.getElementById('openingScene').classList.add('hidden');
+            document.getElementById('floatingFlowers').style.display = 'none';
+            document.getElementById('mainContent').classList.add('visible');
+            document.querySelector('.name-input-section').style.display = 'none';
+            document.getElementById('rsvpButtons').style.display = 'none';
+            document.getElementById('thankYou').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
