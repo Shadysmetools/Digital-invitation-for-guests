@@ -177,7 +177,6 @@
             <div class="rsvp-form" id="rsvpForm">
                 <input type="text" class="rsvp-input" id="guestName" placeholder="Your Name" required>
                 <input type="email" class="rsvp-input" id="guestEmail" placeholder="Your Email" required>
-                <input type="number" class="rsvp-input" id="guestCount" placeholder="Number of Guests" min="1" max="10" value="1">
             </div>
 
             <div class="rsvp-buttons" id="rsvpButtons">
@@ -230,7 +229,6 @@
         function submitRSVP(response) {
             var name = document.getElementById('guestName').value.trim();
             var email = document.getElementById('guestEmail').value.trim();
-            var guests = document.getElementById('guestCount').value;
 
             if (!name) { alert('Please enter your name'); return; }
             if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
@@ -243,7 +241,7 @@
             var data = {
                 name: name,
                 email: email,
-                guests: guests,
+                
                 response: response
             };
 
