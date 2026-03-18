@@ -6,19 +6,19 @@
     <title>Hana & Shady's Engagement</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Pinyon+Script&family=Alex+Brush&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Pinyon+Script&family=Alex+Brush&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { min-height: 100vh; background: #C5D1D8; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
         .floating-flowers { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-        .petal { position: absolute; width: 12px; height: 12px; border-radius: 50%; opacity: 0.6; animation: floatDown linear infinite; }
+        .petal { position: absolute; width: 12px; height: 12px; border-radius: 50%; opacity: 0.5; animation: floatDown linear infinite; }
         .petal.pink { background: radial-gradient(circle, #F5D0D0, #E8B4B8); }
         .petal.rose { background: radial-gradient(circle, #E8C0C8, #D4A0A8); }
         .petal.white { background: radial-gradient(circle, #FFF, #F5E8E0); }
         .petal.lavender { background: radial-gradient(circle, #E0D0E8, #D0B8D8); }
-        @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
         .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(180deg, #D8E4E8 0%, #C5D1D8 50%, #E8DCD8 100%); z-index: 100; transition: background 0.8s ease; }
         .opening-scene.opened { background: linear-gradient(180deg, #FFFEF9 0%, #FDF8F5 100%); }
@@ -30,7 +30,7 @@
         .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
         .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; z-index: 1; }
         .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 120px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20; }
-        .seal { position: absolute; top: 32%; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Alex Brush', cursive; font-size: 14px; color: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
+        .seal { position: absolute; top: 32%; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Great Vibes', cursive; font-size: 16px; color: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
         .opened .seal { opacity: 0; }
         .opened .envelope-flap { transform: rotateX(-180deg); }
         .envelope-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 90px; background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%); clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3; }
@@ -41,49 +41,108 @@
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-card { position: absolute; width: 280px; background: #FFFEF9; padding: 30px 25px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
-        .opening-scene.opened .invitation-card { opacity: 1; transform: scale(1) translateX(-80px); width: min(90vw, 420px); padding: 50px 35px; }
+        /* INVITATION CARD - Elegant Design */
+        .invitation-card { 
+            position: absolute; 
+            width: 320px; 
+            background: #FFFDF8; 
+            padding: 40px 30px; 
+            text-align: center; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.08); 
+            opacity: 0; 
+            transform: scale(0.8); 
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 5; 
+        }
+        .opening-scene.opened .invitation-card { 
+            opacity: 1; 
+            transform: scale(1) translateX(-80px); 
+            width: min(92vw, 440px); 
+            padding: 50px 35px; 
+        }
 
-        .wreath-container { position: relative; width: 160px; height: 160px; margin: 0 auto 25px; }
+        /* Elegant Floral Wreath */
+        .wreath-container { 
+            position: relative; 
+            width: 200px; 
+            height: 200px; 
+            margin: 0 auto 30px; 
+        }
+        
+        /* Main flowers - larger, positioned around circle */
         .flower { position: absolute; border-radius: 50%; }
-        .flower.pink { background: radial-gradient(circle, #F5D0D0 30%, #E8B4B8 70%); }
-        .flower.rose { background: radial-gradient(circle, #E8C0C8 30%, #D4A0A8 70%); }
-        .flower.white { background: radial-gradient(circle, #FFF 30%, #F5E8E0 70%); }
-        .flower.yellow { background: radial-gradient(circle, #F8E8A0 30%, #E8D080 70%); }
-        .flower.blue { background: radial-gradient(circle, #A8C8E0 30%, #88B0D0 70%); }
-        .flower.purple { background: radial-gradient(circle, #D8C0E0 30%, #C0A0D0 70%); }
-        .leaf { position: absolute; background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%); border-radius: 0 70% 0 70%; }
-        .f1 { width: 18px; height: 18px; top: 0px; left: 71px; } .f2 { width: 16px; height: 16px; top: 8px; left: 100px; }
-        .f3 { width: 18px; height: 18px; top: 25px; left: 125px; } .f4 { width: 16px; height: 16px; top: 50px; left: 140px; }
-        .f5 { width: 18px; height: 18px; top: 80px; left: 145px; } .f6 { width: 16px; height: 16px; top: 110px; left: 135px; }
-        .f7 { width: 18px; height: 18px; top: 135px; left: 115px; } .f8 { width: 16px; height: 16px; top: 148px; left: 85px; }
-        .f9 { width: 18px; height: 18px; top: 148px; left: 55px; } .f10 { width: 16px; height: 16px; top: 135px; left: 28px; }
-        .f11 { width: 18px; height: 18px; top: 110px; left: 8px; } .f12 { width: 16px; height: 16px; top: 80px; left: 0px; }
-        .f13 { width: 18px; height: 18px; top: 50px; left: 2px; } .f14 { width: 16px; height: 16px; top: 25px; left: 18px; }
-        .f15 { width: 18px; height: 18px; top: 8px; left: 42px; } .f16 { width: 16px; height: 16px; top: 0px; left: 71px; }
-        .l1 { width: 14px; height: 5px; top: 18px; left: 115px; transform: rotate(45deg); }
-        .l2 { width: 14px; height: 5px; top: 65px; left: 142px; transform: rotate(80deg); }
-        .l3 { width: 14px; height: 5px; top: 122px; left: 128px; transform: rotate(130deg); }
-        .l4 { width: 14px; height: 5px; top: 145px; left: 42px; transform: rotate(-130deg); }
-        .l5 { width: 14px; height: 5px; top: 122px; left: 12px; transform: rotate(-80deg); }
-        .l6 { width: 14px; height: 5px; top: 65px; left: 2px; transform: rotate(-45deg); }
-        .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 44px; color: #444; }
+        .flower.lg { width: 22px; height: 22px; }
+        .flower.md { width: 16px; height: 16px; }
+        .flower.sm { width: 10px; height: 10px; }
+        
+        .flower.pink { background: radial-gradient(circle at 30% 30%, #FFE4E8 0%, #F5C0C8 50%, #E8A0B0 100%); box-shadow: inset -2px -2px 4px rgba(200,100,120,0.2); }
+        .flower.blush { background: radial-gradient(circle at 30% 30%, #FFF0F0 0%, #F8D8D8 50%, #E8C0C0 100%); box-shadow: inset -2px -2px 4px rgba(200,150,150,0.2); }
+        .flower.white { background: radial-gradient(circle at 30% 30%, #FFFFFF 0%, #F8F4F0 50%, #F0E8E0 100%); box-shadow: inset -2px -2px 4px rgba(180,160,140,0.15); }
+        .flower.peach { background: radial-gradient(circle at 30% 30%, #FFE8D8 0%, #F8D0C0 50%, #E8B8A8 100%); box-shadow: inset -2px -2px 4px rgba(200,140,100,0.2); }
+        .flower.lavender { background: radial-gradient(circle at 30% 30%, #F0E8F8 0%, #E0D0E8 50%, #D0B8D8 100%); box-shadow: inset -2px -2px 4px rgba(160,120,180,0.2); }
+        .flower.yellow { background: radial-gradient(circle at 30% 30%, #FFF8D0 0%, #F8E8A0 50%, #E8D080 100%); box-shadow: inset -2px -2px 4px rgba(180,160,80,0.2); }
+        
+        .leaf { position: absolute; background: linear-gradient(135deg, #A8C890 0%, #88B070 50%, #70A058 100%); border-radius: 0 80% 0 80%; }
+        .stem { position: absolute; width: 2px; background: linear-gradient(to bottom, #90A878, #A8C090); border-radius: 1px; }
+        .branch { position: absolute; width: 1px; background: #B8A890; }
 
-        .together-text { font-size: 14px; font-style: italic; color: #888; margin-bottom: 15px; }
-        .names { font-size: 20px; font-weight: 400; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; line-height: 1.5; }
-        .invite-text { font-size: 14px; font-style: italic; color: #666; margin-bottom: 15px; }
-        .date-main { font-size: 16px; font-weight: 500; color: #333; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
-        .date-details { font-size: 14px; font-style: italic; color: #555; line-height: 1.6; margin-bottom: 15px; }
-        .venue-name-small { font-size: 14px; color: #555; margin-bottom: 15px; }
-        .reception-text { font-size: 14px; font-style: italic; color: #888; }
-        .continue-btn { display: none; margin-top: 25px; padding: 12px 40px; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; }
+        /* Flower positions - elegant wreath shape */
+        .f1 { width: 24px; height: 24px; top: -5px; left: 88px; }
+        .f2 { width: 18px; height: 18px; top: 5px; left: 120px; }
+        .f3 { width: 20px; height: 20px; top: 5px; left: 62px; }
+        .f4 { width: 16px; height: 16px; top: 20px; left: 145px; }
+        .f5 { width: 22px; height: 22px; top: 25px; left: 35px; }
+        .f6 { width: 14px; height: 14px; top: 45px; left: 165px; }
+        .f7 { width: 18px; height: 18px; top: 50px; left: 15px; }
+        .f8 { width: 12px; height: 12px; top: 75px; left: 175px; }
+        .f9 { width: 16px; height: 16px; top: 80px; left: 5px; }
+        .f10 { width: 14px; height: 14px; top: 110px; left: 178px; }
+        .f11 { width: 18px; height: 18px; top: 115px; left: 2px; }
+        .f12 { width: 20px; height: 20px; top: 145px; left: 165px; }
+        .f13 { width: 16px; height: 16px; top: 145px; left: 18px; }
+        .f14 { width: 22px; height: 22px; top: 168px; left: 140px; }
+        .f15 { width: 18px; height: 18px; top: 165px; left: 42px; }
+        .f16 { width: 20px; height: 20px; top: 180px; left: 110px; }
+        .f17 { width: 16px; height: 16px; top: 178px; left: 72px; }
+        .f18 { width: 14px; height: 14px; top: 188px; left: 90px; }
+
+        /* Leaves */
+        .l1 { width: 18px; height: 8px; top: 15px; left: 105px; transform: rotate(25deg); }
+        .l2 { width: 16px; height: 7px; top: 35px; left: 155px; transform: rotate(55deg); }
+        .l3 { width: 20px; height: 9px; top: 40px; left: 25px; transform: rotate(-40deg); }
+        .l4 { width: 14px; height: 6px; top: 65px; left: 172px; transform: rotate(75deg); }
+        .l5 { width: 16px; height: 7px; top: 95px; left: 0px; transform: rotate(-85deg); }
+        .l6 { width: 18px; height: 8px; top: 135px; left: 175px; transform: rotate(110deg); }
+        .l7 { width: 15px; height: 6px; top: 155px; left: 30px; transform: rotate(-120deg); }
+        .l8 { width: 16px; height: 7px; top: 175px; left: 125px; transform: rotate(150deg); }
+
+        .monogram { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            font-family: 'Great Vibes', cursive; 
+            font-size: 52px; 
+            color: #444; 
+            letter-spacing: -2px;
+        }
+
+        /* Typography - Elegant */
+        .together-text { font-size: 15px; font-style: italic; color: #888; margin-bottom: 18px; letter-spacing: 0.5px; }
+        .names { font-size: 18px; font-weight: 400; color: #333; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 18px; line-height: 1.8; }
+        .invite-text { font-size: 15px; font-style: italic; color: #666; margin-bottom: 18px; }
+        .date-main { font-size: 15px; font-weight: 500; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+        .date-details { font-size: 15px; font-style: italic; color: #555; line-height: 1.7; margin-bottom: 15px; }
+        .venue-name-small { font-size: 15px; font-style: italic; color: #555; margin-bottom: 15px; }
+        .reception-text { font-size: 15px; font-style: italic; color: #888; }
+        .continue-btn { display: none; margin-top: 28px; padding: 14px 45px; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; }
         .continue-btn:hover { background: #555; }
         .opening-scene.opened .continue-btn { display: inline-block; }
 
         .main-content { display: none; background: #FAF8F5; }
         .main-content.visible { display: block; }
         .section { padding: 60px 30px; text-align: center; background: #FAF8F5; }
-        .main-title { font-family: 'Alex Brush', cursive; font-size: 42px; color: #444; margin-bottom: 30px; }
+        .main-title { font-family: 'Great Vibes', cursive; font-size: 44px; color: #444; margin-bottom: 30px; }
         .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
         .name-input-section { margin-bottom: 25px; }
         .name-label { font-size: 16px; font-style: italic; color: #666; margin-bottom: 12px; display: block; }
@@ -97,18 +156,18 @@
         .sorry-msg { display: none; font-size: 18px; font-style: italic; color: #888; margin-top: 20px; }
 
         .section-venue { padding: 60px 30px 80px; text-align: center; background: #FAF8F5; }
-        .venue-header { font-family: 'Pinyon Script', cursive; font-size: 40px; color: #666; margin-bottom: 30px; }
+        .venue-header { font-family: 'Great Vibes', cursive; font-size: 42px; color: #666; margin-bottom: 30px; }
         .venue-image { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 35px; }
-        .details-label { font-family: 'Pinyon Script', cursive; font-size: 36px; color: #666; margin-bottom: 20px; }
+        .details-label { font-family: 'Great Vibes', cursive; font-size: 38px; color: #666; margin-bottom: 20px; margin-top: 30px; }
         .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
 
         @media (max-width: 600px) {
             .opening-scene.opened .envelope-wrapper { transform: translateX(30vw) scale(0.35); opacity: 0.6; }
-            .opening-scene.opened .invitation-card { transform: scale(1) translateX(0); width: 92vw; padding: 35px 20px; }
-            .wreath-container { width: 130px; height: 130px; }
-            .monogram { font-size: 36px; }
-            .names { font-size: 18px; letter-spacing: 2px; }
+            .opening-scene.opened .invitation-card { transform: scale(1) translateX(0); width: 94vw; padding: 40px 25px; }
+            .wreath-container { width: 170px; height: 170px; }
+            .monogram { font-size: 42px; }
+            .names { font-size: 16px; letter-spacing: 3px; }
             .name-input { width: 100%; max-width: 280px; }
         }
     </style>
@@ -132,15 +191,36 @@
 
         <div class="invitation-card">
             <div class="wreath-container">
-                <div class="flower pink f1"></div><div class="flower white f2"></div><div class="flower rose f3"></div>
-                <div class="flower yellow f4"></div><div class="flower pink f5"></div><div class="flower blue f6"></div>
-                <div class="flower white f7"></div><div class="flower purple f8"></div><div class="flower rose f9"></div>
-                <div class="flower pink f10"></div><div class="flower yellow f11"></div><div class="flower white f12"></div>
-                <div class="flower rose f13"></div><div class="flower blue f14"></div><div class="flower pink f15"></div>
+                <!-- Flowers -->
+                <div class="flower pink f1"></div>
+                <div class="flower blush f2"></div>
+                <div class="flower white f3"></div>
+                <div class="flower peach f4"></div>
+                <div class="flower pink f5"></div>
+                <div class="flower lavender f6"></div>
+                <div class="flower white f7"></div>
+                <div class="flower yellow f8"></div>
+                <div class="flower blush f9"></div>
+                <div class="flower pink f10"></div>
+                <div class="flower white f11"></div>
+                <div class="flower peach f12"></div>
+                <div class="flower lavender f13"></div>
+                <div class="flower pink f14"></div>
+                <div class="flower blush f15"></div>
                 <div class="flower white f16"></div>
-                <div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div>
-                <div class="leaf l4"></div><div class="leaf l5"></div><div class="leaf l6"></div>
-                <div class="monogram">HS</div>
+                <div class="flower yellow f17"></div>
+                <div class="flower pink f18"></div>
+                <!-- Leaves -->
+                <div class="leaf l1"></div>
+                <div class="leaf l2"></div>
+                <div class="leaf l3"></div>
+                <div class="leaf l4"></div>
+                <div class="leaf l5"></div>
+                <div class="leaf l6"></div>
+                <div class="leaf l7"></div>
+                <div class="leaf l8"></div>
+                <!-- Monogram -->
+                <div class="monogram">H&S</div>
             </div>
             <p class="together-text">Together with their families</p>
             <h1 class="names">HANA ALASHRY &<br>SHADY AL-HALAWANI</h1>
@@ -155,7 +235,7 @@
 
     <div class="main-content" id="mainContent">
         <div class="section">
-            <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
+            <h2 class="main-title">Hana & Shady's Engagement</h2>
             <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
             
             <div class="name-input-section">
@@ -194,13 +274,13 @@
         function createPetals() {
             var container = document.getElementById('floatingFlowers');
             var colors = ['pink', 'rose', 'white', 'lavender'];
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < 15; i++) {
                 var petal = document.createElement('div');
                 petal.className = 'petal ' + colors[Math.floor(Math.random() * colors.length)];
                 petal.style.left = Math.random() * 100 + '%';
-                petal.style.animationDuration = (8 + Math.random() * 8) + 's';
-                petal.style.animationDelay = (Math.random() * 10) + 's';
-                petal.style.width = (8 + Math.random() * 8) + 'px';
+                petal.style.animationDuration = (10 + Math.random() * 10) + 's';
+                petal.style.animationDelay = (Math.random() * 12) + 's';
+                petal.style.width = (6 + Math.random() * 8) + 'px';
                 petal.style.height = petal.style.width;
                 container.appendChild(petal);
             }
