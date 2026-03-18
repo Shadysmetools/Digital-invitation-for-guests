@@ -18,6 +18,7 @@
             overflow-x: hidden;
         }
 
+        /* ENVELOPE SCENE */
         .envelope-scene {
             min-height: 100vh;
             display: flex;
@@ -25,6 +26,11 @@
             align-items: center;
             padding: 40px 20px;
             position: relative;
+            transition: opacity 0.5s ease;
+        }
+
+        .envelope-scene.hidden {
+            display: none;
         }
 
         .envelope-wrapper {
@@ -36,7 +42,7 @@
             transition: transform 0.3s ease;
         }
 
-        .envelope-wrapper:hover:not(.opened) { transform: scale(1.02); }
+        .envelope-wrapper:hover { transform: scale(1.02); }
 
         .envelope {
             position: relative;
@@ -78,13 +84,7 @@
                 radial-gradient(circle at 20% 40%, #C8E0C8 4px, transparent 4px),
                 radial-gradient(circle at 40% 35%, #E8C0C0 3px, transparent 3px),
                 radial-gradient(circle at 55% 45%, #C0C8E0 4px, transparent 4px),
-                radial-gradient(circle at 70% 40%, #D8D0B8 3px, transparent 3px),
-                radial-gradient(circle at 25% 60%, #E0C8D8 4px, transparent 4px),
-                radial-gradient(circle at 50% 55%, #C8D8C0 3px, transparent 3px),
-                radial-gradient(circle at 75% 60%, #E8C8B8 4px, transparent 4px),
-                radial-gradient(circle at 35% 75%, #B8D8D8 3px, transparent 3px),
-                radial-gradient(circle at 65% 70%, #D8B8E0 4px, transparent 4px),
-                radial-gradient(circle at 50% 85%, #E0D8C0 3px, transparent 3px);
+                radial-gradient(circle at 70% 40%, #D8D0B8 3px, transparent 3px);
         }
 
         .envelope-flap {
@@ -152,34 +152,52 @@
             clip-path: polygon(100% 0, 0 50%, 100% 100%);
         }
 
-        .invitation-card {
+        .tap-instruction {
             position: absolute;
-            top: 50%;
+            bottom: -50px;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            background: #FFFEF9;
-            padding: 35px 25px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            z-index: 0;
-            opacity: 0;
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-            transition-delay: 0.4s;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-style: italic;
+            color: #888;
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
         }
 
-        .opened .invitation-card {
-            top: -200px;
-            opacity: 1;
-            z-index: 25;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* FULL PAGE INVITATION */
+        .invitation-page {
+            display: none;
+            background: #FFFEF9;
+            min-height: 100vh;
+        }
+
+        .invitation-page.visible {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Invitation Header */
+        .invitation-header {
+            padding: 60px 30px;
+            text-align: center;
+            background: #FFFEF9;
         }
 
         .wreath-container {
             position: relative;
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 20px;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 30px;
         }
 
         .flower { position: absolute; border-radius: 50%; }
@@ -196,29 +214,29 @@
             border-radius: 0 70% 0 70%;
         }
 
-        .f1 { width: 20px; height: 20px; top: 5px; left: 65px; }
-        .f2 { width: 16px; height: 16px; top: 12px; left: 40px; }
-        .f3 { width: 14px; height: 14px; top: 15px; left: 95px; }
-        .f4 { width: 18px; height: 18px; top: 28px; left: 20px; }
-        .f5 { width: 22px; height: 22px; top: 25px; left: 112px; }
-        .f6 { width: 12px; height: 12px; top: 50px; left: 8px; }
-        .f7 { width: 16px; height: 16px; top: 45px; left: 128px; }
-        .f8 { width: 14px; height: 14px; top: 75px; left: 0px; }
-        .f9 { width: 18px; height: 18px; top: 70px; left: 135px; }
-        .f10 { width: 13px; height: 13px; top: 100px; left: 5px; }
-        .f11 { width: 16px; height: 16px; top: 95px; left: 132px; }
-        .f12 { width: 14px; height: 14px; top: 120px; left: 20px; }
-        .f13 { width: 20px; height: 20px; top: 115px; left: 118px; }
-        .f14 { width: 16px; height: 16px; top: 135px; left: 45px; }
-        .f15 { width: 18px; height: 18px; top: 132px; left: 95px; }
-        .f16 { width: 14px; height: 14px; top: 140px; left: 70px; }
+        .f1 { width: 22px; height: 22px; top: 5px; left: 78px; }
+        .f2 { width: 18px; height: 18px; top: 14px; left: 48px; }
+        .f3 { width: 16px; height: 16px; top: 18px; left: 115px; }
+        .f4 { width: 20px; height: 20px; top: 32px; left: 24px; }
+        .f5 { width: 24px; height: 24px; top: 28px; left: 135px; }
+        .f6 { width: 14px; height: 14px; top: 58px; left: 10px; }
+        .f7 { width: 18px; height: 18px; top: 52px; left: 152px; }
+        .f8 { width: 16px; height: 16px; top: 88px; left: 0px; }
+        .f9 { width: 20px; height: 20px; top: 82px; left: 162px; }
+        .f10 { width: 15px; height: 15px; top: 118px; left: 5px; }
+        .f11 { width: 18px; height: 18px; top: 112px; left: 158px; }
+        .f12 { width: 16px; height: 16px; top: 142px; left: 22px; }
+        .f13 { width: 22px; height: 22px; top: 138px; left: 142px; }
+        .f14 { width: 18px; height: 18px; top: 160px; left: 52px; }
+        .f15 { width: 20px; height: 20px; top: 158px; left: 115px; }
+        .f16 { width: 16px; height: 16px; top: 168px; left: 85px; }
 
-        .l1 { width: 16px; height: 6px; top: 20px; left: 55px; transform: rotate(-30deg); }
-        .l2 { width: 20px; height: 8px; top: 35px; left: 105px; transform: rotate(40deg); }
-        .l3 { width: 14px; height: 5px; top: 60px; left: 15px; transform: rotate(-50deg); }
-        .l4 { width: 18px; height: 7px; top: 85px; left: 125px; transform: rotate(60deg); }
-        .l5 { width: 16px; height: 6px; top: 110px; left: 10px; transform: rotate(-70deg); }
-        .l6 { width: 18px; height: 7px; top: 125px; left: 108px; transform: rotate(25deg); }
+        .l1 { width: 18px; height: 7px; top: 24px; left: 65px; transform: rotate(-30deg); }
+        .l2 { width: 22px; height: 9px; top: 40px; left: 125px; transform: rotate(40deg); }
+        .l3 { width: 16px; height: 6px; top: 70px; left: 18px; transform: rotate(-50deg); }
+        .l4 { width: 20px; height: 8px; top: 100px; left: 150px; transform: rotate(60deg); }
+        .l5 { width: 18px; height: 7px; top: 130px; left: 12px; transform: rotate(-70deg); }
+        .l6 { width: 20px; height: 8px; top: 150px; left: 130px; transform: rotate(25deg); }
 
         .monogram {
             position: absolute;
@@ -226,91 +244,48 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Pinyon Script', cursive;
-            font-size: 42px;
+            font-size: 48px;
             color: #444;
             letter-spacing: -3px;
         }
 
-        .together-text { font-size: 12px; font-style: italic; color: #888; margin-bottom: 12px; letter-spacing: 1px; }
-        .names { font-size: 16px; font-weight: 400; color: #333; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; line-height: 1.5; }
-        .invite-text { font-size: 11px; font-style: italic; color: #666; margin-bottom: 12px; }
-        .date-main { font-size: 13px; font-weight: 500; color: #333; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        .date-details { font-size: 11px; font-style: italic; color: #555; line-height: 1.6; margin-bottom: 12px; }
-        .venue-name { font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 12px; }
-        .reception-text { font-size: 11px; font-style: italic; color: #888; }
+        .together-text { font-size: 14px; font-style: italic; color: #888; margin-bottom: 15px; letter-spacing: 1px; }
+        .names { font-size: 24px; font-weight: 400; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; line-height: 1.5; }
+        .invite-text { font-size: 14px; font-style: italic; color: #666; margin-bottom: 15px; }
+        .date-main { font-size: 18px; font-weight: 500; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+        .date-details { font-size: 14px; font-style: italic; color: #555; line-height: 1.6; margin-bottom: 15px; }
+        .venue-name-small { font-size: 14px; color: #555; letter-spacing: 1px; margin-bottom: 15px; }
+        .reception-text { font-size: 14px; font-style: italic; color: #888; }
 
-        .tap-instruction {
-            position: absolute;
-            bottom: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 14px;
-            font-style: italic;
-            color: #888;
-            animation: pulse 2s ease-in-out infinite;
-            white-space: nowrap;
-            transition: opacity 0.3s ease;
-        }
-
-        .opened .tap-instruction { opacity: 0; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .scroll-indicator {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .scroll-indicator.visible { opacity: 1; animation: bounce 2s infinite; }
-        .scroll-indicator svg { width: 30px; height: 30px; fill: #666; }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-            40% { transform: translateX(-50%) translateY(-10px); }
-            60% { transform: translateX(-50%) translateY(-5px); }
-        }
-
-        .content-sections { display: none; background: #FAF8F5; }
-        .content-sections.visible { display: block; }
-
+        /* Sections */
         .section {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 60px 30px;
+            padding: 50px 30px;
             text-align: center;
+            background: #FAF8F5;
         }
 
-        .section-welcome { background: #FAF8F5; }
+        .section-label {
+            font-family: 'Alex Brush', cursive;
+            font-size: 36px;
+            color: #666;
+            margin-bottom: 20px;
+        }
 
         .main-title {
             font-family: 'Alex Brush', cursive;
-            font-size: 48px;
+            font-size: 42px;
             color: #444;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             line-height: 1.3;
         }
 
-        .swirl { width: 60px; margin: 30px 0; }
-
         .welcome-text {
-            font-size: 20px;
+            font-size: 18px;
             font-style: italic;
             color: #666;
             max-width: 400px;
+            margin: 0 auto 30px;
             line-height: 1.8;
-            margin-bottom: 40px;
         }
 
         /* Attend Form */
@@ -318,8 +293,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
         }
 
         .attend-form input {
@@ -342,70 +316,63 @@
             color: #fff;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
-        .attend-btn:hover {
-            background: #555;
-        }
+        .attend-btn:hover { background: #555; }
 
         .success-msg {
             display: none;
             font-size: 18px;
             font-style: italic;
             color: #4a7c59;
-            margin-top: 20px;
         }
 
-        .section-date { background: #FAF8F5; }
+        /* Date Section */
+        .dot { width: 6px; height: 6px; background: #2B4A7C; border-radius: 50%; margin: 15px auto; }
+        .section-date-text { font-size: 18px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 10px; text-decoration: underline; text-underline-offset: 5px; }
+        .time-text { font-size: 16px; letter-spacing: 2px; color: #333; text-decoration: underline; text-underline-offset: 5px; }
 
-        .section-label {
-            font-family: 'Alex Brush', cursive;
-            font-size: 36px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .dot { width: 6px; height: 6px; background: #2B4A7C; border-radius: 50%; margin: 15px 0; }
-        .section-date-text { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 10px; text-decoration: underline; text-underline-offset: 5px; }
-        .time-text { font-size: 15px; letter-spacing: 2px; color: #333; text-decoration: underline; text-underline-offset: 5px; }
-
-        .section-venue { background: #FAF8F5; padding-bottom: 100px; }
-
-        .venue-image {
+        /* Venue Section */
+        .venue-map {
             width: 100%;
-            max-width: 500px;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 4px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-            background: linear-gradient(135deg, #D4A080 0%, #C08060 100%);
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 20px auto;
         }
 
-        .venue-name-large { font-size: 14px; letter-spacing: 3px; text-transform: uppercase; color: #333; margin-bottom: 15px; }
+        .venue-name-large { font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: #333; margin: 20px 0 15px; }
 
         .venue-link {
-            font-size: 12px;
-            letter-spacing: 1px;
-            color: #2B4A7C;
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 13px;
+            letter-spacing: 2px;
+            color: #fff;
+            background: #2B4A7C;
             text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s ease;
         }
 
-        .venue-link:hover { text-decoration: underline; }
+        .venue-link:hover { background: #1a3a5c; }
 
+        /* Mobile */
         @media (max-width: 480px) {
             .envelope-wrapper { width: 300px; height: 210px; }
-            .invitation-card { width: 270px; padding: 30px 20px; }
-            .opened .invitation-card { top: -190px; }
-            .wreath-container { width: 120px; height: 120px; }
-            .monogram { font-size: 34px; }
-            .main-title { font-size: 36px; }
+            .wreath-container { width: 150px; height: 150px; }
+            .monogram { font-size: 40px; }
+            .names { font-size: 20px; letter-spacing: 2px; }
+            .main-title { font-size: 32px; }
             .attend-form input { width: 100%; max-width: 280px; }
+            .venue-map { max-width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="envelope-scene">
+    <!-- ENVELOPE SCENE -->
+    <div class="envelope-scene" id="envelopeScene">
         <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
             <div class="envelope">
                 <div class="envelope-back"></div>
@@ -415,120 +382,99 @@
                 <div class="envelope-bottom"></div>
                 <div class="envelope-flap"></div>
                 <div class="seal">H&S</div>
-
-                <div class="invitation-card">
-                    <div class="wreath-container">
-                        <div class="flower pink f1"></div>
-                        <div class="flower white f2"></div>
-                        <div class="flower rose f3"></div>
-                        <div class="flower yellow f4"></div>
-                        <div class="flower pink f5"></div>
-                        <div class="flower blue f6"></div>
-                        <div class="flower white f7"></div>
-                        <div class="flower purple f8"></div>
-                        <div class="flower rose f9"></div>
-                        <div class="flower pink f10"></div>
-                        <div class="flower yellow f11"></div>
-                        <div class="flower white f12"></div>
-                        <div class="flower rose f13"></div>
-                        <div class="flower blue f14"></div>
-                        <div class="flower pink f15"></div>
-                        <div class="flower white f16"></div>
-                        <div class="leaf l1"></div>
-                        <div class="leaf l2"></div>
-                        <div class="leaf l3"></div>
-                        <div class="leaf l4"></div>
-                        <div class="leaf l5"></div>
-                        <div class="leaf l6"></div>
-                        <div class="monogram">HS</div>
-                    </div>
-                    <p class="together-text">Together with their families</p>
-                    <h1 class="names">HANA ALASHRY &<br>SHADY AL-HALAWANI</h1>
-                    <p class="invite-text">invite you to celebrate their engagement</p>
-                    <p class="date-main">Wednesday, April Twenty-Second</p>
-                    <p class="date-details">two thousand and twenty six<br>at five o'clock in the evening</p>
-                    <p class="venue-name">The Groove Venue, Al Shorouk</p>
-                    <p class="reception-text">Dinner and festivities to follow</p>
-                </div>
             </div>
             <p class="tap-instruction">tap to open</p>
         </div>
     </div>
 
-    <div class="scroll-indicator" id="scrollIndicator">
-        <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-    </div>
+    <!-- FULL PAGE INVITATION -->
+    <div class="invitation-page" id="invitationPage">
+        <!-- Invitation Card Content -->
+        <div class="invitation-header">
+            <div class="wreath-container">
+                <div class="flower pink f1"></div>
+                <div class="flower white f2"></div>
+                <div class="flower rose f3"></div>
+                <div class="flower yellow f4"></div>
+                <div class="flower pink f5"></div>
+                <div class="flower blue f6"></div>
+                <div class="flower white f7"></div>
+                <div class="flower purple f8"></div>
+                <div class="flower rose f9"></div>
+                <div class="flower pink f10"></div>
+                <div class="flower yellow f11"></div>
+                <div class="flower white f12"></div>
+                <div class="flower rose f13"></div>
+                <div class="flower blue f14"></div>
+                <div class="flower pink f15"></div>
+                <div class="flower white f16"></div>
+                <div class="leaf l1"></div>
+                <div class="leaf l2"></div>
+                <div class="leaf l3"></div>
+                <div class="leaf l4"></div>
+                <div class="leaf l5"></div>
+                <div class="leaf l6"></div>
+                <div class="monogram">HS</div>
+            </div>
+            <p class="together-text">Together with their families</p>
+            <h1 class="names">HANA ALASHRY &<br>SHADY AL-HALAWANI</h1>
+            <p class="invite-text">invite you to celebrate their engagement</p>
+            <p class="date-main">Wednesday, April Twenty-Second</p>
+            <p class="date-details">two thousand and twenty six<br>at five o'clock in the evening</p>
+            <p class="venue-name-small">The Groove Venue, Al Shorouk</p>
+            <p class="reception-text">Dinner and festivities to follow</p>
+        </div>
 
-    <div class="content-sections" id="contentSections">
-        <!-- Welcome & Attend -->
-        <div class="section section-welcome">
-            <h1 class="main-title">Hana and Shady's<br>Engagement</h1>
-            <svg class="swirl" viewBox="0 0 100 20">
-                <path d="M0 10 Q25 0 50 10 T100 10" fill="none" stroke="#ccc" stroke-width="1"/>
-            </svg>
+        <!-- Welcome & Attend Section -->
+        <div class="section">
+            <h2 class="main-title">Hana and Shady's<br>Engagement</h2>
             <p class="welcome-text">Join us for the joyous celebration of our engagement. We look forward to sharing this special evening with you.</p>
             
-            <!-- Attendance Form -->
             <form class="attend-form" id="attendForm" action="https://formsubmit.co/haamalashry@gmail.com" method="POST">
                 <input type="hidden" name="_subject" value="🎉 New Guest Attending - Hana & Shady's Engagement">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
                 <input type="hidden" name="_next" value="https://shadysmetools.github.io/Digital-invitation-for-guests/?confirmed=true">
-                
                 <input type="text" name="name" placeholder="Your Name" required>
                 <input type="tel" name="phone" placeholder="Phone Number (optional)">
                 <input type="number" name="guests" placeholder="Number of Guests" min="1" max="10" value="1">
                 <button type="submit" class="attend-btn">I Will Attend</button>
             </form>
-            
             <p class="success-msg" id="successMsg">Thank you! Your attendance has been confirmed 💕</p>
         </div>
 
-        <!-- Date -->
-        <div class="section section-date">
+        <!-- Date Section -->
+        <div class="section">
             <p class="section-label">Date</p>
             <div class="dot"></div>
             <p class="section-date-text">Wednesday, April 22</p>
             <p class="time-text">5:00PM EET</p>
         </div>
 
-        <!-- Venue -->
-        <div class="section section-venue">
-            <p class="section-label">Travel</p>
-            <img src="venue-map.jpg" alt="The Grove Directional Map" class="venue-image">
-            <p class="section-label">Venue</p>
+        <!-- Venue Section -->
+        <div class="section">
+            <p class="section-label">Location</p>
+            <img src="venue-map.jpg" alt="The Grove Directional Map" class="venue-map">
             <p class="venue-name-large">The Groove Venue, Al Shorouk</p>
-            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link">maps.app.goo.gl/bpr5vCxXMrAWmNgD9</a>
+            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link">📍 Open in Google Maps</a>
         </div>
     </div>
 
     <script>
-        let isOpened = false;
-
         function openEnvelope() {
-            if (isOpened) return;
-            isOpened = true;
-            document.getElementById('envelope').classList.add('opened');
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('opened');
+            
             setTimeout(() => {
-                document.getElementById('scrollIndicator').classList.add('visible');
-                document.getElementById('contentSections').classList.add('visible');
-            }, 1500);
+                document.getElementById('envelopeScene').classList.add('hidden');
+                document.getElementById('invitationPage').classList.add('visible');
+            }, 1000);
         }
-
-        window.addEventListener('scroll', () => {
-            const indicator = document.getElementById('scrollIndicator');
-            if (window.scrollY > 100) {
-                indicator.classList.remove('visible');
-            } else if (isOpened) {
-                indicator.classList.add('visible');
-            }
-        });
 
         // Check if returning from form submission
         if (window.location.search.includes('confirmed=true')) {
-            isOpened = true;
-            document.getElementById('envelope').classList.add('opened');
-            document.getElementById('contentSections').classList.add('visible');
+            document.getElementById('envelopeScene').classList.add('hidden');
+            document.getElementById('invitationPage').classList.add('visible');
             document.getElementById('attendForm').style.display = 'none';
             document.getElementById('successMsg').style.display = 'block';
         }
