@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shady & Hana's Engagement</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #C9A227;
+            --gold-light: #E8D5A3;
+            --dark-green: #1B4332;
+            --cream: #FDF8F0;
+            --cream-dark: #F5EBD9;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 100%);
+            font-family: 'Cormorant Garamond', serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .bg-decoration { position: fixed; pointer-events: none; opacity: 0.15; }
+        .marigold {
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, #FF9933 30%, #FF6600 70%);
+            border-radius: 50%; position: absolute;
+        }
+        .marigold::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px; background: #FFD700; border-radius: 50%;
+        }
+        .marigold-1 { top: 5%; left: 5%; width: 80px; height: 80px; }
+        .marigold-2 { top: 15%; right: 8%; width: 100px; height: 100px; }
+        .marigold-3 { bottom: 10%; left: 3%; width: 90px; height: 90px; }
+        .marigold-4 { bottom: 20%; right: 5%; width: 70px; height: 70px; }
+        .diya {
+            width: 40px; height: 30px; background: var(--gold);
+            border-radius: 0 0 50% 50%; position: absolute;
+        }
+        .diya::before {
+            content: ''; position: absolute; top: -20px; left: 50%;
+            transform: translateX(-50%); width: 8px; height: 20px;
+            background: linear-gradient(to top, #FF6600, #FFD700, transparent);
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .diya-1 { top: 30%; left: 2%; }
+        .diya-2 { top: 40%; right: 3%; }
+        .diya-3 { bottom: 35%; left: 4%; }
+        .diya-4 { bottom: 40%; right: 2%; }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+        }
+        .envelope-container {
+            position: relative; width: 320px; height: 220px;
+            cursor: pointer; perspective: 1000px; transition: transform 0.3s ease;
+        }
+        .envelope-container:hover { transform: scale(1.02); }
+        .envelope-container.opened { cursor: default; }
+        .envelope {
+            position: relative; width: 100%; height: 100%;
+            background: linear-gradient(145deg, #F5E6D3 0%, #E8D5B8 100%);
+            border-radius: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); overflow: visible;
+        }
+        .envelope::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border: 3px solid var(--gold); border-radius: 8px; pointer-events: none;
+        }
+        .envelope-flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(145deg, #F5E6D3 0%, #E8D5B8 100%);
+            transform-origin: top center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10; clip-path: polygon(0 0, 50% 100%, 100% 0);
+            border-top: 3px solid var(--gold);
+        }
+        .envelope-flap::after {
+            content: ''; position: absolute; top: 20%; left: 50%;
+            transform: translateX(-50%); width: 50px; height: 50px;
+            background: var(--gold);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+        .opened .envelope-flap { transform: rotateX(180deg); }
+        .tap-instruction {
+            position: absolute; bottom: -50px; left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cormorant Garamond', serif; font-size: 16px;
+            color: var(--dark-green); animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+        .opened .tap-instruction { opacity: 0; pointer-events: none; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+        .invitation-card {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            width: 280px; background: linear-gradient(180deg, #FFFEF9 0%, #FDF8F0 100%);
+            border-radius: 8px; padding: 30px 20px; text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.3s; z-index: 5; border: 2px solid var(--gold-light);
+        }
+        .invitation-card::before {
+            content: ''; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid var(--gold); border-radius: 4px; pointer-events: none;
+        }
+        .opened .invitation-card {
+            top: -320px; transform: translateX(-50%) scale(1.15);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+        }
+        .card-decoration { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .card-decoration .mini-diya {
+            width: 20px; height: 15px; background: var(--gold);
+            border-radius: 0 0 50% 50%; position: relative;
+        }
+        .card-decoration .mini-diya::before {
+            content: ''; position: absolute; top: -10px; left: 50%;
+            transform: translateX(-50%); width: 4px; height: 10px;
+            background: linear-gradient(to top, #FF6600, #FFD700, transparent);
+            border-radius: 50%; animation: flicker 1.5s infinite alternate;
+        }
+        .celebrate-text {
+            font-family: 'Cormorant Garamond', serif; font-size: 14px;
+            font-style: italic; color: var(--dark-green);
+            margin-bottom: 10px; letter-spacing: 1px;
+        }
+        .names {
+            font-family: 'Great Vibes', cursive; font-size: 32px;
+            color: var(--dark-green); line-height: 1.3; margin-bottom: 20px;
+        }
+        .names .and { font-size: 24px; display: block; margin: 5px 0; color: var(--gold); }
+        .divider {
+            width: 80px; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 15px auto;
+        }
+        .details {
+            font-family: 'Playfair Display', serif; font-size: 13px;
+            color: var(--dark-green); line-height: 1.8; margin-bottom: 15px;
+        }
+        .details .date { font-weight: 600; font-size: 14px; margin-bottom: 5px; }
+        .details .venue { font-style: italic; font-size: 12px; letter-spacing: 0.5px; }
+        .footer-text {
+            font-family: 'Cormorant Garamond', serif; font-size: 12px;
+            font-style: italic; color: var(--gold); margin-top: 10px;
+        }
+        .rsvp-container {
+            position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.5s ease; transition-delay: 1s;
+            pointer-events: none; z-index: 100;
+        }
+        .opened ~ .rsvp-container, .show-rsvp .rsvp-container {
+            opacity: 1; pointer-events: auto;
+        }
+        .rsvp-button {
+            display: inline-block; padding: 15px 40px;
+            background: linear-gradient(135deg, var(--dark-green) 0%, #2D5A45 100%);
+            color: var(--gold-light); font-family: 'Playfair Display', serif;
+            font-size: 16px; letter-spacing: 3px; text-transform: uppercase;
+            text-decoration: none; border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(27, 67, 50, 0.3);
+            transition: all 0.3s ease; border: 2px solid var(--gold);
+        }
+        .rsvp-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(27, 67, 50, 0.4);
+        }
+        @media (max-width: 480px) {
+            .envelope-container { width: 280px; height: 190px; }
+            .invitation-card { width: 250px; padding: 25px 15px; }
+            .opened .invitation-card { top: -300px; transform: translateX(-50%) scale(1.2); }
+            .names { font-size: 28px; }
+            .marigold { display: none; }
+        }
+        .confetti {
+            position: fixed; top: -10px; width: 10px; height: 10px;
+            opacity: 0; pointer-events: none;
+        }
+        .show-confetti .confetti { animation: fall 3s ease-out forwards; }
+        @keyframes fall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-decoration marigold marigold-1"></div>
+    <div class="bg-decoration marigold marigold-2"></div>
+    <div class="bg-decoration marigold marigold-3"></div>
+    <div class="bg-decoration marigold marigold-4"></div>
+    <div class="bg-decoration diya diya-1"></div>
+    <div class="bg-decoration diya diya-2"></div>
+    <div class="bg-decoration diya diya-3"></div>
+    <div class="bg-decoration diya diya-4"></div>
+
+    <div class="envelope-container" id="envelope" onclick="openEnvelope()">
+        <div class="envelope">
+            <div class="envelope-flap"></div>
+            <div class="invitation-card">
+                <div class="card-decoration">
+                    <div class="mini-diya"></div>
+                    <div class="mini-diya"></div>
+                    <div class="mini-diya"></div>
+                </div>
+                <p class="celebrate-text">Join us as we celebrate the engagement of</p>
+                <h1 class="names">
+                    Shady Al-halawani
+                    <span class="and">&</span>
+                    Hana Alashry
+                </h1>
+                <div class="divider"></div>
+                <div class="details">
+                    <p class="date">Tuesday, 22 April 2026</p>
+                    <p>7:00 PM ONWARDS</p>
+                    <p class="venue">THE GROOVE<br>CAIRO, EGYPT</p>
+                </div>
+                <div class="divider"></div>
+                <p class="footer-text">Dinner and festivities to follow.</p>
+            </div>
+        </div>
+        <p class="tap-instruction">✨ Tap to Open ✨</p>
+    </div>
+
+    <div class="rsvp-container">
+        <a href="https://www.greetingsisland.com/rsvp/ah9zpf" target="_blank" class="rsvp-button">RSVP</a>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script>
+        let isOpened = false;
+        function openEnvelope() {
+            if (isOpened) return;
+            isOpened = true;
+            document.getElementById('envelope').classList.add('opened');
+            document.body.classList.add('show-rsvp');
+            setTimeout(createConfetti, 600);
+        }
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#C9A227', '#1B4332', '#FF9933', '#E8D5A3', '#FFD700'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                confetti.style.height = (Math.random() * 10 + 5) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                container.appendChild(confetti);
+            }
+            document.body.classList.add('show-confetti');
+            setTimeout(() => {
+                container.innerHTML = '';
+                document.body.classList.remove('show-confetti');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
