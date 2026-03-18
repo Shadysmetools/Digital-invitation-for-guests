@@ -10,98 +10,36 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body {
-            min-height: 100vh;
-            background: #C5D1D8;
-            font-family: 'Cormorant Garamond', serif;
-            overflow-x: hidden;
-        }
+        body { min-height: 100vh; background: #C5D1D8; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
         .envelope-scene {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #C5D1D8;
-            z-index: 100;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: #C5D1D8; z-index: 100;
             transition: opacity 0.5s ease, visibility 0.5s ease;
         }
         .envelope-scene.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        .envelope-wrapper {
-            position: relative;
-            width: 340px; height: 240px;
-            cursor: pointer;
-            perspective: 1500px;
-            transition: transform 0.3s ease;
-        }
+        .envelope-wrapper { position: relative; width: 340px; height: 240px; cursor: pointer; perspective: 1500px; transition: transform 0.3s ease; }
         .envelope-wrapper:hover { transform: scale(1.02); }
-
         .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
-        .envelope-back {
-            position: absolute; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%);
-            border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-        }
-        .envelope-inside {
-            position: absolute; width: 100%; height: 100%;
-            background: #FCEEE8; border-radius: 4px; overflow: hidden; z-index: 1;
-        }
-        .envelope-inside::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                radial-gradient(circle at 15% 20%, #E8B8B8 4px, transparent 4px),
-                radial-gradient(circle at 30% 15%, #B8D0B8 3px, transparent 3px),
-                radial-gradient(circle at 45% 25%, #D8B8D8 4px, transparent 4px),
-                radial-gradient(circle at 60% 10%, #E8D8B8 3px, transparent 3px),
-                radial-gradient(circle at 75% 20%, #B8C8E0 4px, transparent 4px);
-        }
-        .envelope-flap {
-            position: absolute; top: 0; left: 0; width: 100%; height: 130px;
-            background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%);
-            clip-path: polygon(0 0, 50% 100%, 100% 0);
-            transform-origin: top center;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 20;
-        }
-        .seal {
-            position: absolute; top: 35%; left: 50%; transform: translateX(-50%);
-            width: 50px; height: 50px;
-            background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%);
-            border-radius: 50%; z-index: 21;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Alex Brush', cursive; font-size: 16px; color: #fff;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            transition: opacity 0.3s ease;
-        }
+        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; overflow: hidden; z-index: 1; }
+        .envelope-inside::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 15% 20%, #E8B8B8 4px, transparent 4px), radial-gradient(circle at 30% 15%, #B8D0B8 3px, transparent 3px), radial-gradient(circle at 45% 25%, #D8B8D8 4px, transparent 4px), radial-gradient(circle at 60% 10%, #E8D8B8 3px, transparent 3px), radial-gradient(circle at 75% 20%, #B8C8E0 4px, transparent 4px); }
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 130px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); z-index: 20; }
+        .seal { position: absolute; top: 35%; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Alex Brush', cursive; font-size: 16px; color: #fff; box-shadow: 0 3px 10px rgba(0,0,0,0.2); transition: opacity 0.3s ease; }
         .opened .seal { opacity: 0; }
         .opened .envelope-flap { transform: rotateX(-180deg); }
-
-        .envelope-bottom {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 100px;
-            background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%);
-            clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3;
-        }
+        .envelope-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%); clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3; }
         .envelope-left, .envelope-right { position: absolute; top: 0; width: 50%; height: 100%; z-index: 2; }
         .envelope-left { left: 0; background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
         .envelope-right { right: 0; background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-
-        .tap-instruction {
-            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
-            font-size: 14px; font-style: italic; color: #888;
-            animation: pulse 2s ease-in-out infinite; white-space: nowrap;
-        }
+        .tap-instruction { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); font-size: 14px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; white-space: nowrap; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         .invitation-page { min-height: 100vh; background: #FFFEF9; }
 
-        .invitation-header {
-            min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 40px 30px; text-align: center; background: #FFFEF9;
-        }
+        .invitation-header { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 30px; text-align: center; background: #FFFEF9; }
 
         .wreath-container { position: relative; width: 200px; height: 200px; margin-bottom: 30px; }
         .flower { position: absolute; border-radius: 50%; }
@@ -113,30 +51,20 @@
         .flower.purple { background: radial-gradient(circle, #D8C0E0 30%, #C0A0D0 70%); }
         .leaf { position: absolute; background: linear-gradient(45deg, #90A878 0%, #B8C8A0 100%); border-radius: 0 70% 0 70%; }
 
-        .f1 { width: 24px; height: 24px; top: 5px; left: 88px; }
-        .f2 { width: 20px; height: 20px; top: 15px; left: 55px; }
-        .f3 { width: 18px; height: 18px; top: 18px; left: 128px; }
-        .f4 { width: 22px; height: 22px; top: 35px; left: 28px; }
-        .f5 { width: 26px; height: 26px; top: 30px; left: 150px; }
-        .f6 { width: 16px; height: 16px; top: 62px; left: 12px; }
-        .f7 { width: 20px; height: 20px; top: 56px; left: 170px; }
-        .f8 { width: 18px; height: 18px; top: 95px; left: 0px; }
-        .f9 { width: 22px; height: 22px; top: 88px; left: 180px; }
-        .f10 { width: 17px; height: 17px; top: 128px; left: 8px; }
-        .f11 { width: 20px; height: 20px; top: 122px; left: 175px; }
-        .f12 { width: 18px; height: 18px; top: 155px; left: 28px; }
-        .f13 { width: 24px; height: 24px; top: 150px; left: 155px; }
-        .f14 { width: 20px; height: 20px; top: 175px; left: 58px; }
-        .f15 { width: 22px; height: 22px; top: 172px; left: 128px; }
-        .f16 { width: 18px; height: 18px; top: 182px; left: 95px; }
-
+        .f1 { width: 24px; height: 24px; top: 5px; left: 88px; } .f2 { width: 20px; height: 20px; top: 15px; left: 55px; }
+        .f3 { width: 18px; height: 18px; top: 18px; left: 128px; } .f4 { width: 22px; height: 22px; top: 35px; left: 28px; }
+        .f5 { width: 26px; height: 26px; top: 30px; left: 150px; } .f6 { width: 16px; height: 16px; top: 62px; left: 12px; }
+        .f7 { width: 20px; height: 20px; top: 56px; left: 170px; } .f8 { width: 18px; height: 18px; top: 95px; left: 0px; }
+        .f9 { width: 22px; height: 22px; top: 88px; left: 180px; } .f10 { width: 17px; height: 17px; top: 128px; left: 8px; }
+        .f11 { width: 20px; height: 20px; top: 122px; left: 175px; } .f12 { width: 18px; height: 18px; top: 155px; left: 28px; }
+        .f13 { width: 24px; height: 24px; top: 150px; left: 155px; } .f14 { width: 20px; height: 20px; top: 175px; left: 58px; }
+        .f15 { width: 22px; height: 22px; top: 172px; left: 128px; } .f16 { width: 18px; height: 18px; top: 182px; left: 95px; }
         .l1 { width: 20px; height: 8px; top: 28px; left: 72px; transform: rotate(-30deg); }
         .l2 { width: 24px; height: 10px; top: 45px; left: 140px; transform: rotate(40deg); }
         .l3 { width: 18px; height: 7px; top: 78px; left: 20px; transform: rotate(-50deg); }
         .l4 { width: 22px; height: 9px; top: 108px; left: 168px; transform: rotate(60deg); }
         .l5 { width: 20px; height: 8px; top: 142px; left: 15px; transform: rotate(-70deg); }
         .l6 { width: 22px; height: 9px; top: 165px; left: 145px; transform: rotate(25deg); }
-
         .monogram { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Pinyon Script', cursive; font-size: 52px; color: #444; letter-spacing: -3px; }
 
         .together-text { font-size: 16px; font-style: italic; color: #888; margin-bottom: 18px; letter-spacing: 1px; }
@@ -162,20 +90,14 @@
         .section-date-text { font-size: 20px; letter-spacing: 5px; text-transform: uppercase; color: #333; margin-bottom: 12px; text-decoration: underline; text-underline-offset: 6px; }
         .time-text { font-size: 18px; letter-spacing: 3px; color: #333; text-decoration: underline; text-underline-offset: 6px; }
 
-        /* FIXED: Image without black bars */
-        .venue-map {
-            max-width: 400px;
-            width: 90%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
-            margin: 25px auto;
-            display: block;
-        }
-
-        .venue-name-large { font-size: 18px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin: 25px 0 20px; }
-        .venue-link { display: inline-block; padding: 14px 35px; font-size: 14px; letter-spacing: 2px; color: #fff; background: #2B4A7C; text-decoration: none; border-radius: 6px; transition: background 0.3s ease; }
-        .venue-link:hover { background: #1a3a5c; }
+        /* VENUE SECTION - Matching reference style */
+        .section-venue { padding: 60px 30px 80px; text-align: center; background: #FAF8F5; }
+        .travel-label { font-family: 'Pinyon Script', cursive; font-size: 42px; color: #666; margin-bottom: 30px; }
+        .venue-image { max-width: 600px; width: 90%; height: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.12); margin: 0 auto 40px; display: block; }
+        .venue-label { font-family: 'Pinyon Script', cursive; font-size: 38px; color: #666; margin-bottom: 25px; }
+        .venue-name-large { font-size: 16px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 15px; }
+        .venue-link-text { font-size: 14px; letter-spacing: 1px; color: #333; text-decoration: none; }
+        .venue-link-text:hover { text-decoration: underline; }
 
         @media (max-width: 480px) {
             .envelope-wrapper { width: 300px; height: 210px; }
@@ -184,7 +106,7 @@
             .names { font-size: 22px; letter-spacing: 2px; }
             .main-title { font-size: 34px; }
             .attend-form input { width: 100%; max-width: 300px; }
-            .venue-map { width: 95%; max-width: 100%; }
+            .venue-image { width: 95%; }
         }
     </style>
 </head>
@@ -249,11 +171,13 @@
             <p class="time-text">5:00PM EET</p>
         </div>
 
-        <div class="section">
-            <p class="section-label">Location</p>
-            <img src="venue-map.jpg" alt="The Grove Directional Map" class="venue-map">
-            <p class="venue-name-large">The Groove Venue, Al Shorouk</p>
-            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link">📍 Open in Google Maps</a>
+        <!-- VENUE SECTION - Matching reference style -->
+        <div class="section-venue">
+            <p class="travel-label">Travel</p>
+            <img src="venue.jpg" alt="The Groove Venue" class="venue-image">
+            <p class="venue-label">Venue</p>
+            <p class="venue-name-large">THE GROOVE VENUE, AL SHOROUK</p>
+            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link-text">MAPS.APP.GOO.GL/BPR5VCXXMRAWMNGD9</a>
         </div>
     </div>
 
