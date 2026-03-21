@@ -17,7 +17,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { min-height: 100vh; background: #F5F0EB; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
+        body { min-height: 100vh; background: #fff; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
         .floating-flowers { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
         .petal { position: absolute; width: 12px; height: 12px; border-radius: 50%; opacity: 0.5; animation: floatDown linear infinite; }
@@ -30,89 +30,86 @@
             top: 0; left: 0; 
             width: 100%; height: 100%; 
             display: flex; 
+            flex-direction: column;
             justify-content: center; 
             align-items: center; 
-            background: linear-gradient(180deg, #C8D4DA 0%, #B8C8D0 100%);
+            background: #fff;
             z-index: 100; 
             overflow: hidden;
         }
-        .opening-scene.step2 { background: linear-gradient(180deg, #C8D4DA 0%, #B8C8D0 100%); }
         .opening-scene.hidden { display: none; }
 
         /* Envelope Container */
         .envelope-container {
             position: relative;
             width: 350px;
-            height: 250px;
             cursor: pointer;
         }
 
         /* Closed Envelope */
         .envelope-closed {
-            position: absolute;
             width: 100%;
             transition: opacity 0.5s ease;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
         }
-        .envelope-closed img {
-            width: 100%;
-            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.15));
-        }
-        .step2 .envelope-closed { opacity: 0; pointer-events: none; }
-
-        /* Open Envelope with Lining */
-        .envelope-open {
+        .opened .envelope-closed { 
+            opacity: 0; 
             position: absolute;
-            width: 450px;
+            top: 0;
+        }
+
+        /* Open Envelope */
+        .envelope-open-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .envelope-open-wrapper img {
+            width: 100%;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
+        }
+        .opened .envelope-open-wrapper { 
+            opacity: 1;
+            position: relative;
+        }
+
+        /* Card sliding up */
+        .card-wrapper {
+            position: absolute;
+            bottom: 20%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(80px);
+            width: 70%;
             opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .envelope-open img {
-            width: 100%;
-            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.15));
-        }
-        .step2 .envelope-open { opacity: 1; }
-
-        /* Invitation Card sliding up */
-        .invitation-card {
-            position: absolute;
-            width: 280px;
-            right: -50px;
-            top: 50px;
-            opacity: 0;
-            transform: translateY(100px);
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
             z-index: 10;
         }
-        .invitation-card img {
+        .card-wrapper img {
             width: 100%;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
-        .step2 .invitation-card {
+        .opened .card-wrapper {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(-120px);
         }
 
         .tap-instruction { 
-            position: absolute; 
-            bottom: 80px; 
-            left: 50%; 
-            transform: translateX(-50%); 
+            margin-top: 30px;
             font-size: 14px; 
             font-style: italic; 
-            color: #666; 
+            color: #999; 
             animation: pulse 2s ease-in-out infinite;
+            transition: opacity 0.3s;
         }
-        .step2 .tap-instruction { opacity: 0; }
+        .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         .continue-btn { 
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 14px 40px; 
+            margin-top: 30px;
+            padding: 14px 50px; 
             font-family: 'Cormorant Garamond', serif; 
             font-size: 13px; 
             letter-spacing: 3px; 
@@ -122,10 +119,11 @@
             color: #555; 
             cursor: pointer;
             opacity: 0;
+            pointer-events: none;
             transition: opacity 0.5s ease 0.8s;
         }
         .continue-btn:hover { background: #555; color: #fff; }
-        .step2 .continue-btn { opacity: 1; }
+        .opened .continue-btn { opacity: 1; pointer-events: auto; }
 
         .main-content { display: none; background: #F8F5F0; }
         .main-content.visible { display: block; }
@@ -156,10 +154,9 @@
         .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
 
-        @media (max-width: 550px) {
-            .envelope-container { width: 300px; height: 220px; }
-            .envelope-open { width: 100vw; }
-            .invitation-card { width: 200px; right: -30px; top: 30px; }
+        @media (max-width: 450px) {
+            .envelope-container { width: 300px; }
+            .opened .card-wrapper { transform: translateX(-50%) translateY(-100px); }
             .rsvp-form { flex-direction: column; align-items: center; }
             .rsvp-options { flex-direction: column; align-items: center; }
             .rsvp-input { width: 280px; }
@@ -171,19 +168,17 @@
     <div class="floating-flowers" id="floatingFlowers"></div>
 
     <div class="opening-scene" id="openingScene">
-        <div class="envelope-container" onclick="openEnvelope()">
+        <div class="envelope-container" id="envelopeContainer" onclick="openEnvelope()">
             <!-- Closed Envelope -->
-            <div class="envelope-closed">
-                <img src="envelope.jpg" alt="Envelope">
-            </div>
+            <img src="envelope-closed.jpg" alt="Envelope" class="envelope-closed">
             
-            <!-- Open Envelope with Lining + Card -->
-            <div class="envelope-open">
+            <!-- Open Envelope -->
+            <div class="envelope-open-wrapper">
                 <img src="envelope-open.jpg" alt="Open Envelope">
             </div>
             
-            <!-- Card that slides up -->
-            <div class="invitation-card">
+            <!-- Card slides up -->
+            <div class="card-wrapper">
                 <img src="invitation-card.jpg" alt="Invitation">
             </div>
         </div>
@@ -244,7 +239,8 @@
         createPetals();
 
         function openEnvelope() { 
-            document.getElementById('openingScene').classList.add('step2'); 
+            document.getElementById('envelopeContainer').classList.add('opened');
+            document.getElementById('openingScene').classList.add('opened'); 
         }
         
         function showContent() {
