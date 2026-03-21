@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { min-height: 100vh; background: #FFFFFF; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
+        html, body { min-height: 100vh; background: #FFFFFF !important; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
 
         .opening-scene { 
             position: fixed; 
@@ -24,7 +24,7 @@
             flex-direction: column;
             justify-content: center; 
             align-items: center; 
-            background: #FFFFFF;
+            background: #FFFFFF !important;
             z-index: 100; 
             cursor: pointer;
         }
@@ -109,7 +109,7 @@
             letter-spacing: 3px; 
             text-transform: uppercase; 
             border: 1px solid #555; 
-            background: #FFFFFF; 
+            background: #FFFFFF !important; 
             color: #555; 
             cursor: pointer;
             opacity: 0;
@@ -120,19 +120,19 @@
         .step3 .continue-btn { opacity: 1; pointer-events: auto; }
 
         /* Main Sections */
-        .main-content { display: none; background: #FFFFFF; }
+        .main-content { display: none; background: #FFFFFF !important; }
         .main-content.visible { display: block; }
-        .section { padding: 60px 20px; text-align: center; background: #FFFFFF; }
+        .section { padding: 60px 20px; text-align: center; background: #FFFFFF !important; }
         .main-title { font-family: 'Great Vibes', cursive; font-size: 42px; color: #444; margin-bottom: 30px; }
         .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 400px; margin: 0 auto 35px; line-height: 1.8; }
         
         .rsvp-form, .rsvp-options { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
         .rsvp-input { padding: 14px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 220px; text-align: center; }
-        .rsvp-option { padding: 16px 30px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid #ccc; background: #FFFFFF; cursor: pointer; }
+        .rsvp-option { padding: 16px 30px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid #ccc; background: #FFFFFF !important; cursor: pointer; }
         .rsvp-option.selected { background: #333; color: #fff; }
         .submit-btn { padding: 16px 60px; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; background: #333; color: #fff; border: none; cursor: pointer; }
 
-        .section-venue { padding: 60px 20px; text-align: center; background: #FFFFFF; }
+        .section-venue { padding: 60px 20px; text-align: center; background: #FFFFFF !important; }
         .venue-image { width: 100%; max-width: 500px; margin-bottom: 30px; }
         .venue-link { color: #333; text-decoration: none; font-size: 13px; letter-spacing: 2px; }
 
