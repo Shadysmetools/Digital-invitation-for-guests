@@ -18,12 +18,12 @@
         .petal.white { background: radial-gradient(circle, #FFF, #F5E8E0); }
         @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
-        .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(180deg, #EDE8E3 0%, #E5DED6 50%, #F0E8E0 100%); z-index: 100; transition: background 0.8s ease; }
-        .opening-scene.opened { background: #F8F5F0; }
+        .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(180deg, #EDE8E3 0%, #E5DED6 50%, #F0E8E0 100%); z-index: 100; transition: background 0.8s ease; overflow: auto; }
+        .opening-scene.opened { background: #F8F5F0; align-items: flex-start; padding: 20px 0; }
         .opening-scene.hidden { display: none; }
 
         .envelope-wrapper { position: absolute; width: 320px; height: 220px; cursor: pointer; perspective: 1500px; transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
-        .opening-scene.opened .envelope-wrapper { transform: translateX(calc(50vw - 80px)) scale(0.4); opacity: 0; pointer-events: none; }
+        .opening-scene.opened .envelope-wrapper { opacity: 0; pointer-events: none; position: fixed; }
         .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
         .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
         .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; z-index: 1; }
@@ -39,14 +39,24 @@
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-card { position: absolute; background: #F8F5F0; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.08); opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; overflow: hidden; max-height: 90vh; }
-        .opening-scene.opened .invitation-card { opacity: 1; transform: scale(1); width: min(94vw, 500px); }
+        .invitation-card { 
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: #F8F5F0; 
+            text-align: center; 
+            box-shadow: 0 10px 50px rgba(0,0,0,0.08); 
+            width: min(94vw, 500px);
+            margin: 0 auto;
+        }
+        .opening-scene.opened .invitation-card { 
+            display: flex;
+        }
         
         .invitation-image { width: 100%; height: auto; display: block; }
         
         .continue-btn { 
-            display: none; 
-            margin: 0 auto 20px; 
+            margin: 20px auto 30px; 
             padding: 16px 50px; 
             font-family: 'Cormorant Garamond', serif; 
             font-size: 14px; 
@@ -58,7 +68,6 @@
             cursor: pointer; 
         }
         .continue-btn:hover { background: #666; color: #fff; }
-        .opening-scene.opened .continue-btn { display: inline-block; }
 
         .main-content { display: none; background: #F8F5F0; }
         .main-content.visible { display: block; }
@@ -88,7 +97,6 @@
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
 
         @media (max-width: 600px) {
-            .opening-scene.opened .envelope-wrapper { opacity: 0; }
             .opening-scene.opened .invitation-card { width: 96vw; }
             .rsvp-input, .rsvp-btn { width: 100%; max-width: 300px; }
         }
