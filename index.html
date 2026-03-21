@@ -44,6 +44,11 @@
             position: relative;
             width: 350px;
             cursor: pointer;
+            transition: all 0.8s ease;
+        }
+        .step2 .envelope-container {
+            transform: translateY(100px) scale(0.8);
+            opacity: 0;
         }
 
         /* Closed Envelope */
@@ -76,7 +81,7 @@
             position: relative;
         }
 
-        /* Card sliding up */
+        /* Card sliding up then expanding */
         .card-wrapper {
             position: absolute;
             bottom: 20%;
@@ -84,7 +89,7 @@
             transform: translateX(-50%) translateY(80px);
             width: 70%;
             opacity: 0;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
         }
         .card-wrapper img {
@@ -93,7 +98,18 @@
         }
         .opened .card-wrapper {
             opacity: 1;
-            transform: translateX(-50%) translateY(-120px);
+            transform: translateX(-50%) translateY(-100px);
+        }
+        
+        /* Step 2: Card fills the page */
+        .step2 .card-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: min(90vw, 450px);
+            bottom: auto;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tap-instruction { 
@@ -104,11 +120,14 @@
             animation: pulse 2s ease-in-out infinite;
             transition: opacity 0.3s;
         }
-        .opened .tap-instruction { opacity: 0; }
+        .opened .tap-instruction { opacity: 0; pointer-events: none; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         .continue-btn { 
-            margin-top: 30px;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 14px 50px; 
             font-family: 'Cormorant Garamond', serif; 
             font-size: 13px; 
@@ -120,10 +139,11 @@
             cursor: pointer;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease 0.8s;
+            transition: opacity 0.5s ease;
+            z-index: 20;
         }
         .continue-btn:hover { background: #555; color: #fff; }
-        .opened .continue-btn { opacity: 1; pointer-events: auto; }
+        .step2 .continue-btn { opacity: 1; pointer-events: auto; }
 
         .main-content { display: none; background: #F8F5F0; }
         .main-content.visible { display: block; }
@@ -155,8 +175,7 @@
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
 
         @media (max-width: 450px) {
-            .envelope-container { width: 300px; }
-            .opened .card-wrapper { transform: translateX(-50%) translateY(-100px); }
+            .envelope-container { width: 280px; }
             .rsvp-form { flex-direction: column; align-items: center; }
             .rsvp-options { flex-direction: column; align-items: center; }
             .rsvp-input { width: 280px; }
@@ -168,17 +187,17 @@
     <div class="floating-flowers" id="floatingFlowers"></div>
 
     <div class="opening-scene" id="openingScene">
-        <div class="envelope-container" id="envelopeContainer" onclick="openEnvelope()">
+        <div class="envelope-container" id="envelopeContainer">
             <!-- Closed Envelope -->
-            <img src="envelope-closed.jpg" alt="Envelope" class="envelope-closed">
+            <img src="envelope-closed.jpg" alt="Envelope" class="envelope-closed" onclick="openEnvelope()">
             
             <!-- Open Envelope -->
             <div class="envelope-open-wrapper">
                 <img src="envelope-open.jpg" alt="Open Envelope">
             </div>
             
-            <!-- Card slides up -->
-            <div class="card-wrapper">
+            <!-- Card slides up then fills page -->
+            <div class="card-wrapper" onclick="expandCard()">
                 <img src="invitation-card.jpg" alt="Invitation">
             </div>
         </div>
@@ -221,6 +240,7 @@
     <script>
         var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbym4kD9VxToh3qHsVy442IOfr1f__GNClr9hvAs7qgYNCnb9fo_9QZUImZXXvVgW_KHWA/exec";
         var selectedResponse = null;
+        var isOpened = false;
 
         function createPetals() {
             var container = document.getElementById('floatingFlowers');
@@ -239,8 +259,20 @@
         createPetals();
 
         function openEnvelope() { 
-            document.getElementById('envelopeContainer').classList.add('opened');
-            document.getElementById('openingScene').classList.add('opened'); 
+            if (!isOpened) {
+                document.getElementById('envelopeContainer').classList.add('opened');
+                document.getElementById('openingScene').classList.add('opened');
+                isOpened = true;
+                
+                // Auto expand after 1 second
+                setTimeout(function() {
+                    expandCard();
+                }, 1000);
+            }
+        }
+        
+        function expandCard() {
+            document.getElementById('openingScene').classList.add('step2');
         }
         
         function showContent() {
