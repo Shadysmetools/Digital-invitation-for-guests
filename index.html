@@ -165,7 +165,7 @@
             
             <div class="rsvp-form">
                 <input type="text" id="guestName" class="rsvp-input" placeholder="Your Name">
-                <input type="email" id="guestEmail" class="rsvp-input" placeholder="Your Email">
+                
             </div>
 
             <div class="rsvp-options">
@@ -223,7 +223,7 @@
 
         function sendRsvp() {
             var name = document.getElementById('guestName').value;
-            var email = document.getElementById('guestEmail').value;
+            var email = '';
             if(!name || !email || !responseValue) { alert("Please fill in all fields."); return; }
 
             document.getElementById('btnSubmit').disabled = true;
