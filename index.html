@@ -78,7 +78,7 @@
             flex-direction: row; 
             justify-content: center; 
             gap: 15px; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
         }
         .rsvp-input { 
             padding: 14px 20px; 
@@ -90,28 +90,46 @@
             background: #fff; 
         }
         
-        .rsvp-buttons { 
+        .rsvp-options { 
             display: flex; 
             flex-direction: row; 
             justify-content: center; 
             gap: 15px; 
-            margin-bottom: 30px; 
+            margin-bottom: 20px; 
         }
-        .rsvp-btn { 
+        .rsvp-option { 
             padding: 18px 35px; 
             font-family: 'Cormorant Garamond', serif; 
             font-size: 14px; 
             letter-spacing: 3px; 
             text-transform: uppercase; 
-            border: 1px solid #333; 
-            background: transparent; 
-            color: #333; 
+            border: 1px solid #ccc; 
+            background: #fff; 
+            color: #666; 
             cursor: pointer; 
+            transition: all 0.3s;
         }
-        .rsvp-btn:hover { background: #333; color: #fff; }
-        .rsvp-btn.decline { border-color: #999; color: #666; }
-        .rsvp-btn.decline:hover { background: #888; color: #fff; }
-        .rsvp-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .rsvp-option:hover { border-color: #333; color: #333; }
+        .rsvp-option.selected { 
+            background: #333; 
+            color: #fff; 
+            border-color: #333; 
+        }
+        
+        .submit-btn { 
+            padding: 18px 60px; 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 14px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            border: 1px solid #333; 
+            background: #333; 
+            color: #fff; 
+            cursor: pointer; 
+            margin-bottom: 30px;
+        }
+        .submit-btn:hover { background: #555; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .thank-you { display: none; font-size: 20px; font-style: italic; color: #4a7c59; margin-top: 20px; }
         .sorry-msg { display: none; font-size: 18px; font-style: italic; color: #888; margin-top: 20px; }
@@ -126,9 +144,9 @@
 
         @media (max-width: 500px) {
             .rsvp-form { flex-direction: column; align-items: center; }
-            .rsvp-buttons { flex-direction: column; align-items: center; }
+            .rsvp-options { flex-direction: column; align-items: center; }
             .rsvp-input { width: 280px; }
-            .rsvp-btn { width: 280px; }
+            .rsvp-option { width: 280px; text-align: center; }
         }
     </style>
 </head>
@@ -165,10 +183,12 @@
                 <input type="email" class="rsvp-input" id="guestEmail" placeholder="Your Email" required>
             </div>
 
-            <div class="rsvp-buttons" id="rsvpButtons">
-                <button class="rsvp-btn" id="attendBtn" onclick="submitRSVP('Will Attend')">Will Attend</button>
-                <button class="rsvp-btn decline" id="declineBtn" onclick="submitRSVP('Can\'t Attend')">Can't Attend</button>
+            <div class="rsvp-options" id="rsvpOptions">
+                <button class="rsvp-option" id="attendOption" onclick="selectOption('Will Attend')">Will Attend</button>
+                <button class="rsvp-option" id="declineOption" onclick="selectOption('Can\'t Attend')">Can't Attend</button>
             </div>
+            
+            <button class="submit-btn" id="submitBtn" onclick="submitRSVP()">Submit</button>
             
             <p class="loading" id="loading">Sending...</p>
             <p class="thank-you" id="thankYou">Thank you! A confirmation email has been sent to you 💕</p>
@@ -186,6 +206,7 @@
 
     <script>
         var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbym4kD9VxToh3qHsVy442IOfr1f__GNClr9hvAs7qgYNCnb9fo_9QZUImZXXvVgW_KHWA/exec";
+        var selectedResponse = null;
 
         function createPetals() {
             var container = document.getElementById('floatingFlowers');
@@ -211,18 +232,29 @@
             document.getElementById('mainContent').classList.add('visible');
         }
 
-        function submitRSVP(response) {
+        function selectOption(response) {
+            selectedResponse = response;
+            document.getElementById('attendOption').classList.remove('selected');
+            document.getElementById('declineOption').classList.remove('selected');
+            if (response === 'Will Attend') {
+                document.getElementById('attendOption').classList.add('selected');
+            } else {
+                document.getElementById('declineOption').classList.add('selected');
+            }
+        }
+
+        function submitRSVP() {
             var name = document.getElementById('guestName').value.trim();
             var email = document.getElementById('guestEmail').value.trim();
 
             if (!name) { alert('Please enter your name'); return; }
             if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
+            if (!selectedResponse) { alert('Please select Will Attend or Can\'t Attend'); return; }
 
-            document.getElementById('attendBtn').disabled = true;
-            document.getElementById('declineBtn').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
             document.getElementById('loading').style.display = 'block';
 
-            var data = { name: name, email: email, response: response };
+            var data = { name: name, email: email, response: selectedResponse };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -232,8 +264,9 @@
             }).then(function() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('rsvpForm').style.display = 'none';
-                document.getElementById('rsvpButtons').style.display = 'none';
-                if (response === 'Will Attend') {
+                document.getElementById('rsvpOptions').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'none';
+                if (selectedResponse === 'Will Attend') {
                     document.getElementById('thankYou').style.display = 'block';
                 } else {
                     document.getElementById('sorryMsg').style.display = 'block';
