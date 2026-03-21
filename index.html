@@ -39,21 +39,12 @@
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-        .invitation-card { position: absolute; width: 320px; background: #FFFDF8; padding: 40px 30px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.08); opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; }
-        .opening-scene.opened .invitation-card { opacity: 1; transform: scale(1) translateX(-80px); width: min(92vw, 440px); padding: 50px 35px; }
-
-        .wreath-svg-container { width: 220px; height: 220px; margin: 0 auto 25px; position: relative; }
-        .wreath-svg { width: 100%; height: 100%; }
-        .monogram-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Great Vibes', cursive; font-size: 48px; color: #3a3a3a; }
-
-        .together-text { font-size: 15px; font-style: italic; color: #888; margin-bottom: 18px; }
-        .names { font-size: 18px; font-weight: 400; color: #333; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 18px; line-height: 1.8; }
-        .invite-text { font-size: 15px; font-style: italic; color: #666; margin-bottom: 18px; }
-        .date-main { font-size: 15px; font-weight: 500; color: #333; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
-        .date-details { font-size: 15px; font-style: italic; color: #555; line-height: 1.7; margin-bottom: 15px; }
-        .venue-name-small { font-size: 15px; font-style: italic; color: #555; margin-bottom: 15px; }
-        .reception-text { font-size: 15px; font-style: italic; color: #888; }
-        .continue-btn { display: none; margin-top: 28px; padding: 14px 45px; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; }
+        .invitation-card { position: absolute; width: 320px; background: #FFFDF8; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,0.08); opacity: 0; transform: scale(0.8); transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5; overflow: hidden; }
+        .opening-scene.opened .invitation-card { opacity: 1; transform: scale(1) translateX(-80px); width: min(92vw, 440px); }
+        
+        .invitation-image { width: 100%; height: auto; display: block; }
+        
+        .continue-btn { display: none; margin: 20px auto; padding: 14px 45px; font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; }
         .continue-btn:hover { background: #555; }
         .opening-scene.opened .continue-btn { display: inline-block; }
 
@@ -86,10 +77,7 @@
 
         @media (max-width: 600px) {
             .opening-scene.opened .envelope-wrapper { transform: translateX(30vw) scale(0.35); opacity: 0.6; }
-            .opening-scene.opened .invitation-card { transform: scale(1) translateX(0); width: 94vw; padding: 40px 25px; }
-            .wreath-svg-container { width: 180px; height: 180px; }
-            .monogram-overlay { font-size: 38px; }
-            .names { font-size: 16px; letter-spacing: 3px; }
+            .opening-scene.opened .invitation-card { transform: scale(1) translateX(0); width: 94vw; }
             .rsvp-input, .rsvp-btn { width: 100%; max-width: 300px; }
         }
     </style>
@@ -112,59 +100,7 @@
         </div>
 
         <div class="invitation-card">
-            <div class="wreath-svg-container">
-                <svg class="wreath-svg" viewBox="0 0 200 200">
-                    <g fill="none" stroke="#7da668" stroke-width="1.5" stroke-linecap="round">
-                        <path d="M100,15 Q85,25 75,20"/><path d="M100,15 Q115,25 125,20"/>
-                        <path d="M140,35 Q150,45 160,40"/><path d="M60,35 Q50,45 40,40"/>
-                        <path d="M165,70 Q175,80 180,75"/><path d="M35,70 Q25,80 20,75"/>
-                        <path d="M175,110 Q185,115 188,125"/><path d="M25,110 Q15,115 12,125"/>
-                        <path d="M165,150 Q175,155 172,165"/><path d="M35,150 Q25,155 28,165"/>
-                        <path d="M140,175 Q145,185 155,188"/><path d="M60,175 Q55,185 45,188"/>
-                    </g>
-                    <g fill="#8fb875" opacity="0.9">
-                        <ellipse cx="70" cy="22" rx="8" ry="4" transform="rotate(-30 70 22)"/>
-                        <ellipse cx="130" cy="22" rx="8" ry="4" transform="rotate(30 130 22)"/>
-                        <ellipse cx="155" cy="45" rx="7" ry="3.5" transform="rotate(50 155 45)"/>
-                        <ellipse cx="45" cy="45" rx="7" ry="3.5" transform="rotate(-50 45 45)"/>
-                        <ellipse cx="175" cy="80" rx="8" ry="4" transform="rotate(70 175 80)"/>
-                        <ellipse cx="25" cy="80" rx="8" ry="4" transform="rotate(-70 25 80)"/>
-                        <ellipse cx="182" cy="120" rx="7" ry="3.5" transform="rotate(85 182 120)"/>
-                        <ellipse cx="18" cy="120" rx="7" ry="3.5" transform="rotate(-85 18 120)"/>
-                        <ellipse cx="170" cy="160" rx="8" ry="4" transform="rotate(110 170 160)"/>
-                        <ellipse cx="30" cy="160" rx="8" ry="4" transform="rotate(-110 30 160)"/>
-                        <ellipse cx="145" cy="182" rx="7" ry="3.5" transform="rotate(140 145 182)"/>
-                        <ellipse cx="55" cy="182" rx="7" ry="3.5" transform="rotate(-140 55 182)"/>
-                    </g>
-                    <g class="flower-pink">
-                        <circle cx="100" cy="12" r="10" fill="#f8c8d4" opacity="0.7"/>
-                        <circle cx="97" cy="9" r="5" fill="#f4a5b8"/><circle cx="103" cy="9" r="5" fill="#f4a5b8"/>
-                        <circle cx="100" cy="15" r="5" fill="#f4a5b8"/><circle cx="100" cy="11" r="3" fill="#e89aad"/>
-                    </g>
-                    <g transform="translate(55, 30)"><circle cx="0" cy="0" r="9" fill="#f8c8d4" opacity="0.7"/><circle cx="-3" cy="-3" r="4" fill="#f4a5b8"/><circle cx="3" cy="-3" r="4" fill="#f4a5b8"/><circle cx="0" cy="3" r="4" fill="#f4a5b8"/><circle cx="0" cy="0" r="2.5" fill="#e89aad"/></g>
-                    <g transform="translate(145, 30)"><circle cx="0" cy="0" r="9" fill="#fdd5dc" opacity="0.7"/><circle cx="-3" cy="-3" r="4" fill="#f8b8c8"/><circle cx="3" cy="-3" r="4" fill="#f8b8c8"/><circle cx="0" cy="3" r="4" fill="#f8b8c8"/><circle cx="0" cy="0" r="2.5" fill="#f0a0b5"/></g>
-                    <g transform="translate(170, 65)"><circle cx="0" cy="0" r="8" fill="#fff8f0" opacity="0.8"/><circle cx="-2" cy="-3" r="4" fill="#fff"/><circle cx="3" cy="-2" r="4" fill="#fff"/><circle cx="0" cy="3" r="4" fill="#fff"/><circle cx="0" cy="0" r="2" fill="#f5e8d8"/></g>
-                    <g transform="translate(30, 65)"><circle cx="0" cy="0" r="8" fill="#fff8f0" opacity="0.8"/><circle cx="-2" cy="-3" r="4" fill="#fff"/><circle cx="3" cy="-2" r="4" fill="#fff"/><circle cx="0" cy="3" r="4" fill="#fff"/><circle cx="0" cy="0" r="2" fill="#f5e8d8"/></g>
-                    <g transform="translate(180, 100)"><circle cx="0" cy="0" r="9" fill="#fde4d8" opacity="0.7"/><circle cx="-3" cy="-3" r="4.5" fill="#f8d0c0"/><circle cx="3" cy="-3" r="4.5" fill="#f8d0c0"/><circle cx="0" cy="4" r="4.5" fill="#f8d0c0"/><circle cx="0" cy="0" r="2.5" fill="#f0c0a8"/></g>
-                    <g transform="translate(20, 100)"><circle cx="0" cy="0" r="9" fill="#fde4d8" opacity="0.7"/><circle cx="-3" cy="-3" r="4.5" fill="#f8d0c0"/><circle cx="3" cy="-3" r="4.5" fill="#f8d0c0"/><circle cx="0" cy="4" r="4.5" fill="#f8d0c0"/><circle cx="0" cy="0" r="2.5" fill="#f0c0a8"/></g>
-                    <g transform="translate(175, 140)"><circle cx="0" cy="0" r="10" fill="#f8c8d4" opacity="0.7"/><circle cx="-4" cy="-3" r="5" fill="#f4a5b8"/><circle cx="4" cy="-3" r="5" fill="#f4a5b8"/><circle cx="0" cy="4" r="5" fill="#f4a5b8"/><circle cx="0" cy="0" r="3" fill="#e89aad"/></g>
-                    <g transform="translate(25, 140)"><circle cx="0" cy="0" r="10" fill="#fdd5dc" opacity="0.7"/><circle cx="-4" cy="-3" r="5" fill="#f8b8c8"/><circle cx="4" cy="-3" r="5" fill="#f8b8c8"/><circle cx="0" cy="4" r="5" fill="#f8b8c8"/><circle cx="0" cy="0" r="3" fill="#f0a0b5"/></g>
-                    <g transform="translate(155, 175)"><circle cx="0" cy="0" r="8" fill="#fff8f0" opacity="0.8"/><circle cx="-3" cy="-2" r="4" fill="#fff"/><circle cx="3" cy="-2" r="4" fill="#fff"/><circle cx="0" cy="3" r="4" fill="#fff"/><circle cx="0" cy="0" r="2" fill="#f5e8d8"/></g>
-                    <g transform="translate(45, 175)"><circle cx="0" cy="0" r="8" fill="#fff8f0" opacity="0.8"/><circle cx="-3" cy="-2" r="4" fill="#fff"/><circle cx="3" cy="-2" r="4" fill="#fff"/><circle cx="0" cy="3" r="4" fill="#fff"/><circle cx="0" cy="0" r="2" fill="#f5e8d8"/></g>
-                    <g transform="translate(100, 188)"><circle cx="0" cy="0" r="9" fill="#f8c8d4" opacity="0.7"/><circle cx="-3" cy="-3" r="4" fill="#f4a5b8"/><circle cx="3" cy="-3" r="4" fill="#f4a5b8"/><circle cx="0" cy="3" r="4" fill="#f4a5b8"/><circle cx="0" cy="0" r="2.5" fill="#e89aad"/></g>
-                    <circle cx="85" cy="20" r="4" fill="#e8d0a0" opacity="0.8"/><circle cx="115" cy="20" r="4" fill="#d8c8e0" opacity="0.8"/>
-                    <circle cx="165" cy="55" r="3" fill="#e8d0a0" opacity="0.8"/><circle cx="35" cy="55" r="3" fill="#d8c8e0" opacity="0.8"/>
-                    <circle cx="80" cy="185" r="4" fill="#e8d0a0" opacity="0.8"/><circle cx="120" cy="185" r="4" fill="#d8c8e0" opacity="0.8"/>
-                </svg>
-                <div class="monogram-overlay">H&S</div>
-            </div>
-            <p class="together-text">Together with their families</p>
-            <h1 class="names">HANA ALASHRY &<br>SHADY AL-HALAWANI</h1>
-            <p class="invite-text">invite you to celebrate their engagement</p>
-            <p class="date-main">WEDNESDAY, APRIL TWENTY SECOND</p>
-            <p class="date-details">two thousand and twenty six<br>at five o'clock in the evening</p>
-            <p class="venue-name-small">The Groove Venue</p>
-            <p class="reception-text">Dinner and festivities to follow</p>
+            <img src="invitation-card.jpg" alt="Hana & Shady's Engagement Invitation" class="invitation-image">
             <button class="continue-btn" onclick="showContent()">Continue</button>
         </div>
     </div>
@@ -193,13 +129,12 @@
             <p class="venue-header">Venue</p>
             <img src="venue.jpg" alt="The Groove Venue" class="venue-image">
             <p class="venue-name-large">THE GROOVE VENUE, AL SHOROUK</p>
-            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link-text">MAPS.APP.GOO.GL/BPR5VCXXMRAWMNGD9</a>
+            <a href="https://maps.app.goo.gl/bpr5vCxXMrAWmNgD9" target="_blank" class="venue-link-text">OPEN IN GOOGLE MAPS</a>
             <p class="details-label">Details</p>
         </div>
     </div>
 
     <script>
-        // REPLACE THIS URL with your Google Apps Script Web App URL
         var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbym4kD9VxToh3qHsVy442IOfr1f__GNClr9hvAs7qgYNCnb9fo_9QZUImZXXvVgW_KHWA/exec";
 
         function createPetals() {
@@ -233,17 +168,11 @@
             if (!name) { alert('Please enter your name'); return; }
             if (!email || !email.includes('@')) { alert('Please enter a valid email'); return; }
 
-            // Disable buttons and show loading
             document.getElementById('attendBtn').disabled = true;
             document.getElementById('declineBtn').disabled = true;
             document.getElementById('loading').style.display = 'block';
 
-            var data = {
-                name: name,
-                email: email,
-                
-                response: response
-            };
+            var data = { name: name, email: email, response: response };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
@@ -254,31 +183,12 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('rsvpForm').style.display = 'none';
                 document.getElementById('rsvpButtons').style.display = 'none';
-                
-                if (response === 'Will Attend') {
-                    document.getElementById('thankYou').style.display = 'block';
-                } else {
-                    document.getElementById('sorryMsg').style.display = 'block';
-                }
-            }).catch(function() {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('rsvpForm').style.display = 'none';
-                document.getElementById('rsvpButtons').style.display = 'none';
                 if (response === 'Will Attend') {
                     document.getElementById('thankYou').style.display = 'block';
                 } else {
                     document.getElementById('sorryMsg').style.display = 'block';
                 }
             });
-        }
-
-        if (window.location.search.includes('confirmed=true')) {
-            document.getElementById('openingScene').classList.add('hidden');
-            document.getElementById('floatingFlowers').style.display = 'none';
-            document.getElementById('mainContent').classList.add('visible');
-            document.getElementById('rsvpForm').style.display = 'none';
-            document.getElementById('rsvpButtons').style.display = 'none';
-            document.getElementById('thankYou').style.display = 'block';
         }
     </script>
 </body>
