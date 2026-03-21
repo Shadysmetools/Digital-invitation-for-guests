@@ -27,24 +27,38 @@
         .petal.white { background: radial-gradient(circle, #FFF, #F5E8E0); }
         @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
-        .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: linear-gradient(180deg, #EDE8E3 0%, #E5DED6 50%, #F0E8E0 100%); z-index: 100; transition: background 0.8s ease; overflow: auto; }
+        .opening-scene { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #fff; z-index: 100; transition: background 0.8s ease; overflow: auto; }
         .opening-scene.opened { background: #F8F5F0; align-items: flex-start; padding: 20px 0; }
         .opening-scene.hidden { display: none; }
 
-        .envelope-wrapper { position: absolute; width: 320px; height: 220px; cursor: pointer; perspective: 1500px; transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
-        .opening-scene.opened .envelope-wrapper { opacity: 0; pointer-events: none; position: fixed; }
-        .envelope { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
-        .envelope-back { position: absolute; width: 100%; height: 100%; background: linear-gradient(180deg, #FAF6F0 0%, #F5EDE3 100%); border-radius: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); }
-        .envelope-inside { position: absolute; width: 100%; height: 100%; background: #FCEEE8; border-radius: 4px; z-index: 1; }
-        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 120px; background: linear-gradient(180deg, #FAF6F0 0%, #F0E8DE 100%); clip-path: polygon(0 0, 50% 100%, 100% 0); transform-origin: top center; transition: transform 0.6s; z-index: 20; }
-        .seal { position: absolute; top: 32%; left: 50%; transform: translateX(-50%); width: 45px; height: 45px; background: linear-gradient(135deg, #D4A5A5 0%, #C49090 100%); border-radius: 50%; z-index: 21; display: flex; align-items: center; justify-content: center; font-family: 'Great Vibes', cursive; font-size: 16px; color: #fff; box-shadow: 0 3px 8px rgba(0,0,0,0.2); transition: opacity 0.3s; }
-        .opened .seal { opacity: 0; }
-        .opened .envelope-flap { transform: rotateX(-180deg); }
-        .envelope-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 90px; background: linear-gradient(0deg, #FAF6F0 0%, #F5EDE3 100%); clip-path: polygon(0 100%, 50% 0, 100% 100%); z-index: 3; }
-        .envelope-left, .envelope-right { position: absolute; top: 0; width: 50%; height: 100%; z-index: 2; }
-        .envelope-left { left: 0; background: linear-gradient(90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(0 0, 100% 50%, 0 100%); }
-        .envelope-right { right: 0; background: linear-gradient(-90deg, #F5EDE3 0%, #FAF6F0 100%); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
-        .tap-instruction { position: absolute; bottom: -45px; left: 50%; transform: translateX(-50%); font-size: 13px; font-style: italic; color: #888; animation: pulse 2s ease-in-out infinite; }
+        .envelope-wrapper { 
+            position: absolute; 
+            cursor: pointer; 
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 10; 
+        }
+        .envelope-wrapper img {
+            width: 350px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.12));
+        }
+        .opening-scene.opened .envelope-wrapper { 
+            opacity: 0; 
+            pointer-events: none; 
+            transform: scale(0.8);
+        }
+        .tap-instruction { 
+            position: absolute; 
+            bottom: -40px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 13px; 
+            font-style: italic; 
+            color: #888; 
+            animation: pulse 2s ease-in-out infinite; 
+            white-space: nowrap;
+        }
         .opened .tap-instruction { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
@@ -82,61 +96,15 @@
         .main-title { font-family: 'Great Vibes', cursive; font-size: 44px; color: #444; margin-bottom: 30px; }
         .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
         
-        .rsvp-form { 
-            display: flex; 
-            flex-direction: row; 
-            justify-content: center; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        .rsvp-input { 
-            padding: 14px 20px; 
-            font-family: 'Cormorant Garamond', serif; 
-            font-size: 16px; 
-            border: 1px solid #ccc; 
-            width: 200px; 
-            text-align: center; 
-            background: #fff; 
-        }
+        .rsvp-form { display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .rsvp-input { padding: 14px 20px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 200px; text-align: center; background: #fff; }
         
-        .rsvp-options { 
-            display: flex; 
-            flex-direction: row; 
-            justify-content: center; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        .rsvp-option { 
-            padding: 18px 35px; 
-            font-family: 'Cormorant Garamond', serif; 
-            font-size: 14px; 
-            letter-spacing: 3px; 
-            text-transform: uppercase; 
-            border: 1px solid #ccc; 
-            background: #fff; 
-            color: #666; 
-            cursor: pointer; 
-            transition: all 0.3s;
-        }
+        .rsvp-options { display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .rsvp-option { padding: 18px 35px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #ccc; background: #fff; color: #666; cursor: pointer; transition: all 0.3s; }
         .rsvp-option:hover { border-color: #333; color: #333; }
-        .rsvp-option.selected { 
-            background: #333; 
-            color: #fff; 
-            border-color: #333; 
-        }
+        .rsvp-option.selected { background: #333; color: #fff; border-color: #333; }
         
-        .submit-btn { 
-            padding: 18px 60px; 
-            font-family: 'Cormorant Garamond', serif; 
-            font-size: 14px; 
-            letter-spacing: 3px; 
-            text-transform: uppercase; 
-            border: 1px solid #333; 
-            background: #333; 
-            color: #fff; 
-            cursor: pointer; 
-            margin-bottom: 30px;
-        }
+        .submit-btn { padding: 18px 60px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; margin-bottom: 30px; }
         .submit-btn:hover { background: #555; }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
@@ -152,6 +120,7 @@
         .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
 
         @media (max-width: 500px) {
+            .envelope-wrapper img { width: 300px; }
             .rsvp-form { flex-direction: column; align-items: center; }
             .rsvp-options { flex-direction: column; align-items: center; }
             .rsvp-input { width: 280px; }
@@ -164,15 +133,7 @@
 
     <div class="opening-scene" id="openingScene">
         <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
-            <div class="envelope">
-                <div class="envelope-back"></div>
-                <div class="envelope-inside"></div>
-                <div class="envelope-left"></div>
-                <div class="envelope-right"></div>
-                <div class="envelope-bottom"></div>
-                <div class="envelope-flap"></div>
-                <div class="seal">H&S</div>
-            </div>
+            <img src="../envelope.jpg" alt="Envelope">
             <p class="tap-instruction">tap to open</p>
         </div>
 
