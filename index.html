@@ -9,21 +9,12 @@
     <meta property="og:image" content="https://shady-hana-engagement.vercel.app/preview.jpg" />
     <meta property="og:url" content="https://shady-hana-engagement.vercel.app/" />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://shady-hana-engagement.vercel.app/preview.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { min-height: 100vh; background: #fff; font-family: 'Cormorant Garamond', serif; overflow-x: hidden; }
-
-        .floating-flowers { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: hidden; }
-        .petal { position: absolute; width: 12px; height: 12px; border-radius: 50%; opacity: 0.5; animation: floatDown linear infinite; }
-        .petal.pink { background: radial-gradient(circle, #F5D0D0, #E8B4B8); }
-        .petal.white { background: radial-gradient(circle, #FFF, #F5E8E0); }
-        @keyframes floatDown { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+        body { min-height: 100vh; background: #fff; font-family: 'Cormorant Garamond', serif; }
 
         .opening-scene { 
             position: fixed; 
@@ -35,99 +26,67 @@
             align-items: center; 
             background: #fff;
             z-index: 100; 
-            overflow: hidden;
         }
         .opening-scene.hidden { display: none; }
 
-        /* Envelope Container */
-        .envelope-container {
+        /* Step 1: Closed Envelope */
+        .envelope-closed {
+            width: 320px;
+            cursor: pointer;
+            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.1));
+            transition: all 0.5s ease;
+        }
+        .step1 .envelope-closed { display: none; }
+
+        /* Step 1: Open Envelope + Card coming out */
+        .envelope-open-container {
+            display: none;
             position: relative;
             width: 350px;
-            cursor: pointer;
-            transition: all 0.8s ease;
         }
-        .step2 .envelope-container {
-            transform: translateY(100px) scale(0.8);
-            opacity: 0;
-        }
-
-        /* Closed Envelope */
-        .envelope-closed {
+        .step1 .envelope-open-container { display: block; }
+        
+        .envelope-open-img {
             width: 100%;
-            transition: opacity 0.5s ease;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
-        }
-        .opened .envelope-closed { 
-            opacity: 0; 
-            position: absolute;
-            top: 0;
-        }
-
-        /* Open Envelope */
-        .envelope-open-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-        .envelope-open-wrapper img {
-            width: 100%;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.1));
-        }
-        .opened .envelope-open-wrapper { 
-            opacity: 1;
-            position: relative;
-        }
-
-        /* Card sliding up then expanding */
-        .card-wrapper {
-            position: absolute;
-            bottom: 20%;
-            left: 50%;
-            transform: translateX(-50%) translateY(80px);
-            width: 70%;
-            opacity: 0;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
-        }
-        .card-wrapper img {
-            width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
-        .opened .card-wrapper {
-            opacity: 1;
-            transform: translateX(-50%) translateY(-100px);
+            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.1));
         }
         
-        /* Step 2: Card fills the page */
-        .step2 .card-wrapper {
-            position: fixed;
-            top: 20px;
+        .card-inside {
+            position: absolute;
+            width: 65%;
             left: 50%;
-            transform: translateX(-50%) translateY(0);
-            width: min(90vw, 450px);
-            bottom: auto;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+            bottom: 25%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            animation: slideUp 0.8s ease forwards;
+        }
+        @keyframes slideUp {
+            from { bottom: 10%; opacity: 0.5; }
+            to { bottom: 25%; opacity: 1; }
         }
 
+        /* Step 2: Card fills page */
+        .card-fullpage {
+            display: none;
+            width: min(90vw, 420px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .step2 .envelope-open-container { display: none; }
+        .step2 .card-fullpage { display: block; }
+
         .tap-instruction { 
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 14px; 
             font-style: italic; 
             color: #999; 
-            animation: pulse 2s ease-in-out infinite;
-            transition: opacity 0.3s;
+            animation: pulse 2s infinite;
         }
-        .opened .tap-instruction { opacity: 0; pointer-events: none; }
+        .step1 .tap-instruction, .step2 .tap-instruction { display: none; }
         @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
         .continue-btn { 
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: none;
+            margin-top: 25px;
             padding: 14px 50px; 
             font-family: 'Cormorant Garamond', serif; 
             font-size: 13px; 
@@ -137,29 +96,25 @@
             background: #fff; 
             color: #555; 
             cursor: pointer;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-            z-index: 20;
         }
         .continue-btn:hover { background: #555; color: #fff; }
-        .step2 .continue-btn { opacity: 1; pointer-events: auto; }
+        .step2 .continue-btn { display: inline-block; }
 
         .main-content { display: none; background: #F8F5F0; }
         .main-content.visible { display: block; }
         .section { padding: 60px 30px; text-align: center; background: #F8F5F0; }
-        .main-title { font-family: 'Great Vibes', cursive; font-size: 44px; color: #444; margin-bottom: 30px; }
-        .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 420px; margin: 0 auto 35px; line-height: 1.8; }
+        .main-title { font-family: 'Great Vibes', cursive; font-size: 42px; color: #444; margin-bottom: 30px; }
+        .welcome-text { font-size: 18px; font-style: italic; color: #666; max-width: 400px; margin: 0 auto 35px; line-height: 1.8; }
         
-        .rsvp-form { display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .rsvp-form { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; }
         .rsvp-input { padding: 14px 20px; font-family: 'Cormorant Garamond', serif; font-size: 16px; border: 1px solid #ccc; width: 200px; text-align: center; background: #fff; }
         
-        .rsvp-options { display: flex; flex-direction: row; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .rsvp-option { padding: 18px 35px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #ccc; background: #fff; color: #666; cursor: pointer; transition: all 0.3s; }
+        .rsvp-options { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .rsvp-option { padding: 16px 30px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid #ccc; background: #fff; color: #666; cursor: pointer; }
         .rsvp-option:hover { border-color: #333; color: #333; }
         .rsvp-option.selected { background: #333; color: #fff; border-color: #333; }
         
-        .submit-btn { padding: 18px 60px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; margin-bottom: 30px; }
+        .submit-btn { padding: 16px 50px; font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid #333; background: #333; color: #fff; cursor: pointer; margin-bottom: 30px; }
         .submit-btn:hover { background: #555; }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
@@ -168,39 +123,33 @@
         .loading { display: none; font-size: 16px; font-style: italic; color: #888; }
 
         .section-venue { padding: 60px 30px 80px; text-align: center; background: #F8F5F0; }
-        .venue-header { font-family: 'Great Vibes', cursive; font-size: 42px; color: #666; margin-bottom: 30px; }
-        .venue-image { width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 35px; }
-        .details-label { font-family: 'Great Vibes', cursive; font-size: 38px; color: #666; margin-bottom: 20px; margin-top: 30px; }
-        .venue-name-large { font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
-        .venue-link-text { font-size: 13px; letter-spacing: 1px; color: #333; text-decoration: none; }
+        .venue-header { font-family: 'Great Vibes', cursive; font-size: 40px; color: #666; margin-bottom: 30px; }
+        .venue-image { width: 100%; height: auto; display: block; margin: 0 auto 35px; }
+        .venue-name-large { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: #333; margin-bottom: 12px; }
+        .venue-link-text { font-size: 13px; color: #333; text-decoration: none; }
+        .details-label { font-family: 'Great Vibes', cursive; font-size: 36px; color: #666; margin: 30px 0 20px; }
 
         @media (max-width: 450px) {
-            .envelope-container { width: 280px; }
-            .rsvp-form { flex-direction: column; align-items: center; }
-            .rsvp-options { flex-direction: column; align-items: center; }
-            .rsvp-input { width: 280px; }
-            .rsvp-option { width: 280px; text-align: center; }
+            .envelope-closed { width: 280px; }
+            .envelope-open-container { width: 300px; }
+            .rsvp-form, .rsvp-options { flex-direction: column; align-items: center; }
+            .rsvp-input, .rsvp-option { width: 280px; }
         }
     </style>
 </head>
 <body>
-    <div class="floating-flowers" id="floatingFlowers"></div>
-
     <div class="opening-scene" id="openingScene">
-        <div class="envelope-container" id="envelopeContainer">
-            <!-- Closed Envelope -->
-            <img src="envelope-closed.jpg" alt="Envelope" class="envelope-closed" onclick="openEnvelope()">
-            
-            <!-- Open Envelope -->
-            <div class="envelope-open-wrapper">
-                <img src="envelope-open.jpg" alt="Open Envelope">
-            </div>
-            
-            <!-- Card slides up then fills page -->
-            <div class="card-wrapper" onclick="expandCard()">
-                <img src="invitation-card.jpg" alt="Invitation">
-            </div>
+        <!-- Closed Envelope -->
+        <img src="envelope-closed.jpg" alt="Envelope" class="envelope-closed" onclick="openEnvelope()">
+        
+        <!-- Open Envelope with Card sliding up -->
+        <div class="envelope-open-container" onclick="expandCard()">
+            <img src="envelope-open.jpg" alt="Open Envelope" class="envelope-open-img">
+            <img src="invitation-card.jpg" alt="Invitation" class="card-inside">
         </div>
+        
+        <!-- Card fills page -->
+        <img src="invitation-card.jpg" alt="Invitation" class="card-fullpage">
         
         <p class="tap-instruction">tap to open</p>
         <button class="continue-btn" onclick="showContent()">Continue</button>
@@ -240,44 +189,18 @@
     <script>
         var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbym4kD9VxToh3qHsVy442IOfr1f__GNClr9hvAs7qgYNCnb9fo_9QZUImZXXvVgW_KHWA/exec";
         var selectedResponse = null;
-        var isOpened = false;
-
-        function createPetals() {
-            var container = document.getElementById('floatingFlowers');
-            var colors = ['pink', 'white'];
-            for (var i = 0; i < 12; i++) {
-                var petal = document.createElement('div');
-                petal.className = 'petal ' + colors[Math.floor(Math.random() * colors.length)];
-                petal.style.left = Math.random() * 100 + '%';
-                petal.style.animationDuration = (12 + Math.random() * 10) + 's';
-                petal.style.animationDelay = (Math.random() * 15) + 's';
-                petal.style.width = (5 + Math.random() * 6) + 'px';
-                petal.style.height = petal.style.width;
-                container.appendChild(petal);
-            }
-        }
-        createPetals();
 
         function openEnvelope() { 
-            if (!isOpened) {
-                document.getElementById('envelopeContainer').classList.add('opened');
-                document.getElementById('openingScene').classList.add('opened');
-                isOpened = true;
-                
-                // Auto expand after 1 second
-                setTimeout(function() {
-                    expandCard();
-                }, 1000);
-            }
+            document.getElementById('openingScene').classList.add('step1');
         }
         
         function expandCard() {
+            document.getElementById('openingScene').classList.remove('step1');
             document.getElementById('openingScene').classList.add('step2');
         }
         
         function showContent() {
             document.getElementById('openingScene').classList.add('hidden');
-            document.getElementById('floatingFlowers').style.display = 'none';
             document.getElementById('mainContent').classList.add('visible');
         }
 
@@ -303,13 +226,11 @@
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('loading').style.display = 'block';
 
-            var data = { name: name, email: email, response: selectedResponse };
-
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ name: name, email: email, response: selectedResponse })
             }).then(function() {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('rsvpForm').style.display = 'none';
