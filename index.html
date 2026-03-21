@@ -30,24 +30,30 @@
         }
         .opening-scene.hidden { display: none; }
 
-        /* Envelope with card inside */
+        /* Envelope wrapper */
         .envelope-wrapper {
             position: relative;
             width: 340px;
+            transition: all 0.8s ease;
+        }
+        .step3 .envelope-wrapper {
+            transform: translateY(100px) scale(0.6);
+            opacity: 0;
         }
 
         .envelope-img {
             width: 100%;
             filter: drop-shadow(0 10px 25px rgba(0,0,0,0.1));
-            transition: opacity 0.5s;
+            transition: opacity 0.4s;
         }
         .envelope-closed { display: block; }
         .envelope-open { position: absolute; top: 0; left: 0; opacity: 0; }
         
-        .opened .envelope-closed { opacity: 0; }
-        .opened .envelope-open { opacity: 1; position: relative; }
+        /* Step 1: Show open envelope */
+        .step1 .envelope-closed { opacity: 0; }
+        .step1 .envelope-open { opacity: 1; position: relative; }
 
-        /* Card slides UP from envelope */
+        /* Card inside envelope - hidden initially */
         .card-in-envelope {
             position: absolute;
             width: 62%;
@@ -56,12 +62,30 @@
             bottom: 22%;
             opacity: 0;
             box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-            transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
             z-index: 5;
         }
-        .opened .card-in-envelope {
+        /* Step 2: Card slides up */
+        .step2 .card-in-envelope {
             opacity: 1;
-            bottom: 75%;
+            bottom: 70%;
+        }
+
+        /* Full screen card */
+        .card-fullscreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(90vw, 420px);
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+            transition: opacity 0.6s;
+            z-index: 200;
+        }
+        .step3 .card-fullscreen {
+            opacity: 1;
         }
 
         .tap-msg { 
@@ -70,13 +94,16 @@
             font-style: italic; 
             color: #bbb; 
             animation: pulse 2s infinite;
-            transition: opacity 0.5s;
+            transition: opacity 0.3s;
         }
-        .opened .tap-msg { opacity: 0; }
+        .step1 .tap-msg, .step2 .tap-msg, .step3 .tap-msg { opacity: 0; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
         .continue-btn { 
-            margin-top: 30px;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 14px 50px; 
             font-size: 13px; 
             letter-spacing: 3px; 
@@ -87,9 +114,10 @@
             cursor: pointer;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease 0.8s;
+            transition: opacity 0.5s;
+            z-index: 250;
         }
-        .opened .continue-btn { opacity: 1; pointer-events: auto; }
+        .step3 .continue-btn { opacity: 1; pointer-events: auto; }
 
         /* Main Sections */
         .main-content { display: none; background: #F8F5F0; }
@@ -109,7 +137,7 @@
         .venue-link { color: #333; text-decoration: none; font-size: 13px; letter-spacing: 2px; }
 
         @media (max-width: 400px) {
-            .envelope-wrapper { width: 300px; }
+            .envelope-wrapper { width: 290px; }
             .rsvp-form, .rsvp-options { flex-direction: column; align-items: center; }
             .rsvp-input, .rsvp-option { width: 280px; }
         }
@@ -117,12 +145,14 @@
 </head>
 <body>
 
-    <div class="opening-scene" id="openingScene" onclick="openEnvelope()">
+    <div class="opening-scene" id="scene" onclick="handleTap()">
         <div class="envelope-wrapper">
             <img src="envelope-closed.jpg" class="envelope-img envelope-closed" alt="Envelope">
             <img src="envelope-open.jpg" class="envelope-img envelope-open" alt="Envelope Open">
             <img src="invitation-card.jpg" class="card-in-envelope" alt="Invitation">
         </div>
+        
+        <img src="invitation-card.jpg" class="card-fullscreen" alt="Invitation">
         
         <p class="tap-msg">tap to open</p>
         <button class="continue-btn" onclick="event.stopPropagation(); showContent();">Continue</button>
@@ -157,17 +187,30 @@
 
     <script>
         var responseValue = null;
-        var isOpened = false;
+        var animationStarted = false;
 
-        function openEnvelope() {
-            if (!isOpened) {
-                document.getElementById('openingScene').classList.add('opened');
-                isOpened = true;
-            }
+        function handleTap() {
+            if (animationStarted) return;
+            animationStarted = true;
+            
+            var scene = document.getElementById('scene');
+            
+            // Step 1: Open envelope (show liner) - 2 seconds
+            scene.classList.add('step1');
+            
+            setTimeout(function() {
+                // Step 2: Card slides out - 1 second
+                scene.classList.add('step2');
+                
+                setTimeout(function() {
+                    // Step 3: Card fills screen, envelope fades
+                    scene.classList.add('step3');
+                }, 1000);
+            }, 2000);
         }
 
         function showContent() {
-            document.getElementById('openingScene').classList.add('hidden');
+            document.getElementById('scene').classList.add('hidden');
             document.getElementById('mainContent').classList.add('visible');
             window.scrollTo(0, 0);
         }
