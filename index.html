@@ -223,8 +223,8 @@
 
         function sendRsvp() {
             var name = document.getElementById('guestName').value;
-            var email = '';
-            if(!name || !email || !responseValue) { alert("Please fill in all fields."); return; }
+            // email removed
+            if(!name || !responseValue) { alert("Please fill in all fields."); return; }
 
             document.getElementById('btnSubmit').disabled = true;
             document.getElementById('statusMsg').innerText = "Sending...";
