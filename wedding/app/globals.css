@@ -202,3 +202,8 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .login{max-width:360px;margin:12vh auto;padding:34px 28px;background:var(--cream) var(--grain);text-align:center}
 .savedcard{width:100%;display:block}
 .party button{font-variant-numeric:lining-nums tabular-nums}
+.turn{display:flex;flex-direction:column;gap:6px}
+.turn.host{align-items:flex-start}
+.turn.guest{align-items:flex-end}
+.log .wa{display:inline-block;padding:9px 13px;background:#5f6a4a;color:#fff9ef;border-radius:6px;font-size:16px;font-weight:600;text-decoration:none}
+.rowwa{margin-inline-start:8px;color:var(--wine);text-underline-offset:3px}

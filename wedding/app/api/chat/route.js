@@ -28,6 +28,7 @@ Rules:
 - Answer only from the facts. Never guess or invent a detail, including times, addresses, food, gifts or who is invited.
 - If a question about the wedding is not answered by the facts, say kindly that you will ask Shady and Hana, and end your message with ${ASK}.
 - You know nothing about other guests or who has replied. Never discuss them.
+- If a guest wants to reach Shady or Hana, tell them they can use the WhatsApp button below your message, and end with ${ASK}.
 - You cannot change a reply. Send guests to the reply form on the page, or to their private card if they already replied.
 - Reply only in the language of the guest's latest message, and never mix languages in one reply. If they write English, reply in English. If they write Arabic, reply in Egyptian Arabic.
 - You do not know the guest's gender. In Arabic, always address them in the polite plural (for example بيكم and نورتونا). Never use endearments such as حبيبتي or حبيبي.
@@ -37,7 +38,7 @@ Rules:
 }
 
 export async function POST(request) {
-  if (rateLimited(`chat:${clientIp(request)}`, 12, 60 * 1000)) {
+  if (await rateLimited(`chat:${clientIp(request)}`, 12, 60 * 1000)) {
     return NextResponse.json({ error: 'busy' }, { status: 429 });
   }
   const body = await request.json().catch(() => null);
@@ -66,7 +67,7 @@ For this reply: ${language}`,
     if (!text.trim()) throw new Error('empty reply');
     if (text.includes(ASK)) await addQuestion(messages.at(-1).content);
     const reply = text.replace(ASK, '').replace(/(يا\s+)?حبيبت[يى]\s*[،,!]?\s*/g, '').trim();
-    return NextResponse.json({ reply });
+    return NextResponse.json({ reply, needsCouple: text.includes(ASK) });
   } catch (err) {
     console.error('assistant failed', err?.message);
     return NextResponse.json({ error: 'unavailable' }, { status: 503 });

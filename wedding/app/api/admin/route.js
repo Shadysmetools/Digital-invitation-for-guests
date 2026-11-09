@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { COOKIE, isAdmin, passwordMatches, sessionValue } from '@/lib/auth';
+import { normalizePhone } from '@/lib/phone';
 import { clientIp, rateLimited, removeQuestion, removeReply, saveSettings } from '@/lib/store';
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
@@ -18,6 +19,7 @@ function cleanSettings(b) {
     note: text(b.note, 1500),
     maxParty: Number.isInteger(maxParty) && maxParty >= 1 && maxParty <= 10 ? maxParty : 4,
     assistantName: text(b.assistantName, 60) || 'Rehana',
+    whatsapp: normalizePhone(text(b.whatsapp, 24)) ?? '',
     persona: text(b.persona, 1500),
   };
 }
@@ -26,7 +28,7 @@ export async function POST(request) {
   const body = await request.json().catch(() => null);
 
   if (body?.action === 'login') {
-    if (rateLimited(`login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
+    if (await rateLimited(`login:${clientIp(request)}`, 10, 15 * 60 * 1000)) {
       return NextResponse.json({ error: 'busy' }, { status: 429 });
     }
     if (!passwordMatches(body.password)) return NextResponse.json({ error: 'wrong' }, { status: 401 });

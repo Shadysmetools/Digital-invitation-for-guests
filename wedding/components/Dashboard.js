@@ -2,6 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { isPhone, whatsappUrl } from '@/lib/phone';
+
+const inviteText = (reply, link) =>
+  reply.lang === 'ar'
+    ? `${reply.name}، دي دعوتكم الخاصة لفرح شادي وهنا: ${link}`
+    : `Dear ${reply.name}, here is your private invitation to Shady & Hana’s wedding: ${link}`;
 
 const admin = (payload) =>
   fetch('/api/admin', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
@@ -36,11 +42,14 @@ export default function Dashboard({ replies, settings, questions }) {
   const [form, setForm] = useState(settings);
   const [saved, setSaved] = useState('');
   const [copied, setCopied] = useState('');
+  const [origin, setOrigin] = useState('');
+
+  useEffect(() => setOrigin(location.origin), []);
 
   useEffect(() => {
     const id = setInterval(() => {
       if (document.visibilityState === 'visible') router.refresh();
-    }, 30000);
+    }, 60000);
     return () => clearInterval(id);
   }, [router]);
 
@@ -122,7 +131,7 @@ export default function Dashboard({ replies, settings, questions }) {
           <p className="empty">{replies.length ? 'No guests match that search.' : 'No replies yet. They’ll appear here as guests answer.'}</p>
         ) : (
           <table>
-            <thead><tr><th>Name</th><th>Email</th><th>Reply</th><th>People</th><th>Replied</th><th>Private link</th><th /></tr></thead>
+            <thead><tr><th>Name</th><th>Email or phone</th><th>Reply</th><th>People</th><th>Replied</th><th>Private link</th><th /></tr></thead>
             <tbody>
               {shown.map((r) => (
                 <tr key={r.id}>
@@ -131,7 +140,12 @@ export default function Dashboard({ replies, settings, questions }) {
                   <td>{r.attending ? 'Coming' : 'Can’t come'}</td>
                   <td>{r.party}</td>
                   <td>{new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td>
-                  <td><button type="button" onClick={() => copy(r)}>{copied === r.id ? 'Copied' : 'Copy'}</button></td>
+                  <td>
+                    <button type="button" onClick={() => copy(r)}>{copied === r.id ? 'Copied' : 'Copy'}</button>
+                    {isPhone(r.email) && origin && (
+                      <a className="rowwa" href={whatsappUrl(r.email, inviteText(r, `${origin}/i/${r.token}`))} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    )}
+                  </td>
                   <td><button type="button" onClick={() => remove(r)}>Remove</button></td>
                 </tr>
               ))}
@@ -148,6 +162,7 @@ export default function Dashboard({ replies, settings, questions }) {
           {field('mapUrl', 'Google Maps link', { type: 'url', placeholder: 'https://' })}
           {field('dressCode', 'Dress code')}
           {field('deadline', 'Reply by', { type: 'date' })}
+          {field('whatsapp', 'Your WhatsApp number, for guests who need you', { type: 'tel', placeholder: '2010…' })}
           {field('maxParty', 'Most people per reply', { type: 'number', min: 1, max: 10 })}
           <label>
             Anything else the assistant may tell guests

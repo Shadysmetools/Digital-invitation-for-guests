@@ -5,10 +5,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const settings = await getSettings();
-  const { time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName } = settings;
+  const { time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName, whatsapp } = settings;
   return (
     <Invitation
-      facts={{ time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName }}
+      facts={{ time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName, whatsapp }}
       closed={deadlinePassed(settings)}
       assistant={process.env.ASSISTANT_ENABLED === '1'}
     />

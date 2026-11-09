@@ -1,34 +1,23 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { del, get, list, put } from '@vercel/blob';
+import { createClient } from '@supabase/supabase-js';
 
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 
-async function read(path) {
-  const r = await get(path, { access: 'private', useCache: false });
-  if (!r || r.statusCode !== 200 || !r.stream) return null;
-  return JSON.parse(await new Response(r.stream).text());
-}
-
-function write(path, value, allowOverwrite = true) {
-  return put(path, JSON.stringify(value), {
-    access: 'private',
-    addRandomSuffix: false,
-    allowOverwrite,
-    contentType: 'application/json',
+let client;
+function db() {
+  client ??= createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }) },
   });
+  return client;
 }
 
-async function readAll(prefix) {
-  const paths = [];
-  let cursor;
-  do {
-    const page = await list({ prefix, cursor, limit: 1000 });
-    paths.push(...page.blobs.map((b) => b.pathname));
-    cursor = page.hasMore ? page.cursor : undefined;
-  } while (cursor);
-  const items = await Promise.all(paths.map(read));
-  return items.filter(Boolean);
+function must({ data, error }) {
+  if (error) throw error;
+  return data;
 }
+
+export const MAX_REPLIES = 400;
 
 export const DEFAULT_SETTINGS = {
   time: '',
@@ -38,105 +27,144 @@ export const DEFAULT_SETTINGS = {
   deadline: '',
   note: '',
   maxParty: 4,
+  whatsapp: '',
   assistantName: 'Rehana',
   persona: `Your name is Rehana (ريحانة in Arabic). You are the host of this wedding: warm, joyful and gracious, like a much-loved member of the family welcoming guests at the door. Never pushy.
 In English, be elegant and friendly. In Arabic, use natural, respectful Egyptian dialect.
 Show real happiness for Shady and Hana, and make every guest feel expected and wanted. Keep it short, with at most one emoji, only when it feels natural.`,
 };
 
+const fromRow = (r) => ({
+  id: r.id,
+  token: r.token,
+  name: r.name,
+  email: r.email,
+  attending: r.attending,
+  party: r.party,
+  lang: r.lang,
+  welcome: r.welcome,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+});
+
+const isConflict = (error, column) => error?.code === '23505' && error.message.includes(column);
+
+function welcomeTaken() {
+  return Object.assign(new Error('welcome line already used'), { code: 'WELCOME_TAKEN' });
+}
+
+let settingsCache = null;
+
 export async function getSettings() {
-  return { ...DEFAULT_SETTINGS, ...(await read('settings.json')) };
+  if (settingsCache && Date.now() - settingsCache.at < 15000) return settingsCache.value;
+  const row = must(await db().from('settings').select('data').eq('id', 1).maybeSingle());
+  const value = { ...DEFAULT_SETTINGS, ...row?.data };
+  settingsCache = { at: Date.now(), value };
+  return value;
 }
 
-export function saveSettings(settings) {
-  return write('settings.json', settings);
+export async function saveSettings(settings) {
+  must(await db().from('settings').upsert({ id: 1, data: settings }));
+  settingsCache = null;
 }
 
-/** Creates a reply. Returns null when this email has already replied. */
-export async function createReply({ name, email, attending, party, lang }) {
-  const id = sha(email);
-  const now = new Date().toISOString();
+export async function replyExists(email) {
+  return !!must(await db().from('replies').select('id').eq('id', sha(email)).maybeSingle());
+}
+
+export async function countReplies() {
+  const { count, error } = await db().from('replies').select('id', { count: 'exact', head: true });
+  if (error) throw error;
+  return count;
+}
+
+/** Creates a reply. Returns null when this email or phone has already replied. */
+export async function createReply({ name, email, attending, party, lang, welcome }) {
   const token = randomBytes(24).toString('base64url');
-  const reply = { id, token, name, email, attending, party, lang, createdAt: now, updatedAt: now };
-  try {
-    await write(`replies/${id}.json`, reply, false);
-  } catch (err) {
-    if (await read(`replies/${id}.json`)) return null;
-    throw err;
-  }
-  await write(`tokens/${sha(token)}.json`, { id });
-  return reply;
+  const { data, error } = await db()
+    .from('replies')
+    .insert({ id: sha(email), token, token_hash: sha(token), name, email, attending, party, lang, welcome })
+    .select()
+    .single();
+  if (isConflict(error, 'replies_pkey')) return null;
+  if (isConflict(error, 'welcome')) throw welcomeTaken();
+  if (error) throw error;
+  return fromRow(data);
 }
 
 export async function getReplyByToken(token) {
   if (typeof token !== 'string' || token.length < 20 || token.length > 64) return null;
-  const ref = await read(`tokens/${sha(token)}.json`);
-  return ref ? read(`replies/${ref.id}.json`) : null;
+  const row = must(await db().from('replies').select('*').eq('token_hash', sha(token)).maybeSingle());
+  return row ? fromRow(row) : null;
 }
 
-export async function updateReply(reply, changes) {
-  const next = { ...reply, ...changes, updatedAt: new Date().toISOString() };
-  await write(`replies/${reply.id}.json`, next);
-  return next;
+export async function updateReply(reply, { attending = reply.attending, party = reply.party, welcome = reply.welcome }) {
+  const { data, error } = await db()
+    .from('replies')
+    .update({ attending, party, welcome, updated_at: new Date().toISOString() })
+    .eq('id', reply.id)
+    .select()
+    .single();
+  if (isConflict(error, 'welcome')) throw welcomeTaken();
+  if (error) throw error;
+  return fromRow(data);
 }
 
 export async function listReplies() {
-  const replies = await readAll('replies/');
-  return replies.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const rows = must(await db().from('replies').select('*').order('created_at', { ascending: false }));
+  return rows.map(fromRow);
+}
+
+export async function listWelcomes() {
+  const rows = must(await db().from('replies').select('welcome').not('welcome', 'is', null));
+  return rows.map((r) => r.welcome);
 }
 
 export async function removeReply(id) {
-  if (!/^[a-f0-9]{64}$/.test(id)) return;
-  const reply = await read(`replies/${id}.json`);
-  if (!reply) return;
-  await del([`replies/${id}.json`, `tokens/${sha(reply.token)}.json`]);
+  if (/^[a-f0-9]{64}$/.test(id)) must(await db().from('replies').delete().eq('id', id));
 }
 
-export function addQuestion(question) {
+export async function addQuestion(question) {
   const id = `${Date.now()}-${randomBytes(4).toString('hex')}`;
-  return write(`questions/${id}.json`, { id, question, at: new Date().toISOString() });
+  must(await db().from('questions').insert({ id, question }));
 }
 
 export async function listQuestions() {
-  const items = await readAll('questions/');
-  return items.sort((a, b) => b.at.localeCompare(a.at));
+  const rows = must(await db().from('questions').select('*').order('at', { ascending: false }));
+  return rows.map((r) => ({ id: r.id, question: r.question, at: r.at }));
 }
 
 export async function removeQuestion(id) {
-  if (/^[0-9]+-[a-f0-9]{8}$/.test(id)) await del(`questions/${id}.json`);
+  if (/^[0-9]+-[a-f0-9]{8}$/.test(id)) must(await db().from('questions').delete().eq('id', id));
 }
 
-const CHAT_PER_MINUTE = 6;
-const CHAT_PER_VISITOR_DAY = 30;
-const CHAT_PER_DAY_TOTAL = 300;
+/** Durable, atomic limiter shared by every server. If the check fails, the request is refused. */
+export async function rateLimited(key, limit, windowMs) {
+  const { data, error } = await db().rpc('rate_hit', {
+    p_key: sha(key).slice(0, 40),
+    p_limit: limit,
+    p_window: Math.round(windowMs / 1000),
+  });
+  if (error) {
+    console.error('rate limit check failed', error.message);
+    return true;
+  }
+  return data !== true;
+}
 
-/** Durable assistant limits: per visitor per minute and day, and a total daily cap. */
+const MINUTE = 60 * 1000;
+const DAY = 24 * 60 * MINUTE;
+
+/** Assistant limits: per visitor per minute and day, then a total daily cap. */
 export async function allowChat(ip) {
-  const day = new Date().toISOString().slice(0, 10);
-  const visitorPath = `usage/${day}/${sha(ip).slice(0, 32)}.json`;
-  const totalPath = `usage/${day}.json`;
-  const [visitor, total] = await Promise.all([read(visitorPath), read(totalPath)]);
-  const now = Date.now();
-  const recent = (visitor?.recent ?? []).filter((t) => now - t < 60 * 1000);
-  const count = visitor?.count ?? 0;
-  const totalCount = total?.count ?? 0;
-  if (recent.length >= CHAT_PER_MINUTE || count >= CHAT_PER_VISITOR_DAY || totalCount >= CHAT_PER_DAY_TOTAL) return false;
-  await Promise.all([
-    write(visitorPath, { count: count + 1, recent: [...recent, now] }),
-    write(totalPath, { count: totalCount + 1 }),
-  ]);
-  return true;
+  if (await rateLimited(`chat-minute:${ip}`, 6, MINUTE)) return false;
+  if (await rateLimited(`chat-day:${ip}`, 40, DAY)) return false;
+  return !(await rateLimited('chat-total', 300, DAY));
 }
 
-const hits = new Map();
-
-/** Per-instance limiter: a first line of defence against bursts. */
-export function rateLimited(key, limit, windowMs) {
-  const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs);
-  recent.push(now);
-  hits.set(key, recent);
-  return recent.length > limit;
+/** Caps AI card lines per day; past this, cards use the hand-written pool. */
+export async function allowCardMessage() {
+  return !(await rateLimited('card-total', 500, DAY));
 }
 
 export function clientIp(request) {

@@ -5,7 +5,23 @@ import { COPY, hasArabic } from '@/lib/copy';
 
 const fit = (name) => (name.length <= 14 ? 52 : name.length <= 22 ? 40 : name.length <= 32 ? 31 : 25);
 
-async function renderCard(t, name, attending, rtl) {
+function wrap(c, text, max) {
+  const lines = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && c.measureText(next).width > max) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = next;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+async function renderCard(t, name, message, rtl) {
   const W = 1080;
   const H = 1512;
   const canvas = document.createElement('canvas');
@@ -46,12 +62,20 @@ async function renderCard(t, name, attending, rtl) {
   c.direction = hasArabic(name) ? 'rtl' : 'ltr';
   line(name, 790, `${size}px ${nameFont}`);
   c.direction = rtl ? 'rtl' : 'ltr';
-  line(attending ? t.cardYes : t.cardNo, 930, `${rtl ? '' : 'italic '}56px ${body}`);
+  const font = `${rtl ? '' : 'italic '}52px ${body}`;
+  c.font = font;
+  c.letterSpacing = '0px';
+  const lines = wrap(c, message, W - 260);
+  let y = 915;
+  for (const l of lines) {
+    line(l, y, font);
+    y += 72;
+  }
   c.fillStyle = '#a98a78';
-  c.fillRect(W / 2 - 70, 1000, 140, 2);
+  c.fillRect(W / 2 - 70, y, 140, 2);
   c.fillStyle = '#4a0e15';
-  line(t.names, 1110, `600 ${rtl ? 46 : 36}px ${body}`, '9px');
-  line(`${t.dateCaps} · ${t.place}`, 1180, `500 ${rtl ? 44 : 34}px ${body}`, '7px');
+  line(t.names, y + 105, `600 ${rtl ? 46 : 36}px ${body}`, '9px');
+  line(`${t.dateCaps} · ${t.place}`, y + 175, `500 ${rtl ? 44 : 34}px ${body}`, '7px');
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }
 
@@ -61,6 +85,7 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
   const [attending, setAttending] = useState(guest.attending);
   const [party, setParty] = useState(guest.party || 1);
   const [current, setCurrent] = useState(guest.attending);
+  const [welcome, setWelcome] = useState(guest.welcome);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -71,8 +96,10 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
     document.documentElement.dir = t.dir;
   }, [guest.lang, t.dir]);
 
+  const line = welcome || (current ? t.cardYes : t.cardNo);
+
   async function save() {
-    const blob = await renderCard(t, guest.name, current, rtl);
+    const blob = await renderCard(t, guest.name, line, rtl);
     const file = new File([blob], 'shady-and-hana-invitation.png', { type: 'image/png' });
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file] }).catch(() => {});
@@ -96,6 +123,8 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
         body: JSON.stringify({ attending, party: attending ? party : 0 }),
       });
       if (!res.ok) throw new Error('failed');
+      const data = await res.json();
+      setWelcome(data.welcome);
       setCurrent(attending);
       setEditing(false);
       setMessage(t.saved);
@@ -111,7 +140,7 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
         <img src="/art/seal.png" alt="" />
         <div className="rs">{t.cardFor}</div>
         <div className={`gn ${hasArabic(guest.name) ? 'ar' : ''}`} dir="auto" style={{ '--fit': `${fit(guest.name)}px` }}>{guest.name}</div>
-        <div className="m">{current ? t.cardYes : t.cardNo}</div>
+        <div className="m" dir="auto">{line}</div>
         <div className="bar" />
         <div className="rs">{t.names}</div>
         <div className="rs" style={{ marginTop: 8, fontWeight: 500 }}>{t.dateCaps} · {t.place}</div>

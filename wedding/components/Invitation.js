@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { COPY } from '@/lib/copy';
+import { whatsappUrl } from '@/lib/phone';
 
 const useIso = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const OPEN_MS = 6000; // sections must exist before the RSVP button appears at 6.05s
@@ -182,7 +183,7 @@ export default function Invitation({ facts, closed, assistant }) {
         <>
           <Details t={t} facts={facts} />
           <Rsvp t={t} lang={lang} max={facts.maxParty} closed={closed} />
-          {assistant && <Chat t={t} name={facts.assistantName} />}
+          {assistant && <Chat t={t} name={facts.assistantName} whatsapp={facts.whatsapp} />}
         </>
       )}
     </main>
@@ -259,7 +260,7 @@ function Rsvp({ t, lang, max, closed }) {
           <p className="sub">{t.rsvpSub}</p>
           <form onSubmit={submit}>
             <label>{t.name}<input name="name" required maxLength={80} autoComplete="name" /></label>
-            <label>{t.email}<input name="email" type="email" required maxLength={254} autoComplete="email" dir="ltr" /></label>
+            <label>{t.email}<input name="email" type="text" required maxLength={254} autoComplete="off" dir="ltr" /></label>
             <input className="trap" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
             <div className="choice" role="radiogroup" aria-label={t.rsvp}>
               <button type="button" role="radio" aria-checked={attending} className={attending ? 'on' : ''} onClick={() => setAttending(true)}>{t.yes}</button>
@@ -284,7 +285,7 @@ function Rsvp({ t, lang, max, closed }) {
   );
 }
 
-function Chat({ t, name }) {
+function Chat({ t, name, whatsapp }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -310,9 +311,14 @@ function Chat({ t, name }) {
         body: JSON.stringify({ messages: next.slice(-8) }),
       });
       const data = await res.json();
-      setMessages([...next, { role: 'assistant', content: res.ok && data.reply ? data.reply : res.status === 429 ? t.chatLimit : t.chatError }]);
+      const answered = res.ok && data.reply;
+      setMessages([...next, {
+        role: 'assistant',
+        content: answered ? data.reply : res.status === 429 ? t.chatLimit : t.chatError,
+        contactFor: !answered || data.needsCouple ? text : undefined,
+      }]);
     } catch {
-      setMessages([...next, { role: 'assistant', content: t.chatError }]);
+      setMessages([...next, { role: 'assistant', content: t.chatError, contactFor: text }]);
     }
     setBusy(false);
   }
@@ -323,7 +329,14 @@ function Chat({ t, name }) {
       <header><strong>{name}</strong><button type="button" onClick={() => setOpen(false)}>{t.chatClose}</button></header>
       <div className="log" ref={log} aria-live="polite">
         <p className="a">{t.chatHello}</p>
-        {messages.map((m, i) => <p key={i} className={m.role === 'user' ? 'u' : 'a'} dir="auto">{m.content}</p>)}
+        {messages.map((m, i) => (
+          <div key={i} className={m.role === 'user' ? 'turn guest' : 'turn host'}>
+            <p className={m.role === 'user' ? 'u' : 'a'} dir="auto">{m.content}</p>
+            {m.contactFor && whatsapp && (
+              <a className="wa" href={whatsappUrl(whatsapp, `${t.chatWaText}${m.contactFor}`)} target="_blank" rel="noopener noreferrer">{t.chatWa}</a>
+            )}
+          </div>
+        ))}
         {busy && <p className="a typing">…</p>}
       </div>
       <form onSubmit={send}>
