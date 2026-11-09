@@ -161,3 +161,14 @@ Animation library choice, exact schema, component structure, Arabic font choice,
 5. Hana's email for the dashboard.
 6. Image API key for final art. Gemini or OpenAI.
 7. Music: which track, and does Shady hold the right to use it?
+
+## As built (2026-11-09)
+
+Live at https://shady-hana-wedding.vercel.app on the personal Vercel Hobby scope. Differences from the plan above:
+
+- Supabase free plan holds all data; rate limits are durable via the `rate_hit` function.
+- Dashboard uses one shared password in `DASHBOARD_PASSWORD`, not email links.
+- No email is sent. Guests may reply with an email or a phone number; the private card opens on screen, and the dashboard has one-tap WhatsApp sending.
+- Assistant is Rehana on `google/gemini-2.5-flash` through AI Gateway free credit (`ASSISTANT_MODEL` overrides it).
+- Each card carries a unique AI line with a hand-written fallback, enforced by a unique database index.
+- Replies are capped at 400. Art is still cut from the theme image.

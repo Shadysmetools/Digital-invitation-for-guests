@@ -45,7 +45,7 @@ async function renderCard(t, name, message, rtl) {
   c.strokeRect(62, 62, W - 124, H - 124);
 
   const seal = new Image();
-  seal.src = '/art/seal.png';
+  seal.src = '/art/seal.webp';
   await seal.decode();
   const sw = 190;
   c.drawImage(seal, (W - sw) / 2, 300, sw, (sw * seal.height) / seal.width);
@@ -137,7 +137,7 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
   return (
     <main className="private">
       <article className="card">
-        <img src="/art/seal.png" alt="" />
+        <img src="/art/seal.webp" alt="" />
         <div className="rs">{t.cardFor}</div>
         <div className={`gn ${hasArabic(guest.name) ? 'ar' : ''}`} dir="auto" style={{ '--fit': `${fit(guest.name)}px` }}>{guest.name}</div>
         <div className="m" dir="auto">{line}</div>

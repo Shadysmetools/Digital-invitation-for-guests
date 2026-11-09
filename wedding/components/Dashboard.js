@@ -26,6 +26,7 @@ export function Login() {
 
   return (
     <main className="login">
+      <h1>Shady &amp; Hana</h1>
       <form onSubmit={submit}>
         <label>Dashboard password<input name="password" type="password" required autoComplete="current-password" /></label>
         <button className="primary">Sign in</button>

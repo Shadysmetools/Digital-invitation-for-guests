@@ -5,6 +5,7 @@ import { COPY } from '@/lib/copy';
 import { whatsappUrl } from '@/lib/phone';
 
 const useIso = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+const FIT_NOW = "(function(){var e=document.querySelector('.stage'),w=innerWidth,h=innerHeight,c=Math.min(w,h*.62,480);if(h/(c/360)<660)c=h/660*360;var s=c/360;e.style.setProperty('--h',h/s+'px');document.documentElement.style.setProperty('--column',c+'px');e.style.transform='scale('+s+')';e.style.visibility='visible'})()";
 const OPEN_MS = 6000; // sections must exist before the RSVP button appears at 6.05s
 const DOVE = 'M0 8C8 2 16 3 22 8C26 0 32-7 44-10C39-3 36 5 30 11C37 11 42 13 46 17C36 16 28 18 21 16C12 18 5 14 0 8Z';
 
@@ -88,20 +89,11 @@ export default function Invitation({ facts, closed, assistant }) {
           ref={stage}
           className={`stage ${started ? 'play' : ''} ${mode === 'done' ? 'done' : ''}`}
           onClick={open}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              open();
-            }
-          }}
-          role={started ? undefined : 'button'}
-          tabIndex={started ? undefined : 0}
-          aria-label={started ? undefined : t.tap}
         >
           <div className="prop tile" />
           <div className="prop damask" />
-          <img className="prop pom" src="/art/pomegranate.png" alt="" />
-          <img className="prop lily" src="/art/lily.png" alt="" />
+          <img className="prop pom" src="/art/pomegranate.webp" alt="" />
+          <img className="prop lily" src="/art/lily.webp" alt="" />
 
           <div className="env">
             <div className="back" />
@@ -113,17 +105,13 @@ export default function Invitation({ facts, closed, assistant }) {
               <defs>
                 <linearGradient id="pk" x1="0" y1="0" x2=".15" y2="1"><stop offset="0" stopColor="#6b1a23" /><stop offset="1" stopColor="#520f17" /></linearGradient>
                 <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6d1b24" /><stop offset="1" stopColor="#7c222c" /></linearGradient>
-                <filter id="pg" x="0" y="0" width="100%" height="100%">
-                  <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" result="n" />
-                  <feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .34 -.03" result="d" />
-                  <feComposite in="d" in2="SourceAlpha" operator="in" result="g" />
-                  <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="g" /></feMerge>
-                </filter>
+                <pattern id="gr" width="140" height="140" patternUnits="userSpaceOnUse"><image href="/art/grain.webp" width="140" height="140" /></pattern>
                 <pattern id="lp" width="150" height="132" patternUnits="userSpaceOnUse">
-                  <image href="/art/liner.jpg" width="150" height="132" preserveAspectRatio="xMidYMid slice" />
+                  <image href="/art/liner.webp" width="150" height="132" preserveAspectRatio="xMidYMid slice" />
                 </pattern>
               </defs>
-              <polygon points="0,0 156,104 312,0 312,232 0,232" fill="url(#pk)" filter="url(#pg)" />
+              <polygon points="0,0 156,104 312,0 312,232 0,232" fill="url(#pk)" />
+              <polygon points="0,0 156,104 312,0 312,232 0,232" fill="url(#gr)" />
               <path d="M0 232L156 104L312 232" fill="none" stroke="#3a0a10" strokeOpacity=".5" />
             </svg>
             <div className="foil">
@@ -140,15 +128,16 @@ export default function Invitation({ facts, closed, assistant }) {
               </i>
               <i className="out">
                 <svg viewBox="0 0 312 122" width="312" height="122" aria-hidden="true">
-                  <polygon points="0,0 312,0 156,122" fill="url(#fl)" filter="url(#pg)" />
+                  <polygon points="0,0 312,0 156,122" fill="url(#fl)" />
+                  <polygon points="0,0 312,0 156,122" fill="url(#gr)" />
                   <path d="M0 .5L156 122.500L312 .5" fill="none" stroke="#2a060b" strokeOpacity=".5" />
                 </svg>
               </i>
             </div>
             <div className="sheen" />
-            <img className="seal" src="/art/seal.png" alt="" />
+            <img className="seal" src="/art/seal.webp" alt="" />
           </div>
-          <div className="hint">{t.tap}</div>
+          <button type="button" className="hint" disabled={started}>{t.tap}</button>
 
           <div className="full">
             <div className="band" />
@@ -162,8 +151,8 @@ export default function Invitation({ facts, closed, assistant }) {
               <div className="place" style={{ '--d': '5.6s' }}>{t.place}</div>
               <a className="cta" style={{ '--d': '6.05s' }} href="#rsvp" onClick={(e) => e.stopPropagation()}>{t.cta}</a>
             </div>
-            <div className="edge p"><img src="/art/pomegranate.png" alt="" /></div>
-            <div className="edge l"><img src="/art/lily.png" alt="" /></div>
+            <div className="edge p"><img src="/art/pomegranate.webp" alt="" /></div>
+            <div className="edge l"><img src="/art/lily.webp" alt="" /></div>
             <svg className="dove" viewBox="0 -12 48 32" aria-hidden="true"><path d={DOVE} /></svg>
             <svg className="dove two" viewBox="0 -12 48 32" aria-hidden="true"><path d={DOVE} /></svg>
             <div className="cover">
@@ -177,6 +166,7 @@ export default function Invitation({ facts, closed, assistant }) {
           <button type="button" className="icon lang" onClick={toggleLang} aria-label="English / العربية">{t.switchTo}</button>
           {!finished && <button type="button" className="icon skip" onClick={skip}>{t.skip}</button>}
         </div>
+        <script dangerouslySetInnerHTML={{ __html: FIT_NOW }} />
       </div>
 
       {finished && (
