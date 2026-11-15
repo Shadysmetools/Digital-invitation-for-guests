@@ -226,3 +226,53 @@ html,body{background:#e9dcc6}
 .invite .sheet h2{color:#8e1f2c}
 .herocta{margin:14px 22px;background:#8e1f2c}
 .chatopen{background:#8e1f2c}
+
+/* motion */
+.invite{position:relative;overflow:hidden}
+.invite::before,.invite::after{content:"";position:absolute;top:-28px;bottom:0;width:12px;z-index:0;pointer-events:none;background:repeating-linear-gradient(180deg,#9aa45a 0 14px,#efe2cf 14px 28px);animation:stripes 2.4s linear infinite}
+.invite::before{left:0}
+.invite::after{right:0;animation-direction:reverse}
+@keyframes stripes{to{transform:translateY(28px)}}
+.invite>*{position:relative;z-index:1}
+.invite .hero{z-index:2}
+.reveal{opacity:0;transform:translateY(34px) scale(.985);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal h2{clip-path:inset(-20% 100% -20% 0);transition:clip-path 1.2s .25s cubic-bezier(.4,.1,.3,1)}
+.reveal.in h2{clip-path:inset(-20% -5% -20% -5%)}
+[dir=rtl] .reveal h2{clip-path:inset(-20% 0 -20% 100%)}
+[dir=rtl] .reveal.in h2{clip-path:inset(-20% -5% -20% -5%)}
+.reveal .facts>div,.reveal form>*,.reveal .cd>div{opacity:0;transform:translateY(14px);transition:opacity .7s,transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in .facts>div,.reveal.in form>*,.reveal.in .cd>div{opacity:1;transform:none}
+.reveal.in :is(.facts,form,.cd)>:nth-child(1){transition-delay:.35s}
+.reveal.in :is(.facts,form,.cd)>:nth-child(2){transition-delay:.45s}
+.reveal.in :is(.facts,form,.cd)>:nth-child(3){transition-delay:.55s}
+.reveal.in :is(.facts,form,.cd)>:nth-child(4){transition-delay:.65s}
+.reveal.in :is(.facts,form,.cd)>:nth-child(5){transition-delay:.75s}
+.reveal.in :is(.facts,form,.cd)>:nth-child(n+6){transition-delay:.85s}
+.cd b{animation:flip .55s cubic-bezier(.16,1,.3,1)}
+@keyframes flip{from{transform:rotateX(80deg) translateY(-6px);opacity:.2}to{transform:none;opacity:1}}
+.cd div{perspective:300px}
+.herocta,.primary,.chatopen{position:relative;overflow:hidden}
+.herocta::after,.primary::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,#fff5 50%,transparent 65%);transform:translateX(-120%);animation:shine 3.8s 1.5s ease-in-out infinite;pointer-events:none}
+@keyframes shine{0%{transform:translateX(-120%)}35%,100%{transform:translateX(120%)}}
+.herocta{animation:breathe2 3.2s ease-in-out infinite}
+@keyframes breathe2{50%{transform:scale(1.025)}}
+.chatopen{animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.choice button,.party button,.secondary{transition:transform .2s,background-color .25s,color .25s}
+.choice button:active,.party button:active,.primary:active,.secondary:active{transform:scale(.96)}
+.sparkles{position:absolute;inset:0;z-index:0;pointer-events:none}
+.spark{position:absolute;width:12px;fill:#8e1f2c;opacity:.55;animation:twinkle 4.5s ease-in-out infinite}
+.spark:nth-child(odd){left:22px}
+.spark:nth-child(even){right:22px}
+.spark.s1{animation-delay:-1.2s;width:9px}
+.spark.s2{animation-delay:-2.4s;fill:#9aa45a}
+.spark.s3{animation-delay:-3.3s;width:10px}
+@keyframes twinkle{0%,100%{transform:translateY(0) rotate(0) scale(.8);opacity:.25}50%{transform:translateY(-14px) rotate(45deg) scale(1.15);opacity:.8}}
+.log .turn{animation:pop .45s cubic-bezier(.16,1,.3,1)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.card{animation:rise .9s cubic-bezier(.16,1,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .invite::before,.invite::after,.herocta,.herocta::after,.primary::after,.chatopen,.spark,.cd b,.log .turn{animation:none!important}
+  .reveal,.reveal *{transition:none!important;opacity:1!important;transform:none!important;clip-path:none!important}
+}

@@ -59,6 +59,7 @@ export default function Invitation({ facts, closed, assistant }) {
 
   useEffect(() => () => clearTimeout(timer.current), []);
 
+
   function open() {
     if (mode !== 'idle') return;
     setMode('play');
@@ -91,6 +92,24 @@ export default function Invitation({ facts, closed, assistant }) {
   const started = mode !== 'idle';
   const finished = mode === 'done' || mode === 'done2';
 
+  useEffect(() => {
+    if (!finished || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const items = [...document.querySelectorAll('.invite .sheet, .herocta')];
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    for (const el of items) {
+      el.classList.add('reveal');
+      io.observe(el);
+    }
+    return () => io.disconnect();
+  }, [finished, lang]);
+
   return (
     <main className="invite">
       <section className="hero">
@@ -111,6 +130,11 @@ export default function Invitation({ facts, closed, assistant }) {
         </button>
       </section>
       <a className="primary herocta" href="#rsvp">{t.cta}</a>
+      <div className="sparkles" aria-hidden="true">
+        {[8, 22, 37, 51, 66, 80, 93].map((top, i) => (
+          <svg key={top} className={`spark s${i % 4}`} style={{ top: `${top}%` }} viewBox="0 0 20 20"><path d="M10 0L12.5 7.5L20 10L12.5 12.5L10 20L7.5 12.5L0 10L7.5 7.5Z" /></svg>
+        ))}
+      </div>
 
       {finished && (
         <>
@@ -151,7 +175,7 @@ function Countdown({ t, time }) {
       ) : (
         <div className="cd">
           {parts.map((n, i) => (
-            <div key={t.units[i]}><b>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
+            <div key={t.units[i]}><b key={n}>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
           ))}
         </div>
       )}
