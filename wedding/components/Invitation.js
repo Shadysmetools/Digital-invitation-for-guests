@@ -25,17 +25,19 @@ export default function Invitation({ facts, closed, assistant }) {
   const stage = useRef(null);
   const timer = useRef(null);
   const [lang, setLang] = useState('en');
-  const [mode, setMode] = useState('idle'); // idle, play, done
+  const [mode, setMode] = useState('done');
+  const video = useRef(null);
+  const [muted, setMuted] = useState(true);
   const t = COPY[lang];
 
   useIso(() => {
     const el = stage.current;
     let width = window.innerWidth;
-    fitStage(el);
+    if (el) fitStage(el);
     const onResize = () => {
       if (window.innerWidth === width) return; // mobile URL bar and keyboard only change height
       width = window.innerWidth;
-      fitStage(el);
+      if (el) fitStage(el);
     };
     window.addEventListener('resize', onResize);
 
@@ -43,7 +45,6 @@ export default function Invitation({ facts, closed, assistant }) {
     setLang(stored === 'ar' || stored === 'en' ? stored : navigator.language?.startsWith('ar') ? 'ar' : 'en');
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const slow = ['slow-2g', '2g'].includes(navigator.connection?.effectiveType);
-    if (localStorage.getItem('opened') || reduce || slow) setMode('done');
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
@@ -72,6 +73,14 @@ export default function Invitation({ facts, closed, assistant }) {
     setMode('done');
   }
 
+  function toggleSound() {
+    const v = video.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    if (!v.muted) v.play().catch(() => {});
+    setMuted(v.muted);
+  }
+
   function toggleLang(e) {
     e.stopPropagation();
     const next = lang === 'en' ? 'ar' : 'en';
@@ -84,90 +93,24 @@ export default function Invitation({ facts, closed, assistant }) {
 
   return (
     <main className="invite">
-      <div className="stagewrap">
-        <div
-          ref={stage}
-          className={`stage ${started ? 'play' : ''} ${mode === 'done' ? 'done' : ''}`}
-          onClick={open}
-        >
-          <div className="prop tile" />
-          <div className="prop damask" />
-          <img className="prop pom" src="/art/pomegranate.webp" alt="" />
-          <img className="prop lily" src="/art/lily.webp" alt="" />
-
-          <div className="env">
-            <div className="back" />
-            <div className="inner">
-              <div className="of">{t.weddingOf}</div>
-              <div className="nm">{t.names}</div>
-            </div>
-            <svg className="pocket" viewBox="0 0 312 232" aria-hidden="true">
-              <defs>
-                <linearGradient id="pk" x1="0" y1="0" x2=".15" y2="1"><stop offset="0" stopColor="#6b1a23" /><stop offset="1" stopColor="#520f17" /></linearGradient>
-                <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#6d1b24" /><stop offset="1" stopColor="#7c222c" /></linearGradient>
-                <pattern id="gr" width="140" height="140" patternUnits="userSpaceOnUse"><image href="/art/grain.webp" width="140" height="140" /></pattern>
-                <pattern id="lp" width="150" height="132" patternUnits="userSpaceOnUse">
-                  <image href="/art/liner.webp" width="150" height="132" preserveAspectRatio="xMidYMid slice" />
-                </pattern>
-              </defs>
-              <polygon points="0,0 156,104 312,0 312,232 0,232" fill="url(#pk)" />
-              <polygon points="0,0 156,104 312,0 312,232 0,232" fill="url(#gr)" />
-              <path d="M0 232L156 104L312 232" fill="none" stroke="#3a0a10" strokeOpacity=".5" />
-            </svg>
-            <div className="foil">
-              <b>{t.names}</b>
-              <span>{t.dateCaps}</span>
-            </div>
-            <div className="flap">
-              <i className="in">
-                <svg viewBox="0 0 312 122" width="312" height="122" aria-hidden="true">
-                  <polygon points="0,0 312,0 156,122" fill="#5e141c" />
-                  <polygon points="17,0 295,0 156,108" fill="url(#lp)" />
-                  <polygon points="17,0 295,0 156,108" fill="none" stroke="#c9a266" strokeOpacity=".55" />
-                </svg>
-              </i>
-              <i className="out">
-                <svg viewBox="0 0 312 122" width="312" height="122" aria-hidden="true">
-                  <polygon points="0,0 312,0 156,122" fill="url(#fl)" />
-                  <polygon points="0,0 312,0 156,122" fill="url(#gr)" />
-                  <path d="M0 .5L156 122.500L312 .5" fill="none" stroke="#2a060b" strokeOpacity=".5" />
-                </svg>
-              </i>
-            </div>
-            <div className="sheen" />
-            <img className="seal" src="/art/seal.webp" alt="" />
-          </div>
-          <button type="button" className="hint" disabled={started}>{t.tap}</button>
-
-          <div className="full">
-            <div className="band" />
-            <div className="arch" />
-            <div className="text">
-              <div className="o1" style={{ '--d': '3.05s' }}>{t.invited}</div>
-              <div className="o2" style={{ '--d': '3.45s' }}>{t.weddingOf}</div>
-              <div className="names" style={{ '--d': '3.85s' }}>{t.names}</div>
-              <div className="rule" style={{ '--d': '4.95s' }} />
-              <div className="date" style={{ '--d': '5.15s' }}>{t.dateLong}</div>
-              <div className="place" style={{ '--d': '5.6s' }}>{t.place}</div>
-              <a className="cta" style={{ '--d': '6.05s' }} href="#rsvp" onClick={(e) => e.stopPropagation()}>{t.cta}</a>
-            </div>
-            <div className="edge p"><img src="/art/pomegranate.webp" alt="" /></div>
-            <div className="edge l"><img src="/art/lily.webp" alt="" /></div>
-            <svg className="dove" viewBox="0 -12 48 32" aria-hidden="true"><path d={DOVE} /></svg>
-            <svg className="dove two" viewBox="0 -12 48 32" aria-hidden="true"><path d={DOVE} /></svg>
-            <div className="cover">
-              <div className="covertext">
-                <div className="of">{t.weddingOf}</div>
-                <div className="nm">{t.names}</div>
-              </div>
-            </div>
-          </div>
-
-          <button type="button" className="icon lang" onClick={toggleLang} aria-label="English / العربية">{t.switchTo}</button>
-          {!finished && <button type="button" className="icon skip" onClick={skip}>{t.skip}</button>}
-        </div>
-        <script dangerouslySetInnerHTML={{ __html: FIT_NOW }} />
-      </div>
+      <section className="hero">
+        <video
+          ref={video}
+          src="/invitation.mp4"
+          poster="/invitation-poster.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label={`${t.weddingOf} ${t.names} · ${t.dateLong} · ${t.place}`}
+        />
+        <button type="button" className="icon lang" onClick={toggleLang} aria-label="English / العربية">{t.switchTo}</button>
+        <button type="button" className="icon sound" onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? 'Sound on' : 'Sound off'}>
+          {muted ? '♪ off' : '♪ on'}
+        </button>
+      </section>
+      <a className="primary herocta" href="#rsvp">{t.cta}</a>
 
       {finished && (
         <>

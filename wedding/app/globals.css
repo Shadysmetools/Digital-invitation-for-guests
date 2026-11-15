@@ -215,3 +215,14 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .cd span{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
 [dir=rtl] .cd span{letter-spacing:0;font-size:15px}
 [dir=rtl] .cd b{font-family:var(--f-arabic),serif}
+.hero{position:relative;background:#efe2cf}
+.hero video{display:block;width:100%;height:auto;aspect-ratio:464/848;object-fit:cover}
+.hero .icon.sound{right:16px;left:auto}
+.herocta{margin:14px;width:auto}
+/* video palette for everything below the video */
+html,body{background:#e9dcc6}
+.invite{background:#efe2cf;box-shadow:none;background-image:repeating-linear-gradient(180deg,#9aa45a 0 14px,#efe2cf 14px 28px),repeating-linear-gradient(180deg,#9aa45a 0 14px,#efe2cf 14px 28px);background-size:12px 100%,12px 100%;background-position:left top,right top;background-repeat:no-repeat}
+.invite .sheet{margin:0 22px;background:#f4ebdc}
+.invite .sheet h2{color:#8e1f2c}
+.herocta{margin:14px 22px;background:#8e1f2c}
+.chatopen{background:#8e1f2c}
