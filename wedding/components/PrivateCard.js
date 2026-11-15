@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { CardFrame, DiamondColumn, SealArt } from '@/components/CardArt';
 import { COPY, hasArabic } from '@/lib/copy';
+import { whatsappUrl } from '@/lib/phone';
 
 const fit = (name) => (name.length <= 14 ? 52 : name.length <= 22 ? 40 : name.length <= 32 ? 31 : 25);
 
@@ -116,7 +117,7 @@ async function renderCard({ t, ev, name, message, rtl, art }) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 }
 
-export default function PrivateCard({ token, event, guest, maxParty, closed, googleUrl }) {
+export default function PrivateCard({ token, event, guest, maxParty, closed, googleUrl, companions: initialCompanions = [], companion = false }) {
   const t = COPY[guest.lang === 'ar' ? 'ar' : 'en'];
   const ev = event[guest.lang === 'ar' ? 'ar' : 'en'];
   const rtl = t.dir === 'rtl';
@@ -129,6 +130,8 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
   const [busy, setBusy] = useState(false);
   const [image, setImage] = useState('');
   const [open, setOpen] = useState(false);
+  const [companions, setCompanions] = useState(initialCompanions);
+  const [names, setNames] = useState(() => initialCompanions.reduce((list, c) => { list[c.slot] = c.name; return list; }, []));
   const [settled, setSettled] = useState(false);
   const art = useRef(null);
   const timer = useRef(null);
@@ -154,6 +157,7 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
   }
 
   const line = welcome || (current ? t.cardYes : t.cardNo);
+  const num = new Intl.NumberFormat(guest.lang === 'ar' ? 'ar-EG' : 'en-GB');
   const size = sizes(rtl, guest.name);
   const cq = (v) => `${v}cqw`;
 
@@ -179,11 +183,12 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
       const res = await fetch(`/api/rsvp/${token}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ attending, party: attending ? party : 0 }),
+        body: JSON.stringify({ attending, party: attending ? party : 0, guestNames: attending ? Array.from({ length: Math.min(party - 1, 20) }, (_, i) => names[i] ?? '') : [] }),
       });
       if (!res.ok) throw new Error('failed');
       const data = await res.json();
       setWelcome(data.welcome);
+      setCompanions(data.companions ?? []);
       setCurrent(attending);
       setEditing(false);
       setMessage(t.saved);
@@ -226,7 +231,7 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
         <button type="button" className="primary" onClick={save}>{t.save}</button>
         {current && <a className="secondary" href={googleUrl} target="_blank" rel="noopener noreferrer">{t.google}</a>}
         {current && <a className="secondary" href={`/calendar.ics?event=${event.key}`}>{t.apple}</a>}
-        {!closed && !editing && <button type="button" className="secondary" onClick={() => { setEditing(true); setMessage(''); }}>{t.change}</button>}
+        {!companion && !closed && !editing && <button type="button" className="secondary" onClick={() => { setEditing(true); setMessage(''); }}>{t.change}</button>}
         {editing && (
           <div>
             <div className="choice" role="radiogroup" aria-label={t.rsvp}>
@@ -235,12 +240,16 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
             </div>
             {attending && (
               <div className="party">
-                <span>{t.party}</span>
-                <div>
-                  {Array.from({ length: maxParty }, (_, i) => i + 1).map((n) => (
-                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{maxParty === 2 ? (n === 1 ? t.justMe : t.plusOne) : n}</button>
-                  ))}
-                </div>
+                <label>{t.party}
+                  <select value={party} onChange={(e) => setParty(Number(e.target.value))}>
+                    {Array.from({ length: maxParty }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n === 1 ? t.justMe : num.format(n - 1)}</option>)}
+                  </select>
+                </label>
+                {Array.from({ length: Math.min(party - 1, 20) }, (_, i) => (
+                  <label key={i}>{t.guestName.replace('{n}', num.format(i + 1))}
+                    <input value={names[i] ?? ''} maxLength={80} autoComplete="off" dir="auto" onChange={(e) => setNames((list) => { const next = [...list]; next[i] = e.target.value; return next; })} />
+                  </label>
+                ))}
               </div>
             )}
             <button type="button" className="primary" disabled={busy} onClick={update}>{busy ? t.sending : t.update}</button>
@@ -248,8 +257,41 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
         )}
         {image && <img className="savedcard" src={image} alt={guest.name} />}
         {message && <p className="msg" role="status">{message}</p>}
-        <p className="keep">{t.keep}</p>
+        {!companion && <p className="keep">{t.keep}</p>}
       </section>
+      {!companion && current && companions.length > 0 && <GuestCards t={t} ev={ev} companions={companions} />}
     </main>
+  );
+}
+
+function GuestCards({ t, ev, companions }) {
+  const [origin, setOrigin] = useState('');
+  const [copied, setCopied] = useState('');
+  useEffect(() => setOrigin(location.origin), []);
+  const link = (c) => `${origin}/c/${c.token}`;
+  async function copy(c) {
+    await navigator.clipboard?.writeText(link(c)).catch(() => {});
+    setCopied(c.token);
+    setTimeout(() => setCopied(''), 1500);
+  }
+  return (
+    <section className="actions guests">
+      <h2>{t.forGuests}</h2>
+      <p className="keep">{t.forGuestsSub}</p>
+      <ul>
+        {companions.map((c) => (
+          <li key={c.token}>
+            <span className="gname" dir="auto">{c.name}</span>
+            <span className="gbtns">
+              <a className="secondary" href={`/c/${c.token}`} target="_blank" rel="noopener noreferrer">{t.openGuestCard}</a>
+              {origin && (
+                <a className="secondary wa" href={whatsappUrl('', t.waInvite.replace('{name}', c.name).replace('{event}', ev.waName).replace('{link}', link(c)))} target="_blank" rel="noopener noreferrer">{t.shareWa}</a>
+              )}
+              <button type="button" className="secondary" onClick={() => copy(c)}>{copied === c.token ? t.copied : t.copyLink}</button>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

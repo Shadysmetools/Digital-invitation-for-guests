@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import PrivateCard from '@/components/PrivateCard';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { getEvent } from '@/lib/events';
+import { publicCompanions } from '@/lib/companions';
 import { deadlinePassed, getReplyByToken, getSettings, updateReply } from '@/lib/store';
 import { withUniqueWelcome } from '@/lib/welcome';
 
@@ -23,6 +24,7 @@ export default async function Page({ params }) {
       token={token}
       event={{ key, en, ar }}
       guest={{ name: reply.name, attending: reply.attending, party: reply.party, lang: reply.lang, welcome: reply.welcome }}
+      companions={reply.attending ? publicCompanions(reply.companions) : []}
       maxParty={settings.maxParty}
       closed={deadlinePassed(settings)}
       googleUrl={googleCalendarUrl(settings, getEvent(reply.event))}

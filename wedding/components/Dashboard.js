@@ -156,7 +156,10 @@ export default function Dashboard({ replies, settings, questions }) {
             <tbody>
               {shown.map((r) => (
                 <tr key={r.id}>
-                  <td dir="auto">{r.name}</td>
+                  <td dir="auto">
+                    {r.name}
+                    {r.companions?.length > 0 && <small className="comp">+ {r.companions.map((c) => c.name).join(', ')}</small>}
+                  </td>
                   <td>{label(r)}</td>
                   <td>{r.email}</td>
                   <td>{r.attending ? 'Coming' : 'Can’t come'}</td>

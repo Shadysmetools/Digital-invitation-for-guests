@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { clientIp, deadlinePassed, getReplyByToken, getSettings, rateLimited, updateReply } from '@/lib/store';
+import { clientIp, deadlinePassed, getReplyByToken, getSettings, rateLimited, setCompanions, updateReply } from '@/lib/store';
 import { withUniqueWelcome } from '@/lib/welcome';
+import { buildCompanions, keepSlots, parseGuestNames, publicCompanions } from '@/lib/companions';
 
 export async function PATCH(request, { params }) {
   if (await rateLimited(`patch:${clientIp(request)}`, 20, 10 * 60 * 1000)) {
@@ -25,5 +26,16 @@ export async function PATCH(request, { params }) {
     : await withUniqueWelcome({ name: reply.name, lang: reply.lang, attending }, (welcome) =>
         updateReply(reply, { attending, party, welcome }),
       );
-  return NextResponse.json({ attending: next.attending, party: next.party, welcome: next.welcome });
+  const slots = attending ? parseGuestNames(body.guestNames, party) : [];
+  let companions = slots ? null : keepSlots(reply.companions, party);
+  if (slots) {
+    try {
+      companions = await buildCompanions(slots, reply.companions ?? [], reply.lang);
+    } catch (err) {
+      console.error('companions failed', err?.message);
+      companions = keepSlots(reply.companions, party);
+    }
+  }
+  await setCompanions(reply.id, companions);
+  return NextResponse.json({ attending: next.attending, party: next.party, welcome: next.welcome, companions: publicCompanions(companions) });
 }

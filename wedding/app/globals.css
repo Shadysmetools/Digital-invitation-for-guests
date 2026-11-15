@@ -212,6 +212,16 @@ select{appearance:auto;min-height:48px}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 th{text-align:start;font-size:13px;font-weight:600;padding:10px;border-bottom:1px solid var(--wine);color:var(--wine)}
 td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.comp{display:block;margin-top:3px;font-size:13px;color:#7a4a50}
+.guests h2{margin:0;font:600 17px var(--f-serif),var(--f-arabic),serif;letter-spacing:.2em;text-transform:uppercase;color:var(--wine)}
+[dir=rtl] .guests h2{letter-spacing:0;font-size:22px}
+.guests ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;text-align:start}
+.guests li{padding:12px 14px;background:var(--field);border:1px solid #ecd4c4;border-radius:14px;display:flex;flex-direction:column;gap:10px}
+.gname{font:400 26px/1.2 var(--f-script),var(--f-arabic-script),cursive;color:var(--wine)}
+.gbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gbtns .secondary{min-height:42px;font-size:14px;padding:0 6px}
+.gbtns .wa{background:#5f7a3a;border-color:#5f7a3a;color:#fff}
+.actions .party label{display:block;text-align:start;margin-top:10px;color:var(--wine)}
 .msgcell{max-width:260px;font-size:14px}
 td button{background:none;border:0;color:var(--wine);text-decoration:underline;text-underline-offset:3px;font:inherit;cursor:pointer;padding:4px}
 .rowwa{margin-inline-start:8px;color:var(--wine);text-underline-offset:3px}
@@ -224,3 +234,4 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .login{max-width:380px;margin:12vh auto;padding:34px 26px;background:var(--card);border:1px solid #edd6c6;border-radius:16px;text-align:center}
 .login h1{margin-bottom:22px}
 .login label{display:block;text-align:start;font-size:15px;color:var(--wine);margin-bottom:16px}
+.customcount{margin-top:10px}

@@ -17,7 +17,7 @@ function cleanSettings(b) {
     dressCode: text(b.dressCode, 300),
     deadline: /^\d{4}-\d{2}-\d{2}$/.test(deadline) ? deadline : '',
     note: text(b.note, 1500),
-    maxParty: Number.isInteger(maxParty) && maxParty >= 1 && maxParty <= 10 ? maxParty : 4,
+    maxParty: Number.isInteger(maxParty) && maxParty >= 1 && maxParty <= 21 ? maxParty : 21,
     assistantName: text(b.assistantName, 60) || 'Rehana',
     whatsapp: normalizePhone(text(b.whatsapp, 24)) ?? '',
     persona: text(b.persona, 1500),

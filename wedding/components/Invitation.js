@@ -214,6 +214,8 @@ function Countdown({ t, target }) {
 function Rsvp({ t, lang, event, max, closed }) {
   const [attending, setAttending] = useState(true);
   const [party, setParty] = useState(1);
+  const [custom, setCustom] = useState(false);
+  const [names, setNames] = useState([]);
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
 
@@ -232,6 +234,7 @@ function Rsvp({ t, lang, event, max, closed }) {
           email: form.get('email'),
           website: form.get('website'),
           message: form.get('message'),
+          guestNames: attending ? names.slice(0, Math.min(party - 1, 20)) : [],
           attending,
           party: attending ? party : 0,
           lang,
@@ -251,7 +254,9 @@ function Rsvp({ t, lang, event, max, closed }) {
     setStatus('idle');
   }
 
-  const guestLabel = (n) => (n === 1 ? t.justMe : `+${new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-GB').format(n - 1)}`);
+  const num = new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-GB');
+  const guestLabel = (n) => (n === 1 ? t.justMe : num.format(n - 1));
+  const extra = attending ? Math.min(party - 1, 20) : 0;
 
   return (
     <section className="rsvp" id="rsvp">
@@ -274,11 +279,48 @@ function Rsvp({ t, lang, event, max, closed }) {
           </fieldset>
           {attending && (
             <label>{t.party}
-              <select value={party} onChange={(e) => setParty(Number(e.target.value))}>
-                {Array.from({ length: max }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{guestLabel(n)}</option>)}
+              <select
+                value={custom ? 'custom' : party}
+                onChange={(e) => {
+                  if (e.target.value === 'custom') {
+                    setCustom(true);
+                    setParty(6);
+                  } else {
+                    setCustom(false);
+                    setParty(Number(e.target.value));
+                  }
+                }}
+              >
+                {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{guestLabel(n)}</option>)}
+                <option value="custom">{t.otherNumber}</option>
               </select>
+              {custom && (
+                <input
+                  className="customcount"
+                  type="number"
+                  inputMode="numeric"
+                  min={5}
+                  max={max - 1}
+                  required
+                  value={party - 1}
+                  onChange={(e) => setParty(Math.min(max, Math.max(1, Number(e.target.value) || 0) + 1))}
+                  aria-label={t.otherNumberLabel}
+                  placeholder={t.otherNumberLabel}
+                />
+              )}
             </label>
           )}
+          {Array.from({ length: extra }, (_, i) => (
+            <label key={i}>{t.guestName.replace('{n}', num.format(i + 1))}
+              <input
+                value={names[i] ?? ''}
+                maxLength={80}
+                autoComplete="off"
+                dir="auto"
+                onChange={(e) => setNames((list) => { const next = [...list]; next[i] = e.target.value; return next; })}
+              />
+            </label>
+          ))}
           <label>{t.messageLabel}<textarea name="message" maxLength={500} rows={3} dir="auto" /></label>
           <button className="primary" disabled={status === 'sending'}>{status === 'sending' ? t.sending : t.send}</button>
           {message && <p className="msg" role="alert">{message}</p>}

@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { clientIp, countReplies, createReply, deadlinePassed, getSettings, MAX_REPLIES, rateLimited, replyExists } from '@/lib/store';
+import { clientIp, countReplies, createReply, deadlinePassed, getSettings, MAX_REPLIES, rateLimited, replyExists, setCompanions } from '@/lib/store';
 import { normalizePhone } from '@/lib/phone';
 import { withUniqueWelcome } from '@/lib/welcome';
 import { eventKey } from '@/lib/events';
+import { buildCompanions, parseGuestNames } from '@/lib/companions';
 
 const fail = (error, status) => NextResponse.json({ error }, { status });
 
@@ -44,5 +45,13 @@ export async function POST(request) {
     createReply({ event, name, email, lang, welcome, message, ...answer }),
   );
   if (!reply) return fail('exists', 409);
+  const slots = answer.attending ? parseGuestNames(body.guestNames, answer.party) : null;
+  if (slots?.some(Boolean)) {
+    try {
+      await setCompanions(reply.id, await buildCompanions(slots, [], lang));
+    } catch (err) {
+      console.error('companions failed', err?.message); // the reply itself is saved; names can be added later
+    }
+  }
   return NextResponse.json({ token: reply.token });
 }

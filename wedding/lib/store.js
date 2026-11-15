@@ -45,6 +45,7 @@ const fromRow = (r) => ({
   lang: r.lang,
   welcome: r.welcome,
   message: r.message ?? '',
+  companions: r.companions ?? [],
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
@@ -117,9 +118,25 @@ export async function listReplies() {
   return rows.map(fromRow);
 }
 
+/** Every card line in use, including those on companions' cards. */
 export async function listWelcomes() {
-  const rows = must(await db().from('replies').select('welcome').not('welcome', 'is', null));
-  return rows.map((r) => r.welcome);
+  const rows = must(await db().from('replies').select('welcome, companions'));
+  return rows.flatMap((r) => [r.welcome, ...(r.companions ?? []).map((c) => c.welcome)]).filter(Boolean);
+}
+
+export async function setCompanions(id, companions) {
+  must(await db().from('replies').update({ companions: companions.length ? companions : null }).eq('id', id));
+}
+
+/** A companion's card: only what the card shows, never the main guest's contact or answer. */
+export async function getCompanionByToken(token) {
+  if (typeof token !== 'string' || token.length < 20 || token.length > 64) return null;
+  const hash = sha(token);
+  const rows = must(await db().from('replies').select('event, lang, attending, companions').contains('companions', JSON.stringify([{ tokenHash: hash }])).limit(1));
+  const row = rows[0];
+  const companion = row?.companions?.find((c) => c.tokenHash === hash);
+  if (!companion || !row.attending) return null;
+  return { event: row.event, lang: row.lang, name: companion.name, welcome: companion.welcome };
 }
 
 export async function removeReply(id) {

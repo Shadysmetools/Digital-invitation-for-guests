@@ -8,8 +8,8 @@ export const EVENTS = {
     poster: '/katb-poster.jpg',
     og: '/og-katb.jpg',
     path: '/katb',
-    en: { label: 'Katb el-Kitab', title: 'The Katb el-Kitab of Shady & Hana', time: '4:00 PM', short: '4:00 pm' },
-    ar: { label: 'كتب الكتاب', title: 'كتب كتاب شادي وهنا', time: '٤:٠٠ مساءً', short: '٤:٠٠ م' },
+    en: { label: 'Katb el-Kitab', waName: 'Katb el-Kitab', title: 'The Katb el-Kitab of Shady & Hana', time: '4:00 PM', short: '4:00 pm' },
+    ar: { label: 'كتب الكتاب', waName: 'كتب كتاب شادي وهنا', title: 'كتب كتاب شادي وهنا', time: '٤:٠٠ مساءً', short: '٤:٠٠ م' },
   },
   wedding: {
     key: 'wedding',
@@ -19,8 +19,8 @@ export const EVENTS = {
     poster: '/wedding-poster.jpg',
     og: '/og-wedding.jpg',
     path: '/wedding',
-    en: { label: 'Wedding', title: 'The Wedding of Shady & Hana', time: '5:30 PM', short: '5:30 pm' },
-    ar: { label: 'حفل الزفاف', title: 'فرح شادي وهنا', time: '٥:٣٠ مساءً', short: '٥:٣٠ م' },
+    en: { label: 'Wedding', waName: 'Wedding', title: 'The Wedding of Shady & Hana', time: '5:30 PM', short: '5:30 pm' },
+    ar: { label: 'حفل الزفاف', waName: 'فرح شادي وهنا', title: 'فرح شادي وهنا', time: '٥:٣٠ مساءً', short: '٥:٣٠ م' },
   },
 };
 
