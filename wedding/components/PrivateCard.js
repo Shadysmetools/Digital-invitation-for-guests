@@ -162,7 +162,7 @@ export default function PrivateCard({ token, guest, maxParty, closed, googleUrl 
                 <span>{t.party}</span>
                 <div>
                   {Array.from({ length: maxParty }, (_, i) => i + 1).map((n) => (
-                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{n}</button>
+                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{maxParty === 2 ? (n === 1 ? t.justMe : t.plusOne) : n}</button>
                   ))}
                 </div>
               </div>

@@ -276,3 +276,5 @@ html,body{background:#e9dcc6}
   .invite::before,.invite::after,.herocta,.herocta::after,.primary::after,.chatopen,.spark,.cd b,.log .turn{animation:none!important}
   .reveal,.reveal *{transition:none!important;opacity:1!important;transform:none!important;clip-path:none!important}
 }
+.adults{margin:-10px 0 20px;font-size:16px;font-weight:600;color:#8e1f2c}
+.party button:not(:only-child){min-width:48px;width:auto;padding:0 18px}

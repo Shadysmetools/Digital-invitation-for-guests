@@ -251,6 +251,7 @@ function Rsvp({ t, lang, max, closed }) {
       ) : (
         <>
           <p className="sub">{t.rsvpSub}</p>
+          <p className="adults">{t.adults}</p>
           <form onSubmit={submit}>
             <label>{t.name}<input name="name" required maxLength={80} autoComplete="name" /></label>
             <label>{t.email}<input name="email" type="text" required maxLength={254} autoComplete="off" dir="ltr" /></label>
@@ -264,7 +265,7 @@ function Rsvp({ t, lang, max, closed }) {
                 <span id="party-label">{t.party}</span>
                 <div role="group" aria-labelledby="party-label">
                   {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
-                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{n}</button>
+                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{max === 2 ? (n === 1 ? t.justMe : t.plusOne) : n}</button>
                   ))}
                 </div>
               </div>
