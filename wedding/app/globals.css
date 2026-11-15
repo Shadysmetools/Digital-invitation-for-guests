@@ -208,3 +208,10 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .turn.guest{align-items:flex-end}
 .log .wa{display:inline-block;padding:9px 13px;background:#5f6a4a;color:#fff9ef;border-radius:6px;font-size:16px;font-weight:600;text-decoration:none}
 .rowwa{margin-inline-start:8px;color:var(--wine);text-underline-offset:3px}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #d9c3a8;border-bottom:1px solid #d9c3a8}
+.cd div{padding:14px 2px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cd div+div{border-inline-start:1px solid #d9c3a8}
+.cd b{font:500 38px/1 var(--f-serif),serif;color:var(--wine);font-variant-numeric:lining-nums tabular-nums}
+.cd span{font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+[dir=rtl] .cd span{letter-spacing:0;font-size:15px}
+[dir=rtl] .cd b{font-family:var(--f-arabic),serif}

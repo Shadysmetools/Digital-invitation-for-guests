@@ -171,12 +171,48 @@ export default function Invitation({ facts, closed, assistant }) {
 
       {finished && (
         <>
+          <Countdown t={t} time={facts.time} />
           <Details t={t} facts={facts} />
           <Rsvp t={t} lang={lang} max={facts.maxParty} closed={closed} />
           {assistant && <Chat t={t} name={facts.assistantName} whatsapp={facts.whatsapp} />}
         </>
       )}
     </main>
+  );
+}
+
+/** Wedding start in Cairo (UTC+2 in December); defaults to 4 PM until a time is saved. */
+function weddingStart(time) {
+  const [h, m] = /^\d{2}:\d{2}$/.test(time) ? time.split(':').map(Number) : [16, 0];
+  return Date.UTC(2026, 11, 18, h - 2, m);
+}
+
+function Countdown({ t, time }) {
+  const [left, setLeft] = useState(null);
+  useEffect(() => {
+    const target = weddingStart(time);
+    const tick = () => setLeft(Math.max(0, target - Date.now()));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [time]);
+  if (left === null) return null;
+  const s = Math.floor(left / 1000);
+  const parts = [Math.floor(s / 86400), Math.floor(s / 3600) % 24, Math.floor(s / 60) % 60, s % 60];
+  const fmt = new Intl.NumberFormat(t.dir === 'rtl' ? 'ar-EG' : 'en-GB');
+  return (
+    <section className="sheet countdown" aria-label={t.countdown}>
+      <h2>{t.countdown}</h2>
+      {left === 0 ? (
+        <p className="note">{t.married}</p>
+      ) : (
+        <div className="cd">
+          {parts.map((n, i) => (
+            <div key={t.units[i]}><b>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
