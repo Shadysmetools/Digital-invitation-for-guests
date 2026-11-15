@@ -77,7 +77,7 @@ async function renderCard({ t, ev, name, message, rtl }) {
       title: `600 ${size.title * k * u}px ${body}`,
       name: `${size.name * k * u}px ${nameFont}`,
       message: `${rtl ? '' : 'italic '}${size.message * k * u}px ${body}`,
-      detail: `600 ${size.detail * k * u}px ${body}`,
+      detail: `500 ${size.detail * k * u}px ${rtl ? body : family('--f-sans')}`,
     };
     c.font = f.message;
     c.letterSpacing = '0px';

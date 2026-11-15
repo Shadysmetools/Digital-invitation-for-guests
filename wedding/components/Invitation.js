@@ -177,7 +177,7 @@ function Venue({ t, ev, target, mapUrl }) {
       <h2 className="villaname">{t.villaName}</h2>
       <p className="where">{t.giza}</p>
       <div className="goldrule" aria-hidden="true"><i /></div>
-      <p className="when">{t.fridayLong} · {ev.short}</p>
+      <p className="when">{`${t.fridayLong} · ${ev.short}`.split(/([0-9:]+)/).map((part, i) => (i % 2 ? <span key={i} className="digits">{part}</span> : part))}</p>
       <Countdown t={t} target={target} />
       {mapUrl && (
         <a className="pill" href={mapUrl} target="_blank" rel="noopener noreferrer">
@@ -205,7 +205,7 @@ function Countdown({ t, target }) {
   return (
     <div className="cd" role="timer" aria-label={t.countdown}>
       {parts.map((n, i) => (
-        <div key={t.units[i]}><b key={n}>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
+        <div key={t.units[i]}><b key={n}>{i === 0 ? fmt.format(n) : fmt.format(n).padStart(2, fmt.format(0))}</b><span>{t.units[i]}</span></div>
       ))}
     </div>
   );
