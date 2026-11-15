@@ -1,21 +1,25 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { CardFrame, DiamondColumn, SealArt } from '@/components/CardArt';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { COPY, hasArabic } from '@/lib/copy';
 import { whatsappUrl } from '@/lib/phone';
 
+// Hana's card design is used as images: the closed envelope, the two open flaps, and the inner card.
+// The guest's own words are written over the blank part of the inner card.
 const fit = (name) => (name.length <= 14 ? 52 : name.length <= 22 ? 40 : name.length <= 32 ? 31 : 25);
 
-/** Text sizes as a percentage of the card's width, shared by the page and the saved image. */
-function sizes(rtl, name) {
+/** Text sizes as a percentage of the inner card's width, shared by the page and the saved image. */
+function sizes(rtl, name, message) {
   return {
-    title: rtl ? 3.6 : 2.8,
-    name: fit(name) * 0.15,
-    message: rtl ? 3.6 : 3.3,
-    label: rtl ? 3.3 : 2.5,
-    date: rtl ? 3.3 : 2.85,
+    title: 3.2,
+    name: fit(name) * 0.13,
+    message: (rtl ? 3.3 : 3) * (message.length > 120 ? 0.88 : 1),
+    detail: rtl ? 2.6 : 1.95,
   };
+}
+
+function detailLines(t, ev, rtl) {
+  return [`${rtl ? ev.label : ev.label.toUpperCase()} · ${t.friday}`, `${ev.time} · ${t.villa}`];
 }
 
 function wrap(c, text, max) {
@@ -34,17 +38,18 @@ function wrap(c, text, max) {
   return lines;
 }
 
-async function svgImage(svg) {
+async function loadImage(src) {
   const img = new Image();
-  img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svg))}`;
+  img.src = src;
   await img.decode();
   return img;
 }
 
-async function renderCard({ t, ev, name, message, rtl, art }) {
-  const W = 1500;
-  const H = 1050;
-  const u = W / 100; // one percent of the card's width
+/** Draws the inner card with the guest's words, in the same place as on the page. */
+async function renderCard({ t, ev, name, message, rtl }) {
+  const W = 1212;
+  const H = 828;
+  const u = W / 100;
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
@@ -53,68 +58,73 @@ async function renderCard({ t, ev, name, message, rtl, art }) {
   const family = (v) => css.getPropertyValue(v).trim();
   const body = rtl ? family('--f-arabic') : family('--f-serif');
   const nameFont = hasArabic(name) ? family('--f-arabic-script') : family('--f-script');
-  const size = sizes(rtl, name);
+  const size = sizes(rtl, name, message);
   await Promise.all([
     document.fonts.load(`${size.name * u}px ${nameFont}`, name),
-    document.fonts.load(`600 40px ${body}`, t.noteTitle.join(' ')),
     document.fonts.load(`italic 40px ${body}`, message),
+    document.fonts.load(`600 40px ${body}`, ev.label),
   ]);
-  c.drawImage(await svgImage(art), 0, 0, W, H);
+  c.imageSmoothingQuality = 'high';
+  c.drawImage(await loadImage('/art/gf-inner.webp'), 0, 0, W, H);
 
+  // Same box as .sc-text, measured on the inner-card image.
+  const box = { top: 0.45 * H, bottom: 0.87 * H, width: 50 * u };
   const dir = rtl ? 'rtl' : 'ltr';
-  const fonts = {
-    title: `600 ${size.title * u}px ${body}`,
-    name: `${size.name * u}px ${nameFont}`,
-    message: `${rtl ? '' : 'italic '}${size.message * u}px ${body}`,
-    label: `600 ${size.label * u}px ${body}`,
-    date: `500 ${size.date * u}px ${body}`,
-  };
-  c.font = fonts.message;
-  const lines = wrap(c, message, 56 * u);
-  const blocks = [
-    ...t.noteTitle.map((text) => ({ text, font: fonts.title, h: size.title * 1.5, spacing: 0.32 })),
-    { gap: 1.6 },
-    { rule: true, h: 1 },
-    { gap: 1.6 },
-    { text: name, font: fonts.name, h: size.name * 1.2, dir: hasArabic(name) ? 'rtl' : 'ltr' },
-    { gap: 0.6 },
-    ...lines.map((text) => ({ text, font: fonts.message, h: size.message * 1.38 })),
-    { gap: 1.6 },
-    { text: rtl ? ev.label : ev.label.toUpperCase(), font: fonts.label, h: size.label * 1.7, spacing: 0.28 },
-    { text: t.friday, font: fonts.date, h: size.date * 1.45 },
-    { text: `${ev.time} · ${t.villa}`, font: fonts.date, h: size.date * 1.45 },
-  ];
-  const total = blocks.reduce((sum, b) => sum + (b.gap ?? b.h), 0) * u;
-  const top = 0.17 * H;
-  const bottom = 0.88 * H;
-  let y = top + (bottom - top - total) / 2;
+  let blocks;
+  let total;
+  for (let k = 1; k >= 0.55; k -= 0.05) {
+    const f = {
+      title: `600 ${size.title * k * u}px ${body}`,
+      name: `${size.name * k * u}px ${nameFont}`,
+      message: `${rtl ? '' : 'italic '}${size.message * k * u}px ${body}`,
+      detail: `600 ${size.detail * k * u}px ${body}`,
+    };
+    c.font = f.message;
+    c.letterSpacing = '0px';
+    const lines = wrap(c, message, box.width);
+    blocks = [
+      ...(rtl ? [{ text: t.noteTitleAr, font: f.title, h: size.title * 1.5 * k }, { gap: 0.8 * k }] : []),
+      { text: name, font: f.name, h: size.name * 1.2 * k, dir: hasArabic(name) ? 'rtl' : 'ltr', color: '#7d1f2e' },
+      { gap: 0.6 * k },
+      ...lines.map((text) => ({ text, font: f.message, h: size.message * 1.38 * k })),
+      { gap: 1.8 * k },
+      ...detailLines(t, ev, rtl).map((text) => ({ text, font: f.detail, h: size.detail * 1.7 * k, spacing: rtl ? 0 : 0.12, color: '#7d1f2e' })),
+    ];
+    total = blocks.reduce((sum, b) => sum + (b.gap ?? b.h), 0) * u;
+    if (total <= box.bottom - box.top) break;
+  }
+  let y = box.top + (box.bottom - box.top - total) / 2;
   c.textAlign = 'center';
   c.textBaseline = 'middle';
-  c.fillStyle = '#5a1220';
   for (const b of blocks) {
     if (b.gap) {
       y += b.gap * u;
       continue;
     }
     const h = b.h * u;
-    if (b.rule) {
-      c.fillStyle = '#7d1f2e';
-      c.fillRect(W / 2 - 9 * u, y + h / 2, 18 * u, 2);
-      c.save();
-      c.translate(W / 2, y + h / 2 + 1);
-      c.rotate(Math.PI / 4);
-      c.fillRect(-0.55 * u, -0.55 * u, 1.1 * u, 1.1 * u);
-      c.restore();
-      c.fillStyle = '#5a1220';
-    } else {
-      c.font = b.font;
-      c.direction = b.dir ?? dir;
-      c.letterSpacing = !rtl && b.spacing ? `${b.spacing * u}px` : '0px';
-      c.fillText(b.text, W / 2, y + h / 2);
-    }
+    c.font = b.font;
+    c.fillStyle = b.color ?? '#5a1220';
+    c.direction = b.dir ?? dir;
+    c.letterSpacing = b.spacing ? `${b.spacing * (parseFloat(b.font.match(/([\d.]+)px/)[1]))}px` : '0px';
+    c.fillText(b.text, W / 2, y + h / 2);
     y += h;
   }
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+}
+
+/** Shrinks the card text until it fits the blank area of the card. */
+function useFit(ref, deps) {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let k = 1;
+    el.style.setProperty('--k', '1');
+    while (el.scrollHeight > el.clientHeight + 1 && k > 0.55) {
+      k -= 0.05;
+      el.style.setProperty('--k', String(k));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 }
 
 export default function PrivateCard({ token, event, guest, maxParty, closed, googleUrl, companions: initialCompanions = [], companion = false }) {
@@ -132,37 +142,21 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
   const [open, setOpen] = useState(false);
   const [companions, setCompanions] = useState(initialCompanions);
   const [names, setNames] = useState(() => initialCompanions.reduce((list, c) => { list[c.slot] = c.name; return list; }, []));
-  const [settled, setSettled] = useState(false);
-  const art = useRef(null);
-  const timer = useRef(null);
+  const text = useRef(null);
 
   useEffect(() => {
     document.documentElement.lang = guest.lang;
     document.documentElement.dir = t.dir;
   }, [guest.lang, t.dir]);
 
-  useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setOpen(true);
-      setSettled(true);
-    }
-    return () => clearTimeout(timer.current);
-  }, []);
-
-  function openCard() {
-    if (open) return;
-    setOpen(true);
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    timer.current = setTimeout(() => setSettled(true), reduce ? 0 : 1600);
-  }
-
   const line = welcome || (current ? t.cardYes : t.cardNo);
   const num = new Intl.NumberFormat(guest.lang === 'ar' ? 'ar-EG' : 'en-GB');
-  const size = sizes(rtl, guest.name);
-  const cq = (v) => `${v}cqw`;
+  const size = sizes(rtl, guest.name, line);
+  const cq = (v) => `calc(var(--k, 1) * ${v}cqw)`;
+  useFit(text, [line, guest.name, open]);
 
   async function save() {
-    const blob = await renderCard({ t, ev, name: guest.name, message: line, rtl, art: art.current.querySelector('svg') });
+    const blob = await renderCard({ t, ev, name: guest.name, message: line, rtl });
     const file = new File([blob], `shady-and-hana-${event.key}.png`, { type: 'image/png' });
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file] }).catch(() => {});
@@ -200,30 +194,24 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
 
   return (
     <main className="private">
-      <div className={`gf ${open ? 'is-open' : ''} ${settled ? 'is-settled' : ''}`}>
-        <div className="gf-side l" aria-hidden="true"><DiamondColumn /></div>
-        <div className="gf-side r" aria-hidden="true"><DiamondColumn /></div>
-        <article className="gf-card" ref={art} aria-hidden={!open}>
-          <CardFrame />
-          <div className="gf-text" dir={t.dir}>
-            <p className="gf-title" style={{ fontSize: cq(size.title) }}>{t.noteTitle[0]}<br />{t.noteTitle[1]}</p>
-            <span className="gf-rule" />
-            <p className={`gf-name ${hasArabic(guest.name) ? 'ar' : ''}`} dir="auto" style={{ fontSize: cq(size.name) }}>{guest.name}</p>
-            <p className="gf-msg" dir="auto" style={{ fontSize: cq(size.message) }}>{line}</p>
-            <p className="gf-label" style={{ fontSize: cq(size.label) }}>{ev.label}</p>
-            <p className="gf-date" style={{ fontSize: cq(size.date) }}>{t.friday}</p>
-            <p className="gf-date" style={{ fontSize: cq(size.date) }}>{ev.time} · {t.villa}</p>
-          </div>
-        </article>
-        <div className="gf-flaps" aria-hidden="true">
-          <div className="gf-flap l"><span className="gf-face front" /><span className="gf-face back"><span className="gf-dot" /></span></div>
-          <div className="gf-flap r"><span className="gf-face front" /><span className="gf-face back"><span className="gf-dot" /></span></div>
+      <div className={`sc ${open ? 'is-open' : ''}`}>
+        <div className="sc-closed" aria-hidden={open}>
+          <img src="/art/gf-closed.webp" alt="" width="736" height="460" />
+          {!open && <button type="button" className="sc-seal" onClick={() => setOpen(true)} aria-label={t.openCard} />}
         </div>
-        {!settled && (
-          <button type="button" className="gf-seal" onClick={openCard} aria-label={t.openCard} aria-expanded={open}>
-            <SealArt />
-          </button>
-        )}
+        <div className="sc-open" aria-hidden={!open}>
+          <img className="sc-flap l" src="/art/gf-flap-l.webp" alt="" width="268" height="448" />
+          <article className="sc-card">
+            <img src="/art/gf-card.webp" alt={t.noteTitle.join(' ')} width="606" height="448" />
+            <div className="sc-text" ref={text} dir={t.dir}>
+              {rtl && <p className="sc-artitle" style={{ fontSize: cq(size.title) }}>{t.noteTitleAr}</p>}
+              <p className={`sc-name ${hasArabic(guest.name) ? 'ar' : ''}`} dir="auto" style={{ fontSize: cq(size.name) }}>{guest.name}</p>
+              <p className="sc-msg" dir="auto" style={{ fontSize: cq(size.message) }}>{line}</p>
+              {detailLines(t, ev, rtl).map((d) => <p key={d} className="sc-detail" style={{ fontSize: cq(size.detail) }}>{d}</p>)}
+            </div>
+          </article>
+          <img className="sc-flap r" src="/art/gf-flap-r.webp" alt="" width="267" height="448" />
+        </div>
       </div>
       <p className={`gf-hint ${open ? 'gone' : ''}`} aria-hidden={open}>{t.tapSeal}</p>
 
