@@ -251,7 +251,6 @@ function Rsvp({ t, lang, max, closed }) {
       ) : (
         <>
           <p className="sub">{t.rsvpSub}</p>
-          <p className="adults">{t.adults}</p>
           <form onSubmit={submit}>
             <label>{t.name}<input name="name" required maxLength={80} autoComplete="name" /></label>
             <label>{t.email}<input name="email" type="text" required maxLength={254} autoComplete="off" dir="ltr" /></label>
