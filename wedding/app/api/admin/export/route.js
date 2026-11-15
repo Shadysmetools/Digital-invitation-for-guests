@@ -1,5 +1,6 @@
 import { isAdmin } from '@/lib/auth';
 import { listReplies } from '@/lib/store';
+import { EVENTS } from '@/lib/events';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,9 +15,9 @@ export async function GET(request) {
   if (!(await isAdmin())) return new Response('Unauthorized', { status: 401 });
   const origin = new URL(request.url).origin;
   const rows = (await listReplies()).map((r) =>
-    [r.name, r.email, r.attending ? 'Coming' : 'Not coming', r.party, r.createdAt, r.updatedAt, `${origin}/i/${r.token}`].map(cell).join(','),
+    [EVENTS[r.event]?.en.label ?? 'Wedding', r.name, r.email, r.attending ? 'Coming' : 'Not coming', r.party, r.createdAt, r.updatedAt, `${origin}/i/${r.token}`].map(cell).join(','),
   );
-  const header = ['Name', 'Email or phone', 'Reply', 'People', 'Replied at', 'Updated at', 'Private link'].map(cell).join(',');
+  const header = ['Event', 'Name', 'Email or phone', 'Reply', 'People', 'Replied at', 'Updated at', 'Private link'].map(cell).join(',');
   return new Response(`﻿${[header, ...rows].join('\r\n')}`, {
     headers: {
       'content-type': 'text/csv; charset=utf-8',

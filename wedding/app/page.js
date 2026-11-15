@@ -1,16 +1,9 @@
-import Invitation from '@/components/Invitation';
-import { deadlinePassed, getSettings } from '@/lib/store';
+import EventPage from '@/components/EventPage';
+import { eventMetadata } from '@/lib/events';
 
 export const dynamic = 'force-dynamic';
+export const metadata = eventMetadata('wedding');
 
-export default async function Page() {
-  const settings = await getSettings();
-  const { time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName, whatsapp } = settings;
-  return (
-    <Invitation
-      facts={{ time, venue, mapUrl, dressCode, deadline, note, maxParty, assistantName, whatsapp }}
-      closed={deadlinePassed(settings)}
-      assistant={process.env.ASSISTANT_ENABLED === '1'}
-    />
-  );
+export default function Page() {
+  return <EventPage eventKey="wedding" />;
 }

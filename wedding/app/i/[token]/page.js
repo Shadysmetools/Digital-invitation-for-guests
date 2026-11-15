@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import PrivateCard from '@/components/PrivateCard';
 import { googleCalendarUrl } from '@/lib/calendar';
+import { getEvent } from '@/lib/events';
 import { deadlinePassed, getReplyByToken, getSettings, updateReply } from '@/lib/store';
 import { withUniqueWelcome } from '@/lib/welcome';
 
@@ -16,13 +17,15 @@ export default async function Page({ params }) {
     reply = await withUniqueWelcome(current, (welcome) => updateReply(current, { welcome }));
   }
   const settings = await getSettings();
+  const { key, en, ar } = getEvent(reply.event);
   return (
     <PrivateCard
       token={token}
+      event={{ key, en, ar }}
       guest={{ name: reply.name, attending: reply.attending, party: reply.party, lang: reply.lang, welcome: reply.welcome }}
       maxParty={settings.maxParty}
       closed={deadlinePassed(settings)}
-      googleUrl={googleCalendarUrl(settings)}
+      googleUrl={googleCalendarUrl(settings, getEvent(reply.event))}
     />
   );
 }

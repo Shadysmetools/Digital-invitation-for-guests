@@ -37,6 +37,7 @@ Show real happiness for Shady and Hana, and make every guest feel expected and w
 const fromRow = (r) => ({
   id: r.id,
   token: r.token,
+  event: r.event ?? 'wedding',
   name: r.name,
   email: r.email,
   attending: r.attending,
@@ -68,8 +69,8 @@ export async function saveSettings(settings) {
   settingsCache = null;
 }
 
-export async function replyExists(email) {
-  return !!must(await db().from('replies').select('id').eq('id', sha(email)).maybeSingle());
+export async function replyExists(event, email) {
+  return !!must(await db().from('replies').select('id').eq('event', event).eq('email', email).maybeSingle());
 }
 
 export async function countReplies() {
@@ -78,15 +79,15 @@ export async function countReplies() {
   return count;
 }
 
-/** Creates a reply. Returns null when this email or phone has already replied. */
-export async function createReply({ name, email, attending, party, lang, welcome }) {
+/** Creates a reply. Returns null when this email or phone has already replied to this event. */
+export async function createReply({ event, name, email, attending, party, lang, welcome }) {
   const token = randomBytes(24).toString('base64url');
   const { data, error } = await db()
     .from('replies')
-    .insert({ id: sha(email), token, token_hash: sha(token), name, email, attending, party, lang, welcome })
+    .insert({ id: sha(`${event}:${email}`), event, token, token_hash: sha(token), name, email, attending, party, lang, welcome })
     .select()
     .single();
-  if (isConflict(error, 'replies_pkey')) return null;
+  if (isConflict(error, 'replies_pkey') || isConflict(error, 'replies_event_contact_unique')) return null;
   if (isConflict(error, 'welcome')) throw welcomeTaken();
   if (error) throw error;
   return fromRow(data);

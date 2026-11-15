@@ -2,10 +2,12 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { COPY } from '@/lib/copy';
+import { eventStart } from '@/lib/events';
 import { whatsappUrl } from '@/lib/phone';
 
 const useIso = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const FIT_NOW = "(function(){var e=document.querySelector('.stage'),w=innerWidth,h=innerHeight,c=Math.min(w,h*.62,480);if(h/(c/360)<660)c=h/660*360;var s=c/360;e.style.setProperty('--h',h/s+'px');document.documentElement.style.setProperty('--column',c+'px');e.style.transform='scale('+s+')';e.style.visibility='visible'})()";
+const VENUE_PHOTO = process.env.NEXT_PUBLIC_VENUE_PHOTO;
 const OPEN_MS = 6000; // sections must exist before the RSVP button appears at 6.05s
 const DOVE = 'M0 8C8 2 16 3 22 8C26 0 32-7 44-10C39-3 36 5 30 11C37 11 42 13 46 17C36 16 28 18 21 16C12 18 5 14 0 8Z';
 
@@ -21,7 +23,7 @@ function fitStage(stage) {
   stage.style.visibility = 'visible';
 }
 
-export default function Invitation({ facts, closed, assistant }) {
+export default function Invitation({ event, facts, closed, assistant }) {
   const stage = useRef(null);
   const timer = useRef(null);
   const [lang, setLang] = useState('en');
@@ -29,6 +31,7 @@ export default function Invitation({ facts, closed, assistant }) {
   const video = useRef(null);
   const [muted, setMuted] = useState(true);
   const t = COPY[lang];
+  const ev = event[lang];
 
   useIso(() => {
     const el = stage.current;
@@ -115,14 +118,14 @@ export default function Invitation({ facts, closed, assistant }) {
       <section className="hero">
         <video
           ref={video}
-          src="/invitation.mp4"
-          poster="/invitation-poster.jpg"
+          src={event.video}
+          poster={event.poster}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          aria-label={`${t.weddingOf} ${t.names} · ${t.dateLong} · ${t.place}`}
+          aria-label={`${ev.title} · ${t.dateLong} · ${ev.time} · ${t.place}`}
         />
         <button type="button" className="icon lang" onClick={toggleLang} aria-label="English / العربية">{t.switchTo}</button>
         <button type="button" className="icon sound" onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? 'Sound on' : 'Sound off'}>
@@ -138,31 +141,24 @@ export default function Invitation({ facts, closed, assistant }) {
 
       {finished && (
         <>
-          <Countdown t={t} time={facts.time} />
-          <Details t={t} facts={facts} />
-          <Rsvp t={t} lang={lang} max={facts.maxParty} closed={closed} />
-          {assistant && <Chat t={t} name={facts.assistantName} whatsapp={facts.whatsapp} />}
+          <Countdown t={t} target={eventStart(event)} />
+          <Details t={t} ev={ev} facts={facts} />
+          <Rsvp t={t} lang={lang} event={event.key} max={facts.maxParty} closed={closed} />
+          {assistant && <Chat t={t} event={event.key} name={facts.assistantName} whatsapp={facts.whatsapp} />}
         </>
       )}
     </main>
   );
 }
 
-/** Wedding start in Cairo (UTC+2 in December); defaults to 4 PM until a time is saved. */
-function weddingStart(time) {
-  const [h, m] = /^\d{2}:\d{2}$/.test(time) ? time.split(':').map(Number) : [16, 0];
-  return Date.UTC(2026, 11, 18, h - 2, m);
-}
-
-function Countdown({ t, time }) {
+function Countdown({ t, target }) {
   const [left, setLeft] = useState(null);
   useEffect(() => {
-    const target = weddingStart(time);
     const tick = () => setLeft(Math.max(0, target - Date.now()));
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [time]);
+  }, [target]);
   if (left === null) return null;
   const s = Math.floor(left / 1000);
   const parts = [Math.floor(s / 86400), Math.floor(s / 3600) % 24, Math.floor(s / 60) % 60, s % 60];
@@ -183,10 +179,11 @@ function Countdown({ t, time }) {
   );
 }
 
-function Details({ t, facts }) {
+function Details({ t, ev, facts }) {
   const rows = [
+    [t.occasion, ev.label],
     [t.date, t.dateLong],
-    facts.time && [t.time, facts.time],
+    [t.time, ev.time],
     [t.venue, facts.venue || t.place],
     facts.dressCode && [t.dress, facts.dressCode],
     facts.deadline && [t.deadline, facts.deadline],
@@ -199,13 +196,17 @@ function Details({ t, facts }) {
           <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
         ))}
       </dl>
+      {VENUE_PHOTO && (
+        <figure className="venuephoto">
+          <img src={VENUE_PHOTO} alt="Villa Mit Rehan" loading="lazy" decoding="async" />
+        </figure>
+      )}
       {facts.mapUrl && <a className="textlink" href={facts.mapUrl} target="_blank" rel="noopener noreferrer">{t.map}</a>}
-      {facts.note && <p className="note">{facts.note}</p>}
     </section>
   );
 }
 
-function Rsvp({ t, lang, max, closed }) {
+function Rsvp({ t, lang, event, max, closed }) {
   const [attending, setAttending] = useState(true);
   const [party, setParty] = useState(1);
   const [status, setStatus] = useState('idle');
@@ -228,6 +229,7 @@ function Rsvp({ t, lang, max, closed }) {
           attending,
           party: attending ? party : 0,
           lang,
+          event,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -278,7 +280,7 @@ function Rsvp({ t, lang, max, closed }) {
   );
 }
 
-function Chat({ t, name, whatsapp }) {
+function Chat({ t, event, name, whatsapp }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -301,7 +303,7 @@ function Chat({ t, name, whatsapp }) {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ messages: next.slice(-8) }),
+        body: JSON.stringify({ messages: next.slice(-8), event }),
       });
       const data = await res.json();
       const answered = res.ok && data.reply;

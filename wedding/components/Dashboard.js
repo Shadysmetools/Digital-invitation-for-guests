@@ -3,11 +3,19 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { isPhone, whatsappUrl } from '@/lib/phone';
+import { EVENTS } from '@/lib/events';
+
+const label = (r) => EVENTS[r.event]?.en.label ?? 'Wedding';
+
+function tally(list) {
+  const coming = list.filter((r) => r.attending);
+  return { people: coming.reduce((sum, r) => sum + r.party, 0), coming: coming.length, declined: list.length - coming.length };
+}
 
 const inviteText = (reply, link) =>
   reply.lang === 'ar'
-    ? `${reply.name}، دي دعوتكم الخاصة لفرح شادي وهنا: ${link}`
-    : `Dear ${reply.name}, here is your private invitation to Shady & Hana’s wedding: ${link}`;
+    ? `${reply.name}، دي دعوتكم الخاصة ل${EVENTS[reply.event]?.ar.title ?? 'فرح شادي وهنا'}: ${link}`
+    : `Dear ${reply.name}, here is your private invitation to Shady & Hana’s ${reply.event === 'katb' ? 'Katb el-Kitab' : 'wedding'}: ${link}`;
 
 const admin = (payload) =>
   fetch('/api/admin', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
@@ -40,6 +48,7 @@ export default function Dashboard({ replies, settings, questions }) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+  const [eventFilter, setEventFilter] = useState('all');
   const [form, setForm] = useState(settings);
   const [saved, setSaved] = useState('');
   const [copied, setCopied] = useState('');
@@ -54,18 +63,20 @@ export default function Dashboard({ replies, settings, questions }) {
     return () => clearInterval(id);
   }, [router]);
 
-  const coming = replies.filter((r) => r.attending);
-  const people = coming.reduce((sum, r) => sum + r.party, 0);
-  const declined = replies.length - coming.length;
+  const totals = [
+    ['Both events', tally(replies)],
+    ...Object.values(EVENTS).map((e) => [`${e.en.label} · ${e.en.time}`, tally(replies.filter((r) => r.event === e.key))]),
+  ];
 
   const shown = useMemo(() => {
     const q = search.trim().toLowerCase();
     return replies.filter(
       (r) =>
         (filter === 'all' || (filter === 'coming') === r.attending) &&
+        (eventFilter === 'all' || eventFilter === r.event) &&
         (!q || r.name.toLowerCase().includes(q) || r.email.includes(q)),
     );
-  }, [replies, search, filter]);
+  }, [replies, search, filter, eventFilter]);
 
   async function remove(reply) {
     if (!confirm(`Remove ${reply.name}'s reply? Their private card will stop working.`)) return;
@@ -111,10 +122,15 @@ export default function Dashboard({ replies, settings, questions }) {
         <button type="button" className="secondary" style={{ padding: '0 16px' }} onClick={logout}>Sign out</button>
       </header>
 
-      <div className="total">
-        <b>{people}</b>
-        <span>{people === 1 ? 'person is coming' : 'people are coming'}</span>
-        <small>{coming.length} {coming.length === 1 ? 'reply' : 'replies'} coming · {declined} can’t come</small>
+      <div className="totals">
+        {totals.map(([name, { people, coming, declined }]) => (
+          <div className="total" key={name}>
+            <small className="ev">{name}</small>
+            <b>{people}</b>
+            <span>{people === 1 ? 'person is coming' : 'people are coming'}</span>
+            <small>{coming} {coming === 1 ? 'reply' : 'replies'} coming · {declined} can’t come</small>
+          </div>
+        ))}
       </div>
 
       <h2>Guests</h2>
@@ -125,6 +141,10 @@ export default function Dashboard({ replies, settings, questions }) {
           <option value="coming">Coming</option>
           <option value="declined">Can’t come</option>
         </select>
+        <select value={eventFilter} onChange={(e) => setEventFilter(e.target.value)} aria-label="Filter by event" className="secondary" style={{ padding: '0 10px' }}>
+          <option value="all">Both events</option>
+          {Object.values(EVENTS).map((e) => <option key={e.key} value={e.key}>{e.en.label}</option>)}
+        </select>
         <a className="secondary" href="/api/admin/export">Download CSV</a>
       </div>
       <div className="tablewrap">
@@ -132,11 +152,12 @@ export default function Dashboard({ replies, settings, questions }) {
           <p className="empty">{replies.length ? 'No guests match that search.' : 'No replies yet. They’ll appear here as guests answer.'}</p>
         ) : (
           <table>
-            <thead><tr><th>Name</th><th>Email or phone</th><th>Reply</th><th>People</th><th>Replied</th><th>Private link</th><th /></tr></thead>
+            <thead><tr><th>Name</th><th>Event</th><th>Email or phone</th><th>Reply</th><th>People</th><th>Replied</th><th>Private link</th><th /></tr></thead>
             <tbody>
               {shown.map((r) => (
                 <tr key={r.id}>
                   <td dir="auto">{r.name}</td>
+                  <td>{label(r)}</td>
                   <td>{r.email}</td>
                   <td>{r.attending ? 'Coming' : 'Can’t come'}</td>
                   <td>{r.party}</td>
@@ -157,8 +178,8 @@ export default function Dashboard({ replies, settings, questions }) {
 
       <div className="grid2">
         <form onSubmit={save}>
-          <h2>Wedding details and assistant</h2>
-          {field('time', 'Time', { type: 'time' })}
+          <h2>Details and assistant</h2>
+          <p className="empty">Times are fixed: Katb el-Kitab 4:00 PM, Wedding 5:30 PM.</p>
           {field('venue', 'Venue name', { placeholder: 'Mit Rehan' })}
           {field('mapUrl', 'Google Maps link', { type: 'url', placeholder: 'https://' })}
           {field('dressCode', 'Dress code')}
