@@ -1,54 +1,82 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { COPY } from '@/lib/copy';
 import { eventStart } from '@/lib/events';
 import { whatsappUrl } from '@/lib/phone';
 
-const useIso = typeof window === 'undefined' ? useEffect : useLayoutEffect;
-const FIT_NOW = "(function(){var e=document.querySelector('.stage'),w=innerWidth,h=innerHeight,c=Math.min(w,h*.62,480);if(h/(c/360)<660)c=h/660*360;var s=c/360;e.style.setProperty('--h',h/s+'px');document.documentElement.style.setProperty('--column',c+'px');e.style.transform='scale('+s+')';e.style.visibility='visible'})()";
 const VENUE_PHOTO = process.env.NEXT_PUBLIC_VENUE_PHOTO;
-const OPEN_MS = 6000; // sections must exist before the RSVP button appears at 6.05s
-const DOVE = 'M0 8C8 2 16 3 22 8C26 0 32-7 44-10C39-3 36 5 30 11C37 11 42 13 46 17C36 16 28 18 21 16C12 18 5 14 0 8Z';
+// Events that count as the guest's first interaction. Only some of them let a browser start sound,
+// so every attempt is checked and the video goes back to muted playback if the browser refuses.
+const WAKE_EVENTS = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel'];
 
-function fitStage(stage) {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  let column = Math.min(w, h * 0.62, 480);
-  if (h / (column / 360) < 660) column = (h / 660) * 360;
-  const scale = column / 360;
-  stage.style.setProperty('--h', `${h / scale}px`);
-  document.documentElement.style.setProperty('--column', `${column}px`);
-  stage.style.transform = `scale(${scale})`;
-  stage.style.visibility = 'visible';
+/** Plays the video with sound when the browser allows it, otherwise muted until the first interaction. */
+function useSound(video) {
+  const [muted, setMuted] = useState(true);
+  const [waiting, setWaiting] = useState(false);
+
+  useEffect(() => {
+    const v = video.current;
+    if (!v) return undefined;
+    let done = false;
+    const stop = () => WAKE_EVENTS.forEach((e) => window.removeEventListener(e, wake, true));
+    const fallBack = () => {
+      v.muted = true;
+      v.play().catch(() => {});
+    };
+    const tryUnmute = () => {
+      v.muted = false;
+      return v.play().then(() => {
+        if (v.paused || v.muted) throw new Error('blocked');
+        done = true;
+        stop();
+        setMuted(false);
+        setWaiting(false);
+      });
+    };
+    function wake() {
+      if (done) return;
+      tryUnmute().catch(fallBack);
+    }
+    if (localStorage.getItem('sound') === 'off') {
+      fallBack();
+      return undefined;
+    }
+    tryUnmute().catch(() => {
+      fallBack();
+      setWaiting(true);
+      WAKE_EVENTS.forEach((e) => window.addEventListener(e, wake, { capture: true, passive: true }));
+    });
+    return () => {
+      done = true;
+      stop();
+    };
+  }, [video]);
+
+  function toggle() {
+    const v = video.current;
+    if (!v) return;
+    const next = !v.muted;
+    v.muted = next;
+    if (!next) v.play().catch(() => {});
+    localStorage.setItem('sound', next ? 'off' : 'on');
+    setMuted(next);
+    setWaiting(false);
+  }
+
+  return { muted, waiting, toggle };
 }
 
 export default function Invitation({ event, facts, closed, assistant }) {
-  const stage = useRef(null);
-  const timer = useRef(null);
   const [lang, setLang] = useState('en');
-  const [mode, setMode] = useState('done');
   const video = useRef(null);
-  const [muted, setMuted] = useState(true);
+  const sound = useSound(video);
   const t = COPY[lang];
   const ev = event[lang];
 
-  useIso(() => {
-    const el = stage.current;
-    let width = window.innerWidth;
-    if (el) fitStage(el);
-    const onResize = () => {
-      if (window.innerWidth === width) return; // mobile URL bar and keyboard only change height
-      width = window.innerWidth;
-      if (el) fitStage(el);
-    };
-    window.addEventListener('resize', onResize);
-
+  useEffect(() => {
     const stored = localStorage.getItem('lang');
     setLang(stored === 'ar' || stored === 'en' ? stored : navigator.language?.startsWith('ar') ? 'ar' : 'en');
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const slow = ['slow-2g', '2g'].includes(navigator.connection?.effectiveType);
-    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   useEffect(() => {
@@ -57,47 +85,8 @@ export default function Invitation({ event, facts, closed, assistant }) {
   }, [lang, t.dir]);
 
   useEffect(() => {
-    document.documentElement.style.overflow = mode === 'done' || mode === 'done2' ? '' : 'hidden';
-  }, [mode]);
-
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-
-  function open() {
-    if (mode !== 'idle') return;
-    setMode('play');
-    localStorage.setItem('opened', '1');
-    timer.current = setTimeout(() => setMode('done2'), OPEN_MS);
-  }
-
-  function skip(e) {
-    e.stopPropagation();
-    clearTimeout(timer.current);
-    localStorage.setItem('opened', '1');
-    setMode('done');
-  }
-
-  function toggleSound() {
-    const v = video.current;
-    if (!v) return;
-    v.muted = !v.muted;
-    if (!v.muted) v.play().catch(() => {});
-    setMuted(v.muted);
-  }
-
-  function toggleLang(e) {
-    e.stopPropagation();
-    const next = lang === 'en' ? 'ar' : 'en';
-    localStorage.setItem('lang', next);
-    setLang(next);
-  }
-
-  const started = mode !== 'idle';
-  const finished = mode === 'done' || mode === 'done2';
-
-  useEffect(() => {
-    if (!finished || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const items = [...document.querySelectorAll('.invite .sheet, .herocta')];
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const items = [...document.querySelectorAll('.frame > section')];
     const io = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) {
@@ -111,10 +100,27 @@ export default function Invitation({ event, facts, closed, assistant }) {
       io.observe(el);
     }
     return () => io.disconnect();
-  }, [finished, lang]);
+  }, []);
+
+  function choose(next) {
+    localStorage.setItem('lang', next);
+    setLang(next);
+  }
+
+  function replay() {
+    window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    const v = video.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }
 
   return (
     <main className="invite">
+      <div className="langpill" role="group" aria-label="Language">
+        <button type="button" aria-pressed={lang === 'en'} onClick={() => choose('en')} lang="en">English</button>
+        <button type="button" aria-pressed={lang === 'ar'} onClick={() => choose('ar')} lang="ar">العربية</button>
+      </div>
       <section className="hero">
         <video
           ref={video}
@@ -127,27 +133,59 @@ export default function Invitation({ event, facts, closed, assistant }) {
           preload="auto"
           aria-label={`${ev.title} · ${t.dateLong} · ${ev.time} · ${t.place}`}
         />
-        <button type="button" className="icon lang" onClick={toggleLang} aria-label="English / العربية">{t.switchTo}</button>
-        <button type="button" className="icon sound" onClick={toggleSound} aria-pressed={!muted} aria-label={muted ? 'Sound on' : 'Sound off'}>
-          {muted ? '♪ off' : '♪ on'}
-        </button>
+        {sound.waiting && sound.muted ? (
+          <button type="button" className="musicpill" onClick={sound.toggle}>{t.tapMusic}</button>
+        ) : (
+          <button type="button" className="soundtoggle" onClick={sound.toggle} aria-pressed={!sound.muted} aria-label={sound.muted ? t.soundOn : t.soundOff}>
+            {sound.muted ? '♪ ×' : '♪'}
+          </button>
+        )}
       </section>
-      <a className="primary herocta" href="#rsvp">{t.cta}</a>
-      <div className="sparkles" aria-hidden="true">
-        {[8, 22, 37, 51, 66, 80, 93].map((top, i) => (
-          <svg key={top} className={`spark s${i % 4}`} style={{ top: `${top}%` }} viewBox="0 0 20 20"><path d="M10 0L12.5 7.5L20 10L12.5 12.5L10 20L7.5 12.5L0 10L7.5 7.5Z" /></svg>
-        ))}
-      </div>
 
-      {finished && (
-        <>
-          <Countdown t={t} target={eventStart(event)} />
-          <Details t={t} ev={ev} facts={facts} />
-          <Rsvp t={t} lang={lang} event={event.key} max={facts.maxParty} closed={closed} />
-          {assistant && <Chat t={t} event={event.key} name={facts.assistantName} whatsapp={facts.whatsapp} />}
-        </>
-      )}
+      <div className="frame">
+        <Venue t={t} ev={ev} target={eventStart(event)} mapUrl={facts.mapUrl} />
+        <section className="villa">
+          <img src={VENUE_PHOTO || '/art/villa.webp'} alt={t.villaAlt} loading="lazy" decoding="async" width="652" height="488" />
+          <p className="script green">{t.villaCaption}</p>
+        </section>
+        <section className="softcard adults">
+          <Star />
+          <p className="script wine">{t.adultsLine}</p>
+          <p className="smallcaps">{t.adultsCaps}</p>
+        </section>
+        <Rsvp t={t} lang={lang} event={event.key} max={facts.maxParty} closed={closed} />
+        <footer className="foot">
+          <p className="signature">{t.names}</p>
+          <button type="button" className="outline" onClick={replay}>{t.watchAgain}</button>
+        </footer>
+      </div>
+      {assistant && <Chat t={t} event={event.key} name={facts.assistantName} whatsapp={facts.whatsapp} />}
     </main>
+  );
+}
+
+function Star() {
+  return (
+    <svg className="star" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1L11.6 8.4 19 10 11.6 11.6 10 19 8.4 11.6 1 10 8.4 8.4Z" /></svg>
+  );
+}
+
+function Venue({ t, ev, target, mapUrl }) {
+  return (
+    <section className="venue">
+      <p className="at">{t.at}</p>
+      <h2 className="villaname">{t.villaName}</h2>
+      <p className="where">{t.giza}</p>
+      <div className="goldrule" aria-hidden="true"><i /></div>
+      <p className="when">{t.fridayLong} · {ev.short}</p>
+      <Countdown t={t} target={target} />
+      {mapUrl && (
+        <a className="pill" href={mapUrl} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
+          {t.openMaps}
+        </a>
+      )}
+    </section>
   );
 }
 
@@ -159,50 +197,17 @@ function Countdown({ t, target }) {
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, [target]);
-  if (left === null) return null;
+  if (left === null) return <div className="cd" aria-hidden="true" />;
   const s = Math.floor(left / 1000);
   const parts = [Math.floor(s / 86400), Math.floor(s / 3600) % 24, Math.floor(s / 60) % 60, s % 60];
   const fmt = new Intl.NumberFormat(t.dir === 'rtl' ? 'ar-EG' : 'en-GB');
+  if (left === 0) return <p className="when">{t.married}</p>;
   return (
-    <section className="sheet countdown" aria-label={t.countdown}>
-      <h2>{t.countdown}</h2>
-      {left === 0 ? (
-        <p className="note">{t.married}</p>
-      ) : (
-        <div className="cd">
-          {parts.map((n, i) => (
-            <div key={t.units[i]}><b key={n}>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-function Details({ t, ev, facts }) {
-  const rows = [
-    [t.occasion, ev.label],
-    [t.date, t.dateLong],
-    [t.time, ev.time],
-    [t.venue, facts.venue || t.place],
-    facts.dressCode && [t.dress, facts.dressCode],
-    facts.deadline && [t.deadline, facts.deadline],
-  ].filter(Boolean);
-  return (
-    <section className="sheet">
-      <h2>{t.details}</h2>
-      <dl className="facts">
-        {rows.map(([k, v]) => (
-          <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
-        ))}
-      </dl>
-      {VENUE_PHOTO && (
-        <figure className="venuephoto">
-          <img src={VENUE_PHOTO} alt="Villa Mit Rehan" loading="lazy" decoding="async" />
-        </figure>
-      )}
-      {facts.mapUrl && <a className="textlink" href={facts.mapUrl} target="_blank" rel="noopener noreferrer">{t.map}</a>}
-    </section>
+    <div className="cd" role="timer" aria-label={t.countdown}>
+      {parts.map((n, i) => (
+        <div key={t.units[i]}><b key={n}>{fmt.format(n)}</b><span>{t.units[i]}</span></div>
+      ))}
+    </div>
   );
 }
 
@@ -226,6 +231,7 @@ function Rsvp({ t, lang, event, max, closed }) {
           name: form.get('name'),
           email: form.get('email'),
           website: form.get('website'),
+          message: form.get('message'),
           attending,
           party: attending ? party : 0,
           lang,
@@ -245,36 +251,38 @@ function Rsvp({ t, lang, event, max, closed }) {
     setStatus('idle');
   }
 
+  const guestLabel = (n) => (n === 1 ? t.justMe : `+${new Intl.NumberFormat(lang === 'ar' ? 'ar-EG' : 'en-GB').format(n - 1)}`);
+
   return (
-    <section className="sheet rsvp" id="rsvp">
-      <h2>{t.rsvp}</h2>
+    <section className="rsvp" id="rsvp">
+      <h2 className="spaced">{t.rsvp}</h2>
       {closed ? (
-        <p role="status">{t.closed}</p>
+        <p className="softcard" role="status">{t.closed}</p>
       ) : (
-        <>
-          <p className="sub">{t.rsvpSub}</p>
-          <form onSubmit={submit}>
-            <label>{t.name}<input name="name" required maxLength={80} autoComplete="name" /></label>
-            <label>{t.email}<input name="email" type="text" required maxLength={254} autoComplete="off" dir="ltr" /></label>
-            <input className="trap" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-            <div className="choice" role="radiogroup" aria-label={t.rsvp}>
-              <button type="button" role="radio" aria-checked={attending} className={attending ? 'on' : ''} onClick={() => setAttending(true)}>{t.yes}</button>
-              <button type="button" role="radio" aria-checked={!attending} className={!attending ? 'on' : ''} onClick={() => setAttending(false)}>{t.no}</button>
-            </div>
-            {attending && (
-              <div className="party">
-                <span id="party-label">{t.party}</span>
-                <div role="group" aria-labelledby="party-label">
-                  {Array.from({ length: max }, (_, i) => i + 1).map((n) => (
-                    <button type="button" key={n} aria-pressed={party === n} className={party === n ? 'on' : ''} onClick={() => setParty(n)}>{max === 2 ? (n === 1 ? t.justMe : t.plusOne) : n}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-            <button className="primary" disabled={status === 'sending'}>{status === 'sending' ? t.sending : t.send}</button>
-            {message && <p className="msg" role="alert">{message}</p>}
-          </form>
-        </>
+        <form className="softcard" onSubmit={submit}>
+          <label>{t.name}<input name="name" required maxLength={80} autoComplete="name" /></label>
+          <label>{t.email}<input name="email" type="text" required maxLength={254} autoComplete="off" dir="ltr" /></label>
+          <input className="trap" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+          <fieldset className="attend">
+            <legend>{t.attendQ}</legend>
+            <label className={attending ? 'on' : ''}>
+              <input type="radio" name="attending" checked={attending} onChange={() => setAttending(true)} />{t.yes}
+            </label>
+            <label className={!attending ? 'on' : ''}>
+              <input type="radio" name="attending" checked={!attending} onChange={() => setAttending(false)} />{t.no}
+            </label>
+          </fieldset>
+          {attending && (
+            <label>{t.party}
+              <select value={party} onChange={(e) => setParty(Number(e.target.value))}>
+                {Array.from({ length: max }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{guestLabel(n)}</option>)}
+              </select>
+            </label>
+          )}
+          <label>{t.messageLabel}<textarea name="message" maxLength={500} rows={3} dir="auto" /></label>
+          <button className="primary" disabled={status === 'sending'}>{status === 'sending' ? t.sending : t.send}</button>
+          {message && <p className="msg" role="alert">{message}</p>}
+        </form>
       )}
     </section>
   );

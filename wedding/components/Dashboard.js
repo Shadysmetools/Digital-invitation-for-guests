@@ -152,7 +152,7 @@ export default function Dashboard({ replies, settings, questions }) {
           <p className="empty">{replies.length ? 'No guests match that search.' : 'No replies yet. They’ll appear here as guests answer.'}</p>
         ) : (
           <table>
-            <thead><tr><th>Name</th><th>Event</th><th>Email or phone</th><th>Reply</th><th>People</th><th>Replied</th><th>Private link</th><th /></tr></thead>
+            <thead><tr><th>Name</th><th>Event</th><th>Email or phone</th><th>Reply</th><th>People</th><th>Message</th><th>Replied</th><th>Private link</th><th /></tr></thead>
             <tbody>
               {shown.map((r) => (
                 <tr key={r.id}>
@@ -161,6 +161,7 @@ export default function Dashboard({ replies, settings, questions }) {
                   <td>{r.email}</td>
                   <td>{r.attending ? 'Coming' : 'Can’t come'}</td>
                   <td>{r.party}</td>
+                  <td dir="auto" className="msgcell">{r.message}</td>
                   <td>{new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td>
                   <td>
                     <button type="button" onClick={() => copy(r)}>{copied === r.id ? 'Copied' : 'Copy'}</button>

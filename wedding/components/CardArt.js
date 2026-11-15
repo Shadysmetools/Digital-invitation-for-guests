@@ -171,29 +171,29 @@ function Band({ x, y, w, h = 22 }) {
   );
 }
 
-/** The inner card's decoration, 400 x 540. Text is laid over it separately. */
+/** The inner card's decoration, landscape 600 x 420. Text is laid over it separately. */
 export function CardFrame({ id = 'card-art' }) {
   return (
-    <svg id={id} className="gf-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 540" aria-hidden="true">
-      <rect width="400" height="540" fill={CREAM} />
-      <rect x="12" y="12" width="376" height="516" fill="none" stroke={WINE} strokeWidth="1.4" />
-      <rect x="16.5" y="16.5" width="367" height="507" fill="none" stroke={WINE} strokeWidth=".5" opacity=".6" />
-      <Band x={18} y={18} w={364} />
-      <Palm x={8} y={30} s={0.82} dates />
-      <Leaf x={30} y={128} a={-30} s={0.8} />
-      <Palm x={292} y={30} s={0.82} flip tint="#9aa35a" />
-      <Pomegranate x={350} y={112} s={0.78} />
-      <Leaf x={322} y={104} a={200} s={0.7} fill={LEAF_DARK} />
-      <Fan x={24} y={522} s={0.95} from={-110} to={10} />
-      <Leaf x={70} y={514} a={-150} s={0.9} />
-      <Leaf x={48} y={492} a={-110} s={0.8} fill={LEAF_DARK} />
-      <path d="M362 522C350 500 340 476 336 452" stroke={LEAF_DARK} strokeWidth="2" fill="none" />
-      <path d="M352 500C342 486 332 478 320 474" stroke={LEAF_DARK} strokeWidth="1.6" fill="none" />
-      <Ginkgo x={336} y={452} s={1.05} a={-12} />
-      <Ginkgo x={320} y={474} s={0.8} a={-48} />
-      <Leaf x={360} y={500} a={-70} s={0.9} />
-      <Diamond x={200} y={62} s={0.9} />
-      <Diamond x={200} y={500} s={0.9} />
+    <svg id={id} className="gf-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 420" aria-hidden="true">
+      <rect width="600" height="420" fill={CREAM} />
+      <rect x="14" y="14" width="572" height="392" fill="none" stroke={WINE} strokeWidth="1.5" />
+      <rect x="19" y="19" width="562" height="382" fill="none" stroke={WINE} strokeWidth=".5" opacity=".6" />
+      <Band x={21} y={21} w={558} />
+      <Palm x={14} y={34} s={0.95} dates />
+      <Leaf x={40} y={150} a={-30} s={0.85} />
+      <Palm x={492} y={34} s={0.95} flip tint="#d4777c" />
+      <Pomegranate x={556} y={128} s={0.9} />
+      <Leaf x={526} y={118} a={200} s={0.8} fill={LEAF_DARK} />
+      <Fan x={30} y={402} s={1.05} from={-110} to={10} />
+      <Leaf x={82} y={396} a={-150} s={0.95} />
+      <Leaf x={58} y={372} a={-110} s={0.85} fill={LEAF_DARK} />
+      <path d="M568 402C556 380 546 356 542 332" stroke={LEAF_DARK} strokeWidth="2" fill="none" />
+      <path d="M558 380C548 366 538 358 526 354" stroke={LEAF_DARK} strokeWidth="1.6" fill="none" />
+      <Ginkgo x={542} y={332} s={1.1} a={-12} />
+      <Ginkgo x={526} y={354} s={0.85} a={-48} />
+      <Leaf x={566} y={380} a={-70} s={0.9} />
+      <Diamond x={300} y={62} s={0.85} />
+      <Diamond x={300} y={386} s={0.85} />
     </svg>
   );
 }
@@ -204,7 +204,8 @@ export function SealArt() {
     <svg className="gf-sealart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 154" aria-hidden="true">
       <ellipse cx="60" cy="77" rx="57" ry="74" fill={CREAM} stroke={WINE} strokeWidth="2.4" />
       <ellipse cx="60" cy="77" rx="51" ry="68" fill="none" stroke={WINE} strokeWidth=".9" />
-      <Palm x={25} y={14} s={0.7} />
+      <Diamond x={60} y={16} s={0.38} />
+      <Palm x={25} y={18} s={0.68} />
       <Leaf x={36} y={112} a={200} s={0.8} />
       <Leaf x={84} y={112} a={-20} s={0.8} />
       <Pomegranate x={50} y={112} s={0.62} />

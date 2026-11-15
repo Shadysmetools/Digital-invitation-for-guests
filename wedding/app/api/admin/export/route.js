@@ -15,9 +15,9 @@ export async function GET(request) {
   if (!(await isAdmin())) return new Response('Unauthorized', { status: 401 });
   const origin = new URL(request.url).origin;
   const rows = (await listReplies()).map((r) =>
-    [EVENTS[r.event]?.en.label ?? 'Wedding', r.name, r.email, r.attending ? 'Coming' : 'Not coming', r.party, r.createdAt, r.updatedAt, `${origin}/i/${r.token}`].map(cell).join(','),
+    [EVENTS[r.event]?.en.label ?? 'Wedding', r.name, r.email, r.attending ? 'Coming' : 'Not coming', r.party, r.message, r.createdAt, r.updatedAt, `${origin}/i/${r.token}`].map(cell).join(','),
   );
-  const header = ['Event', 'Name', 'Email or phone', 'Reply', 'People', 'Replied at', 'Updated at', 'Private link'].map(cell).join(',');
+  const header = ['Event', 'Name', 'Email or phone', 'Reply', 'People', 'Message', 'Replied at', 'Updated at', 'Private link'].map(cell).join(',');
   return new Response(`﻿${[header, ...rows].join('\r\n')}`, {
     headers: {
       'content-type': 'text/csv; charset=utf-8',

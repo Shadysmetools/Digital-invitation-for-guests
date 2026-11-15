@@ -44,6 +44,7 @@ const fromRow = (r) => ({
   party: r.party,
   lang: r.lang,
   welcome: r.welcome,
+  message: r.message ?? '',
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
@@ -80,11 +81,11 @@ export async function countReplies() {
 }
 
 /** Creates a reply. Returns null when this email or phone has already replied to this event. */
-export async function createReply({ event, name, email, attending, party, lang, welcome }) {
+export async function createReply({ event, name, email, attending, party, lang, welcome, message = null }) {
   const token = randomBytes(24).toString('base64url');
   const { data, error } = await db()
     .from('replies')
-    .insert({ id: sha(`${event}:${email}`), event, token, token_hash: sha(token), name, email, attending, party, lang, welcome })
+    .insert({ id: sha(`${event}:${email}`), event, token, token_hash: sha(token), name, email, attending, party, lang, welcome, message })
     .select()
     .single();
   if (isConflict(error, 'replies_pkey') || isConflict(error, 'replies_event_contact_unique')) return null;

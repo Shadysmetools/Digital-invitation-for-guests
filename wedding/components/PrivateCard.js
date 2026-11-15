@@ -9,11 +9,11 @@ const fit = (name) => (name.length <= 14 ? 52 : name.length <= 22 ? 40 : name.le
 /** Text sizes as a percentage of the card's width, shared by the page and the saved image. */
 function sizes(rtl, name) {
   return {
-    title: rtl ? 5.4 : 4.2,
-    name: fit(name) * 0.25,
-    message: rtl ? 5.8 : 5.6,
-    label: rtl ? 5.2 : 3.9,
-    date: rtl ? 5.2 : 4.5,
+    title: rtl ? 3.6 : 2.8,
+    name: fit(name) * 0.15,
+    message: rtl ? 3.6 : 3.3,
+    label: rtl ? 3.3 : 2.5,
+    date: rtl ? 3.3 : 2.85,
   };
 }
 
@@ -41,8 +41,8 @@ async function svgImage(svg) {
 }
 
 async function renderCard({ t, ev, name, message, rtl, art }) {
-  const W = 1080;
-  const H = 1458;
+  const W = 1500;
+  const H = 1050;
   const u = W / 100; // one percent of the card's width
   const canvas = document.createElement('canvas');
   canvas.width = W;
@@ -69,25 +69,23 @@ async function renderCard({ t, ev, name, message, rtl, art }) {
     date: `500 ${size.date * u}px ${body}`,
   };
   c.font = fonts.message;
-  const lines = wrap(c, message, 66 * u);
+  const lines = wrap(c, message, 56 * u);
   const blocks = [
     ...t.noteTitle.map((text) => ({ text, font: fonts.title, h: size.title * 1.5, spacing: 0.32 })),
-    { gap: 3 },
+    { gap: 1.6 },
     { rule: true, h: 1 },
-    { gap: 3 },
+    { gap: 1.6 },
     { text: name, font: fonts.name, h: size.name * 1.2, dir: hasArabic(name) ? 'rtl' : 'ltr' },
-    { gap: 1.5 },
+    { gap: 0.6 },
     ...lines.map((text) => ({ text, font: fonts.message, h: size.message * 1.38 })),
-    { gap: 3.5 },
-    { rule: true, h: 1 },
-    { gap: 3.5 },
-    { text: rtl ? ev.label : ev.label.toUpperCase(), font: fonts.label, h: size.label * 1.6, spacing: 0.28 },
+    { gap: 1.6 },
+    { text: rtl ? ev.label : ev.label.toUpperCase(), font: fonts.label, h: size.label * 1.7, spacing: 0.28 },
     { text: t.friday, font: fonts.date, h: size.date * 1.45 },
     { text: `${ev.time} · ${t.villa}`, font: fonts.date, h: size.date * 1.45 },
   ];
   const total = blocks.reduce((sum, b) => sum + (b.gap ?? b.h), 0) * u;
-  const top = 0.185 * H;
-  const bottom = 0.85 * H;
+  const top = 0.17 * H;
+  const bottom = 0.88 * H;
   let y = top + (bottom - top - total) / 2;
   c.textAlign = 'center';
   c.textBaseline = 'middle';
@@ -100,11 +98,11 @@ async function renderCard({ t, ev, name, message, rtl, art }) {
     const h = b.h * u;
     if (b.rule) {
       c.fillStyle = '#7d1f2e';
-      c.fillRect(W / 2 - 13 * u, y + h / 2, 26 * u, 2);
+      c.fillRect(W / 2 - 9 * u, y + h / 2, 18 * u, 2);
       c.save();
       c.translate(W / 2, y + h / 2 + 1);
       c.rotate(Math.PI / 4);
-      c.fillRect(-0.8 * u, -0.8 * u, 1.6 * u, 1.6 * u);
+      c.fillRect(-0.55 * u, -0.55 * u, 1.1 * u, 1.1 * u);
       c.restore();
       c.fillStyle = '#5a1220';
     } else {
@@ -207,18 +205,15 @@ export default function PrivateCard({ token, event, guest, maxParty, closed, goo
             <span className="gf-rule" />
             <p className={`gf-name ${hasArabic(guest.name) ? 'ar' : ''}`} dir="auto" style={{ fontSize: cq(size.name) }}>{guest.name}</p>
             <p className="gf-msg" dir="auto" style={{ fontSize: cq(size.message) }}>{line}</p>
-            <span className="gf-rule" />
             <p className="gf-label" style={{ fontSize: cq(size.label) }}>{ev.label}</p>
             <p className="gf-date" style={{ fontSize: cq(size.date) }}>{t.friday}</p>
             <p className="gf-date" style={{ fontSize: cq(size.date) }}>{ev.time} · {t.villa}</p>
           </div>
         </article>
-        {!settled && (
-          <div className="gf-flaps" aria-hidden="true">
-            <div className="gf-flap l"><span className="gf-dot" /></div>
-            <div className="gf-flap r"><span className="gf-dot" /></div>
-          </div>
-        )}
+        <div className="gf-flaps" aria-hidden="true">
+          <div className="gf-flap l"><span className="gf-face front" /><span className="gf-face back"><span className="gf-dot" /></span></div>
+          <div className="gf-flap r"><span className="gf-face front" /><span className="gf-face back"><span className="gf-dot" /></span></div>
+        </div>
         {!settled && (
           <button type="button" className="gf-seal" onClick={openCard} aria-label={t.openCard} aria-expanded={open}>
             <SealArt />

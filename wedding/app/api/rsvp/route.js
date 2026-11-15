@@ -34,12 +34,14 @@ export async function POST(request) {
   if (!answer) return fail('invalid', 400);
 
   const lang = body.lang === 'ar' ? 'ar' : 'en';
+  const note = typeof body.message === 'string' ? body.message.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').trim().slice(0, 500) : '';
+  const message = note || null;
   const event = eventKey(body.event);
   if (await replyExists(event, email)) return fail('exists', 409);
   if ((await countReplies()) >= MAX_REPLIES) return fail('closed', 403);
   if (await rateLimited('rsvp-total', 700, 24 * 60 * 60 * 1000)) return fail('busy', 429);
   const reply = await withUniqueWelcome({ name, lang, attending: answer.attending }, (welcome) =>
-    createReply({ event, name, email, lang, welcome, ...answer }),
+    createReply({ event, name, email, lang, welcome, message, ...answer }),
   );
   if (!reply) return fail('exists', 409);
   return NextResponse.json({ token: reply.token });
