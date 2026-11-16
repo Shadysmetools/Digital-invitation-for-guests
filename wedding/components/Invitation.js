@@ -346,6 +346,11 @@ function Chat({ t, event, name, whatsapp }) {
     const text = new FormData(form).get('q').toString().trim();
     if (!text || busy) return;
     form.reset();
+    ask(text);
+  }
+
+  async function ask(text) {
+    if (busy) return;
     const next = [...messages, { role: 'user', content: text }];
     setMessages(next);
     setBusy(true);
@@ -361,6 +366,7 @@ function Chat({ t, event, name, whatsapp }) {
         role: 'assistant',
         content: answered ? data.reply : res.status === 429 ? t.chatLimit : t.chatError,
         contactFor: !answered || data.needsCouple ? text : undefined,
+        suggestions: answered && Array.isArray(data.suggestions) ? data.suggestions : [],
       }]);
     } catch {
       setMessages([...next, { role: 'assistant', content: t.chatError, contactFor: text }]);
@@ -374,11 +380,17 @@ function Chat({ t, event, name, whatsapp }) {
       <header><strong>{name}</strong><button type="button" onClick={() => setOpen(false)}>{t.chatClose}</button></header>
       <div className="log" ref={log} aria-live="polite">
         <p className="a">{t.chatHello}</p>
+        {messages.length === 0 && (
+          <div className="chips">{t.chatStarters.map((q) => <button type="button" key={q} onClick={() => ask(q)}>{q}</button>)}</div>
+        )}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'turn guest' : 'turn host'}>
             <p className={m.role === 'user' ? 'u' : 'a'} dir="auto">{m.content}</p>
             {m.contactFor && whatsapp && (
               <a className="wa" href={whatsappUrl(whatsapp, `${t.chatWaText}${m.contactFor}`)} target="_blank" rel="noopener noreferrer">{t.chatWa}</a>
+            )}
+            {i === messages.length - 1 && !busy && m.suggestions?.length > 0 && (
+              <div className="chips">{m.suggestions.map((q) => <button type="button" key={q} onClick={() => ask(q)} dir="auto">{q}</button>)}</div>
             )}
           </div>
         ))}

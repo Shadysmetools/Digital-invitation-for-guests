@@ -232,3 +232,6 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 /* even-height numbers everywhere */
 *,*::before,*::after{font-variant-numeric:lining-nums tabular-nums;font-feature-settings:'lnum' 1,'tnum' 1}
 .when .digits{font-style:normal;font-family:var(--f-sans),sans-serif;font-size:.86em;letter-spacing:.02em}
+.chat .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chat .chips button{padding:6px 12px;background:#fff;border:1px solid #e3c7b4;border-radius:999px;color:var(--wine);font:500 13.5px var(--f-sans),var(--f-arabic-sans),sans-serif;cursor:pointer;transition:background .2s}
+.chat .chips button:hover{background:#f6e6dc}
