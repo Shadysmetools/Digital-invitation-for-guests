@@ -235,3 +235,27 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .chat .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chat .chips button{padding:6px 12px;background:#fff;border:1px solid #e3c7b4;border-radius:999px;color:var(--wine);font:500 13.5px var(--f-sans),var(--f-arabic-sans),sans-serif;cursor:pointer;transition:background .2s}
 .chat .chips button:hover{background:#f6e6dc}
+
+/* scroll-driven video: pinned while the guest scrolls through it */
+.scrolly{--p:0;height:calc(100svh + 240svh)}
+.scrolly .stage{position:sticky;top:0;height:100svh;overflow:hidden;background:#efe2cf}
+.scrolly video{width:100%;height:100%;aspect-ratio:auto;object-fit:contain}
+.scrolly .cue{position:absolute;left:50%;bottom:82px;z-index:4;margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;width:max-content;max-width:88%;padding:9px 18px;border-radius:999px;background:#fbf1e8e8;color:var(--wine);font:500 15px var(--f-sans),var(--f-arabic-sans),sans-serif;text-align:center;box-shadow:0 6px 18px #3a0a1026;transform:translateX(-50%);transition:opacity .45s var(--ease),transform .45s var(--ease);pointer-events:none}
+.scrolly .cue .chev{width:11px;height:11px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);animation:chev 1.5s ease-in-out infinite}
+@keyframes chev{0%,100%{translate:0 -3px;opacity:.5}50%{translate:0 3px;opacity:1}}
+.scrolly .cue.start{opacity:max(0,calc(1 - var(--p) * 14))}
+.scrolly:not(.top) .cue.start{pointer-events:none}
+.scrolly .cue.end{opacity:0;transform:translate(-50%,12px)}
+.scrolly.done .cue.end{opacity:1;transform:translateX(-50%)}
+.scrolly .progress{position:absolute;left:0;right:0;bottom:0;z-index:4;height:4px;background:#8b233122}
+.scrolly .progress i{display:block;height:100%;width:calc(var(--p) * 100%);background:var(--wine)}
+.scrolly .musicpill{bottom:22px}
+.scrolly.still{height:auto}
+.scrolly.still .stage{position:relative;height:auto}
+.scrolly.still video{height:auto;aspect-ratio:464/848}
+.scrolly.still .cue,.scrolly.still .progress{display:none}
+.scrolly button.cue{border:0;cursor:pointer;pointer-events:auto;min-height:48px;animation:musicpulse 2.4s ease-in-out infinite}
+.scrolly button.cue:hover{background:#fff}
+.scrolly .soundtoggle{bottom:22px}
+.soundtoggle.nudge{background:var(--wine);color:#fff;animation:nudge 1.8s ease-in-out infinite}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 0 #8b233166}50%{box-shadow:0 0 0 10px #8b233100;transform:scale(1.08)}}

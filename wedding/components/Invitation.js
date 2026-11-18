@@ -10,6 +10,65 @@ const VENUE_PHOTO = process.env.NEXT_PUBLIC_VENUE_PHOTO;
 // so every attempt is checked and the video goes back to muted playback if the browser refuses.
 const WAKE_EVENTS = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel'];
 
+/**
+ * Ties the video to the page scroll: the video stays pinned while the guest scrolls through it,
+ * frame by frame, and the rest of the invitation follows once it ends.
+ * With reduced motion the video simply plays on a loop.
+ */
+function useScrollVideo(video, box) {
+  useEffect(() => {
+    const v = video.current;
+    const el = box.current;
+    if (!v || !el) return undefined;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.classList.add('still');
+      v.loop = true;
+      v.play().catch(() => {});
+      return undefined;
+    }
+    let target = 0;
+    let shown = 0;
+    let raf = 0;
+    const tick = () => {
+      raf = 0;
+      shown += (target - shown) * 0.22;
+      if (Math.abs(target - shown) < 0.0004) shown = target;
+      const d = v.duration;
+      if (d && !v.seeking) {
+        const time = Math.min(d - 0.04, shown * d);
+        if (Math.abs(v.currentTime - time) > 0.015) v.currentTime = time;
+      }
+      if (shown !== target) raf = requestAnimationFrame(tick);
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const measure = () => {
+      const total = el.offsetHeight - window.innerHeight;
+      const p = total > 0 ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / total)) : 0;
+      target = p;
+      el.style.setProperty('--p', p.toFixed(4));
+      el.classList.toggle('done', p > 0.92);
+      el.classList.toggle('top', p < 0.05);
+      kick();
+    };
+    // iOS shows a frame only after the video has played once, so play and pause it straight away
+    v.play().then(() => v.pause()).catch(() => {}).finally(measure);
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    v.addEventListener('loadedmetadata', measure);
+    v.addEventListener('seeked', kick);
+    measure();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', measure);
+      window.removeEventListener('resize', measure);
+      v.removeEventListener('loadedmetadata', measure);
+      v.removeEventListener('seeked', kick);
+    };
+  }, [video, box]);
+}
+
 /** Plays the video with sound when the browser allows it, otherwise muted until the first interaction. */
 function useSound(video) {
   const [muted, setMuted] = useState(true);
@@ -70,7 +129,10 @@ function useSound(video) {
 export default function Invitation({ event, facts, closed, assistant }) {
   const [lang, setLang] = useState('en');
   const video = useRef(null);
-  const sound = useSound(video);
+  const scrolly = useRef(null);
+  const music = useRef(null);
+  const sound = useSound(music);
+  useScrollVideo(video, scrolly);
   const t = COPY[lang];
   const ev = event[lang];
 
@@ -109,10 +171,6 @@ export default function Invitation({ event, facts, closed, assistant }) {
 
   function replay() {
     window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    const v = video.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
   }
 
   return (
@@ -121,25 +179,34 @@ export default function Invitation({ event, facts, closed, assistant }) {
         <button type="button" aria-pressed={lang === 'en'} onClick={() => choose('en')} lang="en">English</button>
         <button type="button" aria-pressed={lang === 'ar'} onClick={() => choose('ar')} lang="ar">العربية</button>
       </div>
-      <section className="hero">
-        <video
-          ref={video}
-          src={event.video}
-          poster={event.poster}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-label={`${ev.title} · ${t.dateLong} · ${ev.time} · ${t.place}`}
-        />
-        {sound.waiting && sound.muted ? (
-          <button type="button" className="musicpill" onClick={sound.toggle}>{t.tapMusic}</button>
-        ) : (
-          <button type="button" className="soundtoggle" onClick={sound.toggle} aria-pressed={!sound.muted} aria-label={sound.muted ? t.soundOn : t.soundOff}>
+      <section className="hero scrolly" ref={scrolly}>
+        <div className="stage">
+          <video
+            ref={video}
+            src={event.video}
+            poster={event.poster}
+            muted
+            playsInline
+            preload="auto"
+            aria-label={`${ev.title} · ${t.dateLong} · ${ev.time} · ${t.place}`}
+          />
+          <button
+            type="button"
+            className="cue start"
+            onClick={() => {
+              if (sound.muted) sound.toggle();
+              window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+            }}
+          >
+            {t.scrollCue}<span className="chev" />
+          </button>
+          <p className="cue end" aria-hidden="true">{t.scrollMore}<span className="chev" /></p>
+          <div className="progress" aria-hidden="true"><i /></div>
+          <button type="button" className={`soundtoggle${sound.waiting && sound.muted ? ' nudge' : ''}`} onClick={sound.toggle} aria-pressed={!sound.muted} aria-label={sound.muted ? t.soundOn : t.soundOff}>
             {sound.muted ? '♪ ×' : '♪'}
           </button>
-        )}
+        </div>
+        <audio ref={music} src={event.music} loop preload="auto" />
       </section>
 
       <div className="frame">
