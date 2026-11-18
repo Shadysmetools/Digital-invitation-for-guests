@@ -259,3 +259,6 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .scrolly .soundtoggle{bottom:22px}
 .soundtoggle.nudge{background:var(--wine);color:#fff;animation:nudge 1.8s ease-in-out infinite}
 @keyframes nudge{0%,100%{box-shadow:0 0 0 0 #8b233166}50%{box-shadow:0 0 0 10px #8b233100;transform:scale(1.08)}}
+.scrolly .stage{background-position:center;background-size:contain;background-repeat:no-repeat}
+.scrolly canvas{display:block;width:100%;height:100%;object-fit:contain}
+.scrolly.still canvas{height:auto;aspect-ratio:464/848}

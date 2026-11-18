@@ -11,62 +11,78 @@ const VENUE_PHOTO = process.env.NEXT_PUBLIC_VENUE_PHOTO;
 const WAKE_EVENTS = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel'];
 
 /**
- * Ties the video to the page scroll: the video stays pinned while the guest scrolls through it,
- * frame by frame, and the rest of the invitation follows once it ends.
- * With reduced motion the video simply plays on a loop.
+ * Ties the invitation film to the page scroll. The film is a sequence of still frames drawn on a canvas,
+ * which works in every browser and in-app browser (WhatsApp, Telegram, Instagram), unlike seeking a video.
+ * With reduced motion the frames simply play through on a loop.
  */
-function useScrollVideo(video, box) {
+function useScrollFrames(canvas, box, frames) {
   useEffect(() => {
-    const v = video.current;
+    const c = canvas.current;
     const el = box.current;
-    if (!v || !el) return undefined;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      el.classList.add('still');
-      v.loop = true;
-      v.play().catch(() => {});
-      return undefined;
-    }
-    let target = 0;
-    let shown = 0;
+    if (!c || !el) return undefined;
+    const ctx = c.getContext('2d');
+    const last = frames.count - 1;
+    const imgs = [];
+    let want = 0;
+    let drawn = -1;
     let raf = 0;
-    const tick = () => {
+    const draw = () => {
       raf = 0;
-      shown += (target - shown) * 0.22;
-      if (Math.abs(target - shown) < 0.0004) shown = target;
-      const d = v.duration;
-      if (d && !v.seeking) {
-        const time = Math.min(d - 0.04, shown * d);
-        if (Math.abs(v.currentTime - time) > 0.015) v.currentTime = time;
+      for (let i = want; i >= 0; i -= 1) {
+        const im = imgs[i];
+        if (im?.complete && im.naturalWidth) {
+          if (i !== drawn) {
+            ctx.drawImage(im, 0, 0, c.width, c.height);
+            drawn = i;
+          }
+          return;
+        }
       }
-      if (shown !== target) raf = requestAnimationFrame(tick);
     };
     const kick = () => {
-      if (!raf) raf = requestAnimationFrame(tick);
+      if (!raf) raf = requestAnimationFrame(draw);
     };
+    const load = (i) => {
+      if (imgs[i]) return;
+      const im = new Image();
+      im.decoding = 'async';
+      im.onload = () => {
+        if (i <= want && i > drawn) kick();
+      };
+      im.src = `${frames.dir}${String(i + 1).padStart(3, '0')}.webp`;
+      imgs[i] = im;
+    };
+    // first frame, then every eighth so any scroll position has a near frame early, then the rest
+    load(0);
+    for (let i = 8; i <= last; i += 8) load(i);
+    for (let i = 1; i <= last; i += 1) load(i);
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.classList.add('still');
+      const timer = setInterval(() => {
+        want = (want + 1) % frames.count;
+        kick();
+      }, 100);
+      return () => clearInterval(timer);
+    }
     const measure = () => {
       const total = el.offsetHeight - window.innerHeight;
       const p = total > 0 ? Math.min(1, Math.max(0, -el.getBoundingClientRect().top / total)) : 0;
-      target = p;
       el.style.setProperty('--p', p.toFixed(4));
       el.classList.toggle('done', p > 0.92);
       el.classList.toggle('top', p < 0.05);
+      want = Math.round(p * last);
       kick();
     };
-    // iOS shows a frame only after the video has played once, so play and pause it straight away
-    v.play().then(() => v.pause()).catch(() => {}).finally(measure);
     window.addEventListener('scroll', measure, { passive: true });
     window.addEventListener('resize', measure);
-    v.addEventListener('loadedmetadata', measure);
-    v.addEventListener('seeked', kick);
     measure();
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', measure);
       window.removeEventListener('resize', measure);
-      v.removeEventListener('loadedmetadata', measure);
-      v.removeEventListener('seeked', kick);
     };
-  }, [video, box]);
+  }, [canvas, box, frames]);
 }
 
 /** Plays the video with sound when the browser allows it, otherwise muted until the first interaction. */
@@ -128,11 +144,11 @@ function useSound(video) {
 
 export default function Invitation({ event, facts, closed, assistant }) {
   const [lang, setLang] = useState('en');
-  const video = useRef(null);
+  const film = useRef(null);
   const scrolly = useRef(null);
   const music = useRef(null);
   const sound = useSound(music);
-  useScrollVideo(video, scrolly);
+  useScrollFrames(film, scrolly, event.frames);
   const t = COPY[lang];
   const ev = event[lang];
 
@@ -180,14 +196,12 @@ export default function Invitation({ event, facts, closed, assistant }) {
         <button type="button" aria-pressed={lang === 'ar'} onClick={() => choose('ar')} lang="ar">العربية</button>
       </div>
       <section className="hero scrolly" ref={scrolly}>
-        <div className="stage">
-          <video
-            ref={video}
-            src={event.video}
-            poster={event.poster}
-            muted
-            playsInline
-            preload="auto"
+        <div className="stage" style={{ backgroundImage: `url(${event.poster})` }}>
+          <canvas
+            ref={film}
+            width={464}
+            height={848}
+            role="img"
             aria-label={`${ev.title} · ${t.dateLong} · ${ev.time} · ${t.place}`}
           />
           <button
