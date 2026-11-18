@@ -237,7 +237,7 @@ td button{background:none;border:0;color:var(--wine);text-decoration:underline;t
 .chat .chips button:hover{background:#f6e6dc}
 
 /* scroll-driven video: pinned while the guest scrolls through it */
-.scrolly{--p:0;height:calc(100svh + 240svh)}
+.scrolly{--p:0;height:calc(100svh + 130svh)}
 .scrolly .stage{position:sticky;top:0;height:100svh;overflow:hidden;background:#efe2cf}
 .scrolly video{width:100%;height:100%;aspect-ratio:auto;object-fit:contain}
 .scrolly .cue{position:absolute;left:50%;bottom:82px;z-index:4;margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;width:max-content;max-width:88%;padding:9px 18px;border-radius:999px;background:#fbf1e8e8;color:var(--wine);font:500 15px var(--f-sans),var(--f-arabic-sans),sans-serif;text-align:center;box-shadow:0 6px 18px #3a0a1026;transform:translateX(-50%);transition:opacity .45s var(--ease),transform .45s var(--ease);pointer-events:none}

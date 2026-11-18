@@ -24,20 +24,25 @@ function useScrollFrames(canvas, box, frames) {
     const last = frames.count - 1;
     const imgs = [];
     let want = 0;
+    let shown = 0;
     let drawn = -1;
     let raf = 0;
+    // glide toward the scroll position instead of jumping, so a flick feels smooth
     const draw = () => {
       raf = 0;
-      for (let i = want; i >= 0; i -= 1) {
+      shown += (want - shown) * 0.3;
+      if (Math.abs(want - shown) < 0.3) shown = want;
+      for (let i = Math.round(shown); i >= 0; i -= 1) {
         const im = imgs[i];
         if (im?.complete && im.naturalWidth) {
           if (i !== drawn) {
             ctx.drawImage(im, 0, 0, c.width, c.height);
             drawn = i;
           }
-          return;
+          break;
         }
       }
+      if (shown !== want) raf = requestAnimationFrame(draw);
     };
     const kick = () => {
       if (!raf) raf = requestAnimationFrame(draw);
@@ -50,6 +55,8 @@ function useScrollFrames(canvas, box, frames) {
         if (i <= want && i > drawn) kick();
       };
       im.src = `${frames.dir}${String(i + 1).padStart(3, '0')}.webp`;
+      // decode ahead of time so drawing a frame while scrolling is instant
+      im.decode?.().catch(() => {});
       imgs[i] = im;
     };
     // first frame, then every eighth so any scroll position has a near frame early, then the rest
@@ -61,6 +68,7 @@ function useScrollFrames(canvas, box, frames) {
       el.classList.add('still');
       const timer = setInterval(() => {
         want = (want + 1) % frames.count;
+        shown = want;
         kick();
       }, 100);
       return () => clearInterval(timer);
